@@ -25,12 +25,12 @@ par=com.ParamRun(fname_params)
 print " "
 
 if (not os.path.isfile(par.output_dir+"/"+par.output_fisher+"/fisher_raw_l.npy")) :
-    print "<> Computing/reading relevant signal power spectra"
-    par.get_cls_all()
-    print " "
-
     print "<> Computing relevant noise power spectra"
     par.get_cls_noise()
+    print " "
+
+    print "<> Computing/reading relevant signal power spectra"
+    par.get_cls_all()
     par.plot_cls()
     print " "
 

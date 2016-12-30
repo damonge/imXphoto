@@ -72,10 +72,12 @@ class NuisanceFunction :
                 i_marg_bphz=np.atleast_1d(data[4])
                 self.z_arr=0.5*(z0_arr+zf_arr)
                 if typ=="sphz" :
+                    self.f_arr=s_ph_arr
                     self.df_arr=0.05*s_ph_arr
                     self.i_marg=i_marg_sphz
                 elif typ=="bphz" :
-                    self.df_arr=0.005
+                    self.f_arr=np.zeros_like(z0_arr)
+                    self.df_arr=0.005*np.ones_like(z0_arr)
                     self.i_marg=i_marg_bphz
                 else :
                     print "WTF"
@@ -385,13 +387,16 @@ def get_cross_noise(tr1,tr2,lmax) :
                 lambda_arr=CLIGHT/nu_arr
                 dist,nbase=np.loadtxt(tr1.base_file,unpack=True)
                 ndist=interp1d(dist,nbase,bounds_error=False,fill_value=0.)
-                norm=0.5*tr1.ndish*(tr1.ndish-1.)/quad(ndist,dist[0],dist[1])[0]
+                norm=0.5*tr1.n_dish*(tr1.n_dish-1.)/quad(ndist,dist[0],dist[1])[0]
                 nbase*=norm; ndist=interp1d(dist,nbase,bounds_error=False,fill_value=0.)
                 n_baselines=ndist(l[None,:]*lambda_arr[:,None]/(2*np.pi))
                 factor_beam=n_baselines[:,:]*((lambda_arr/beam_fwhm)**2)[:,None]
 
             for i in np.arange(nbins1) :
                 cl_noise[:,i,i]=sigma2_noise[i]/np.fmax(factor_beam[i,:],1E-16)
+#                plt.plot(l,cl_noise[:,i,i])
+#            plt.show()
+#            exit(1)
         elif tr1.tracer_type=='gal_shear' :
             data1=np.loadtxt(tr1.bins_file,unpack=True)
             z0_arr1=np.atleast_1d(data1[0])

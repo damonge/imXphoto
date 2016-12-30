@@ -76,6 +76,7 @@ class ParamRun:
     output_path="test_dir/test_prefix" #
     exec_path="./classt" #
     fsky=1.0
+    use_CAMB=False
 
     #Bin parameters
     nbins_gal_clustering=0 #
