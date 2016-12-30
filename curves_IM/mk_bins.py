@@ -2,6 +2,7 @@ import numpy as np
 from scipy.optimize import brentq
 import py_cosmo_mad as csm
 
+plot_stuff=False
 KMAX=0.2
 nuHI=1420.405
 

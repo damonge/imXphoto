@@ -5,6 +5,8 @@ from scipy.special import erf
 from scipy.optimize import brentq
 import py_cosmo_mad as csm
 
+plot_stuff=False
+
 def get_zarr(s_photoz,n_width,z_max) :
     dz_half=s_photoz*n_width*0.5
     zc_arr=[dz_half/(1-dz_half)]
@@ -48,12 +50,14 @@ def plot_bins(fname,z_max,nz_func) :
         wzarr=np.array([erf((zf-z)*denom)-erf((z0-z)*denom) for z in zarr])
         wzarr/=np.amax(wzarr)
         nwarr=nzarr*wzarr
-        plt.plot(zarr,nwarr)
+        if plot_stuff :
+            plt.plot(zarr,nwarr)
     z_global_arr=z_max*1.2*(np.arange(nz_plot)+0.5)/nz_plot
     nz_global_arr=np.array([nz_func(z) for z in z_global_arr])
-    plt.plot(z_global_arr,nz_global_arr,'k--')
-    plt.xlim([0,z_max*1.2])
-    plt.show()
+    if plot_stuff :
+        plt.plot(z_global_arr,nz_global_arr,'k--')
+        plt.xlim([0,z_max*1.2])
+        plt.show()
 
 def get_kmax(pcs,dz,st) :
     def sig_minus_target(lk) :
@@ -110,10 +114,11 @@ pcs.set_linear_pk("EH",-4.,3.,0.01,0.96,0.8)
 gf=pcs.growth_factor(1./(1+0.))/pcs.growth_factor(1)
 sthr_arr=(np.arange(50)+1.)*0.021
 kmax_arr=np.array([get_kmax(pcs,gf,st) for st in sthr_arr])
-plt.plot(sthr_arr,kmax_arr);
-plt.xlabel("$\\sigma_{\\rm thr}$",fontsize=16)
-plt.ylabel("$k_{\\rm max}(z=0)\\,[h\\,{\\rm Mpc}^{-1}]$",fontsize=16)
-plt.show()
+if plot_stuff :
+    plt.plot(sthr_arr,kmax_arr);
+    plt.xlabel("$\\sigma_{\\rm thr}$",fontsize=16)
+    plt.ylabel("$k_{\\rm max}(z=0)\\,[h\\,{\\rm Mpc}^{-1}]$",fontsize=16)
+    plt.show()
 np.savetxt('kvals_st.txt',np.transpose([sthr_arr,kmax_arr]))
 
 get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,

@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 
+plot_stuff=False
+
 def get_grid_square(ns,dl) :
     pos_1=(np.arange(ns)+0.5)*dl
     pos=np.array([(pos_1[:,None]*np.ones([ns,ns])).flatten(),
@@ -38,12 +40,13 @@ darr2,nbarr2=get_basedist_grid(32,6.,fname="baseline_file_HIRAX_6m.txt")
 darr3,nbarr3=get_basedist_grid(64,7.,fname="baseline_file_HIRAX64_7m.txt")
 darr4,nbarr4=get_basedist_grid(64,6.,fname="baseline_file_HIRAX64_6m.txt")
 fac_l=2*np.pi*400./300.
-plotarr(fac_l*darr1,nbarr1)
-plotarr(fac_l*darr2,nbarr2)
-plotarr(fac_l*darr3,nbarr3)
-plotarr(fac_l*darr4,nbarr4)
-plt.plot(fac_l*darr1,nbarr1)
-plt.plot(fac_l*darr2,nbarr2)
-plt.plot(fac_l*darr3,nbarr3)
-plt.plot(fac_l*darr4,nbarr4)
-plt.show()
+if plot_stuff :
+    plotarr(fac_l*darr1,nbarr1)
+    plotarr(fac_l*darr2,nbarr2)
+    plotarr(fac_l*darr3,nbarr3)
+    plotarr(fac_l*darr4,nbarr4)
+    plt.plot(fac_l*darr1,nbarr1)
+    plt.plot(fac_l*darr2,nbarr2)
+    plt.plot(fac_l*darr3,nbarr3)
+    plt.plot(fac_l*darr4,nbarr4)
+    plt.show()
