@@ -386,17 +386,20 @@ def get_cross_noise(tr1,tr2,lmax) :
             else :
                 lambda_arr=CLIGHT/nu_arr
                 dist,nbase=np.loadtxt(tr1.base_file,unpack=True)
-                ndist=interp1d(dist,nbase,bounds_error=False,fill_value=0.)
-                norm=0.5*tr1.n_dish*(tr1.n_dish-1.)/quad(ndist,dist[0],dist[1])[0]
+                ndistint=interp1d(dist,nbase*dist*2*np.pi,bounds_error=False,fill_value=0.)
+                norm=0.5*tr1.n_dish*(tr1.n_dish-1.)/quad(ndistint,dist[0],dist[-1])[0]
                 nbase*=norm; ndist=interp1d(dist,nbase,bounds_error=False,fill_value=0.)
                 n_baselines=ndist(l[None,:]*lambda_arr[:,None]/(2*np.pi))
                 factor_beam=n_baselines[:,:]*((lambda_arr/beam_fwhm)**2)[:,None]
 
             for i in np.arange(nbins1) :
                 cl_noise[:,i,i]=sigma2_noise[i]/np.fmax(factor_beam[i,:],1E-16)
+#            for i in np.arange(nbins1) :
 #                plt.plot(l,cl_noise[:,i,i])
+#            plt.ylim([1E-7,1])
 #            plt.show()
 #            exit(1)
+
         elif tr1.tracer_type=='gal_shear' :
             data1=np.loadtxt(tr1.bins_file,unpack=True)
             z0_arr1=np.atleast_1d(data1[0])
