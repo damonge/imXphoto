@@ -8,6 +8,30 @@ phoz_LSSTgold = {
     "ezfi" : "curves_LSST/ez_gold.txt"
     }
 
+spec_DESI = {
+    "name" : "DESI",
+    "nzfi" : "curves_spec/nz_DESI.txt",
+    "bzfi" : "curves_spec/bz_DESI.txt",
+    "szfi" : "curves_spec/sz_DESI.txt",
+    "ezfi" : "curves_spec/ez_DESI.txt"
+    }
+
+spec_Euclid = {
+    "name" : "Euclid",
+    "nzfi" : "curves_spec/nz_Euclid.txt",
+    "bzfi" : "curves_spec/bz_Euclid.txt",
+    "szfi" : "curves_spec/sz_Euclid.txt",
+    "ezfi" : "curves_spec/ez_Euclid.txt"
+    }
+
+spec_WFIRST = {
+    "name" : "WFIRST",
+    "nzfi" : "curves_spec/nz_WFIRST.txt",
+    "bzfi" : "curves_spec/bz_WFIRST.txt",
+    "szfi" : "curves_spec/sz_WFIRST.txt",
+    "ezfi" : "curves_spec/ez_WFIRST.txt"
+    }
+
 im_HIRAX_32_6 = {
     "name" : "HIRAX_32_6",
     "nzfi" : "curves_IM/nz_HI.txt",
@@ -21,5 +45,37 @@ im_HIRAX_32_6 = {
     "n_dish" : 1024,
     "area_eff" : 1.0,
     "is_sd" : "no",
+    "base_file" : "curves_IM/baseline_file_HIRAX_6m.txt"
+}
+
+im_HIRAX_32_7 = {
+    "name" : "HIRAX_32_7",
+    "nzfi" : "curves_IM/nz_HI.txt",
+    "bzfi" : "curves_IM/bz_HI.txt",
+    "szfi" : "curves_IM/sz_HI.txt",
+    "ezfi" : "curves_IM/ez_HI.txt",
+    "tzfi" : "curves_IM/tz_HI.txt",
+    "dish_size" : 6.,
+    "t_inst" : 50.,
+    "t_total" : 10000.,
+    "n_dish" : 1024,
+    "area_eff" : 1.0,
+    "is_sd" : "no",
+    "base_file" : "curves_IM/baseline_file_HIRAX_7m.txt"
+}
+
+im_SKA_SD = {
+    "name" : "SKA_SD",
+    "nzfi" : "curves_IM/nz_HI.txt",
+    "bzfi" : "curves_IM/bz_HI.txt",
+    "szfi" : "curves_IM/sz_HI.txt",
+    "ezfi" : "curves_IM/ez_HI.txt",
+    "tzfi" : "curves_IM/tz_HI.txt",
+    "dish_size" : 15.,
+    "t_inst" : 25.,
+    "t_total" : 10000.,
+    "n_dish" : 200,
+    "area_eff" : 1.0,
+    "is_sd" : "yes",
     "base_file" : "curves_IM/baseline_file_HIRAX_6m.txt"
 }

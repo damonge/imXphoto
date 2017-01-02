@@ -352,11 +352,16 @@ def get_cross_noise(tr1,tr2,lmax) :
             if NZ_IN_AMIN==True :
                 nz_nz_arr*=(180.*60/np.pi)**2
             dz_arr=z_nz_arr[1:]-z_nz_arr[:-1]
+            nzf=interp1d(z_nz_arr,nz_nz_arr,bounds_error=False,fill_value=0)
             for i in np.arange(nbins1) :
-                parr=pdf_photo(z_nz_arr,z0_arr1[i],zf_arr1[i],sz_arr1[i])
-                integ=interp1d(z_nz_arr,parr*nz_nz_arr)
-                ndens=quad(integ,z_nz_arr[0],z_nz_arr[-1])[0]
-                cl_noise[:,i,i]=1./ndens
+                def integ(z) :
+                    return nzf(z)*pdf_photo(z,z0_arr1[i],zf_arr1[i],sz_arr1[i])
+                ndens=quad(integ,z0_arr1[i]-5*sz_arr1[i],zf_arr1[i]+5*sz_arr1[i])[0]#
+#                parr=pdf_photo(z_nz_arr,z0_arr1[i],zf_arr1[i],sz_arr1[i])
+#                integ=interp1d(z_nz_arr,parr*nz_nz_arr)
+#                ndens=quad(integ,z_nz_arr[0],z_nz_arr[-1])[0];
+                print i, ndens,z0_arr1[i],zf_arr1[i],sz_arr1[i]
+                cl_noise[:,i,i]=1./np.fmax(ndens,1E-16)
         elif tr1.tracer_type=='intensity_mapping' :
             #Compute background temperature
             z,tz=np.loadtxt(tr1.tz_file,unpack=True)

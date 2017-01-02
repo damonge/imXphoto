@@ -77,6 +77,7 @@ class ParamRun:
     exec_path="./classt" #
     fsky=1.0
     use_CAMB=False
+    just_run_cls=False
 
     #Bin parameters
     nbins_gal_clustering=0 #
@@ -280,6 +281,9 @@ class ParamRun:
         if config.has_option('Behaviour parameters','save_param_files') :
             self.save_param_files=config.getboolean('Behaviour parameters',
                                                     'save_param_files')
+        if config.has_option('Behaviour parameters','just_run_cls') :
+            self.just_run_cls=config.getboolean('Behaviour parameters',
+                                                    'just_run_cls')
 
         if ((self.model=='BADE') and (self.use_CAMB==False)) :
             print "Can only do BADE with CAMB"
@@ -546,6 +550,9 @@ class ParamRun:
         for i in np.arange(self.npar_vary) :
             allfound*=ino.start_running(self,self.params_fshr[i].name,1)
             allfound*=ino.start_running(self,self.params_fshr[i].name,-1)
+
+        if self.just_run_cls :
+            return
 
         #Wait for CLASS to finish
         if not allfound :
