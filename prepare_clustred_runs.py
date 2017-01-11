@@ -112,6 +112,7 @@ def write_param_file(xp_photo,xp_im,bins_photo,bz_photo,bins_im,bz_im,output_dir
     stout+="bias_file= "+bz_photo+"\n"
     stout+="sbias_file= "+xp_photo['szfi']+"\n"
     stout+="ebias_file= "+xp_photo['ezfi']+"\n"
+    stout+="is_photometric= yes\n"
     stout+="use_tracer= yes\n"
     stout+="\n"
     stout+="[Tracer 2]\n"
@@ -176,15 +177,17 @@ def prepare_bin(z0,zf,sz,lmx,predir,ibin,lmax_im=2000,sthr=None,fac_sigma=3) :
 
     z0_im=np.amax([z0-fac_sigma*sz,0])
     zf_im=zf+fac_sigma*sz
-    nu0=nuHI/(1+zf_im); nuf=nuHI/(1+z0_im); dnu=get_dnu(0.5*(z0+zf),20.);
-    nnu=2*3*fac_sigma; #nnu=int((nuf-nu0)/dnu);
-    dnu=(nuf-nu0)/nnu;
-    nuf_arr=nuf-(np.arange(nnu)+0)*dnu
-    nu0_arr=nuf-(np.arange(nnu)+1)*dnu
-    z0_arr=nuHI/nuf_arr-1; zf_arr=nuHI/nu0_arr-1; zm_arr=0.5*(z0_arr+zf_arr)
+    nz=int(fac_sample_sigma*(zf_spec-z0_spec)/sz); dz=(zf_spec-z0_spec)/nz
+    z0_arr=z0_spec+(np.arange(nz)+0)*dz; zf_arr=z0_spec+(np.arange(nz)+1)*dz; zm_arr=0.5*(z0_arr+zf_arr)
+#    nu0=nuHI/(1+zf_im); nuf=nuHI/(1+z0_im); dnu=get_dnu(0.5*(z0+zf),20.);
+#    nnu=2*3*fac_sigma; #nnu=int((nuf-nu0)/dnu); nz=nnu
+#    dnu=(nuf-nu0)/nnu;
+#    nuf_arr=nuf-(np.arange(nnu)+0)*dnu
+#    nu0_arr=nuf-(np.arange(nnu)+1)*dnu
+#    z0_arr=nuHI/nuf_arr-1; zf_arr=nuHI/nu0_arr-1; zm_arr=0.5*(z0_arr+zf_arr)
     lmax_arr=np.ones_like(z0_arr)*lmax_im;
     if sthr!=None :
-        for i in np.arange(nnu) :
+        for i in np.arange(nz) :
             lmax_arr[i]=np.amin([lmax_arr[i],get_lmax(zm_arr[i],sthr)])
 
     fname_im=predir+"/bins_im_b%d.txt"%ibin

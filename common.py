@@ -446,6 +446,11 @@ class ParamRun:
             if config.has_option(sec_title,'ebias_file') :
                 ebias_file=config.get(sec_title,'ebias_file')
 
+            #Galaxy clustering
+            is_photometric=True
+            if config.has_option(sec_title,'is_photometric') :
+                is_photometric=config.getboolean(sec_title,'is_photometric')
+
             #Galaxy lensing
             sigma_gamma=None; abias_file=None; rfrac_file=None;
             if config.has_option(sec_title,'sigma_gamma') :
@@ -499,7 +504,7 @@ class ParamRun:
                 sys.exit(strout)
 
             self.tracers.append(trc.Tracer(self,name,tr_type,bins_file,nz_file,
-                                           bias_file,sbias_file,ebias_file,
+                                           is_photometric,bias_file,sbias_file,ebias_file,
                                            abias_file,rfrac_file,sigma_gamma,
                                            has_t,has_p,sigma_t,sigma_p,beam_amin,l_transition,
                                            tz_file,dish_size,t_inst,t_total,n_dish,

@@ -173,6 +173,7 @@ class Tracer :
     nuisance_bphz =NuisanceFunction()
 
     #Parameters for galaxy clustering
+    is_photometric=1
     nuisance_bias =NuisanceFunction()
     nuisance_sbias=NuisanceFunction()
     nuisance_ebias=NuisanceFunction()
@@ -213,7 +214,7 @@ class Tracer :
     consider_tracer=True
 
     def __init__(self,par,name,type_str,bins_file,nz_file,
-                 bias_file,sbias_file,ebias_file,
+                 is_photometric,bias_file,sbias_file,ebias_file,
                  abias_file,rfrac_file,sigma_gamma,
                  has_t,has_p,sigma_t,sigma_p,beam_amin,l_transition,
                  tz_file,dish_size,t_inst,t_total,n_dish,
@@ -227,6 +228,10 @@ class Tracer :
             self.tracer_type="gal_clustering"
             self.bins_file=bins_file
             self.nz_file=nz_file
+            if(is_photometric) :
+                self.is_photometric=1
+            else :
+                self.is_photometric=0
             self.nuisance_bias =NuisanceFunction("bias_"+name+"_",bias_file,nz_file,
                                                  par.output_dir+"/","bias")
             if par.include_magnification or par.include_gr_vel or par.include_gr_pot :

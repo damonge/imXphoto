@@ -651,7 +651,7 @@ def write_class_param_file(par,param_vary,sign_vary,prefix_out) :
             rfrac_fname =tr.nuisance_rfrac.get_filename(-1,sign_vary)
 
         if tr.tracer_type=="gal_clustering" :
-            photoz_nc_string+="1 "
+            photoz_nc_string+="%d "%(tr.is_photometric)
             selection_nc_string+="tophat "
             bins_nc_string+=bins_fname+" "
             nz_nc_string+=tr.nz_file+" "
