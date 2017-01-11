@@ -48,6 +48,18 @@
 %    redshift distributions through cross-correlations with an overlapping spectroscopic survey
 %    with no requirement on completeness or sampling of colour space.
   
+    \begin{figure*}
+      \centering
+      \includegraphics[width=0.49\textwidth]{bins}
+      \includegraphics[width=0.49\textwidth]{xcorr_map}
+      \caption{{\sl Left panel:} example of a redshift bin for a photometric survey and the redshift
+               bins chosen for an overlapping spectroscopic survey.
+               {\sl Right panel:} amplitude of the cross-correlation with an overlapping spectroscopic
+               survey as a function of spectroscopic redshift bin ($x$ axis) and angular scale
+               ($y$ axis). The amplitude of the cross-correlation traces the redshift distribution,
+               and can therefore be used to constrain it.}
+      \label{fig:clustred_example}
+    \end{figure*}
 \section{Formalism}\label{sec:method}
   \subsection{Clustering-based photo-$z$ calibration}\label{ssec:method.clustred}
     Consider two galaxy samples with redshift distributions $\phi_i(z)$ ($i=\{1,2\}$),
@@ -76,19 +88,20 @@
     of the samples has good radial resolution, in which case it can be split into narrow bins
     of redshift. The cross-correlations of all narrow bins with the other sample will
     therefore trace the amplitude of its redshift distribution, and can effectively be used
-    to constrain it. This is illustrated in Fig. \TODO{make fig}, which shows the
+    to constrain it. This is illustrated in Fig. \ref{fig:clustred_example}, which shows the
     cross-power spectrum between a Gaussian photo-$z$ bin of width $\sigma=0.05$ and a set
-    of narrow redshift bins ($\delta z=0.002$).
+    of narrow redshift bins ($\delta z\sim0.002$).
 
     Different recipes have been formulated to carry out this kind of analysis, such as the
-    optimal quadratic estimator method of \TODO{cite}. The forecasts presented here will
-    interpret the redshift distribution (in a parametric or non-parametric form) as a set
-    of extra nuisance parameters, on which we will carry out the Fisher matrix analysis
-    described in Section \ref{ssec:method.fisher}. Thus, even though our results will be
-    optimistic in as much as the Fisher matrix saturates the Rao-Cramer bound, they will
-    account for all correlations between redshift distribution parameters and with the
-    cosmological parameters, as well as the presence of redshift-space distortions and
-    magnification bias (effects that have been overseen in previous works).
+    optimal quadratic estimator method of \cite{2013MNRAS.433.2857M}. The forecasts
+    presented here will interpret the redshift distribution (in a parametric or
+    non-parametric form) as a set of extra nuisance parameters, on which we will carry out
+    the Fisher matrix analysis described in Section \ref{ssec:method.fisher}. Thus, even
+    though our results will be optimistic in as much as the Fisher matrix saturates the
+    Rao-Cramer bound, they will account for all correlations between redshift distribution
+    parameters and with the cosmological parameters, as well as the presence of
+    redshift-space distortions and magnification bias (effects that have been overseen in
+    previous works).
 
     For the purposes of estimating the ability of future surveys to calibrate photometric
     redshift distributions through cross-correlations, we will always consider an individual
@@ -98,7 +111,7 @@
     sample, and let $p(\zph|z)$ be the conditional distribution for a photo-$z$ $\zph$
     given the true redshift $z$. Then, the redshift distribution in a photo-$z$ redshift bin
     $b$ with bounds $z_b^i<\zph<z_b^f$ is given by
-    \begin{equation}
+    \begin{equation}\label{eq:phz_dist}
       \phi_b(z)\propto N^p(z)
       \int_{z_b^i}^{z_b^f}d\zph\,p(\zph|z).
     \end{equation}
@@ -114,17 +127,10 @@
         and we will assume that the uncertainty in the redshift distribution is fully
         described by $\Delta z$ and $\sigma_z$.
       \item We will introduce hard tails in the photo-$z$ distribution (possibly caused
-        by catastrophic outliers) and parametrize it by a pseudo-Voigt profile, combining
-        a Gaussian and Cauchy distributions:
-        \begin{align}\nonumber
-          p(\zph|z)\equiv &f(\sigma_z,\gamma)\,\mathcal{N}(z_{\rm ph}-\Delta z;z,\sigma_z)\\
-          &+(1-f(\sigma_z,\gamma))\frac{\gamma/\pi}{\gamma^2+(z-\Delta z)^2},
-        \end{align}
-        where $f$ is given as in \TODO{cite}:
-        \begin{equation}
-          f(\sigma_z,\gamma)=a.
-        \end{equation}
-        We thus add $\gamma$ to $\Delta z$ and $\sigma_z$ in describing the redshift distribution.
+        by catastrophic outliers) and parametrize it by a Voigt profile, combining a
+        Gaussian and Cauchy distributions. The tails are thus parametrized by $\gamma_L$,
+        the half-width at half-maximum of the Cauchy component. The exact form of the
+        Voigt profile used here is described in Appendix \ref{app:voigt}.
       \item We will use a non-parametric form for $\phi_b(z)$, given as a piecewise function with
         a free amplitude for each spectroscopic redshift bin.
     \end{enumerate}
@@ -134,28 +140,142 @@
     We finish this section by noting that the use of cross-correlations with spectroscopic surveys or
     intensity mapping observations for photo-$z$ calibration is not limited to the measurement of
     the redshift distribution of a given galaxy sample, but that they can also be used to improve the
-    precision of photometric redshift estimates for individual galaxies (e.g. \TODO{CITE}). 
+    precision of photometric redshift estimates for individual galaxies (e.g. \cite{2012MNRAS.425.1042J}). 
     Although we leave the discussion of this possibility for future work, we describe a Bayesian
     formalism for this task in Appendix \ref{app:ind_phz}.
     
+  \subsection{Photometric redshift surveys}\label{ssec:method.phz}
+    \begin{figure}
+      \centering
+      \includegraphics[width=0.49\textwidth]{nz_lsst}
+      \caption{Angular number density of galaxies as a function of redshift for the LSST
+                gold sample (solid black line). The colored lines in show the window functions
+                of the 15 redshift bins considered here.}
+      \label{fig:nz_lsst}
+    \end{figure}
+    This section describes the model used here for a LSST-like photometric redshift survey.
+    As in \cite{2015PhRvD..92f3525A}, we base our description of the number density of sources
+    and their magnification bias on the measurements of the luminosity function of
+    \cite{2006A&A...448..101G}, with $k$-corrections computed with {\tt kcorrect}
+    \cite{2007AJ....133..734B}. We assume a magnitude cut of $25.3$ in the $i$ band, corresponding
+    to the so-called ``gold'' sample \cite{2009arXiv0912.0201L}. Unlike \cite{2015PhRvD..92f3525A},
+    and for simplicity, we will consider a single galaxy population,
+    instead of splitting it into ``red'' and ``blue'' sources. The resulting redshift
+    distribution is shown by the solid black line in Figure \ref{fig:nz_lsst}.
+
+    We model the linear galaxy bias as a function of redshift as $b(z)=1+0.84z$, based
+    on the simulations of \cite{2004ApJ...601....1W}, and quoted in the LSST science book
+    \cite{2009arXiv0912.0201L}.
+    
+    The photometric redshift requirement for the gold sample as stated in the LSST science
+    book are $\sigma_z/(1+z)<0.05$, with a goal of $0.02$. Here we have taken a conservative
+    estimate, assuming a standard deviation $\sigma_z=0.03(1+z)$. We then split the full
+    sample into redshift bins with a width given by $3\times\hat{\sigma}_z$, where
+    $\hat{\sigma}_z$ is the photo-$z$ variance at the bin centre. This binning scheme is
+    chosen to reduce the correlation between bins induced by the tails of the photo-$z$
+    distribution, and results in the 15 redshift bins shown in Fig. \ref{fig:nz_lsst} (where
+    the redshift distributions are computed with Eq. \ref{eq:phz_dist}. Our fiducial
+    photo-$z$ model will assume unbiased Gaussian distributions, fully determined by
+    $\sigma_z$. When considering biased and hard-tailed distributions parametrized as
+    Voigt profiles we will assume $\Delta z=0$ and $\gamma_L=0$ for our fiducial
+    model.
 
   \subsection{Intensity mapping}\label{ssec:method.imap}
-    \TODO{      
-      \begin{itemize}
-        \item Briefly describe intensity mapping
-        \item Interferometer vs single dish. Noise expressions.
-        \item Foregrounds
-      \end{itemize}
-    }
+    \begin{table}
+      \centering{
+      \renewcommand*{\arraystretch}{1.2}
+      \begin{tabular}{|c|c|c|}
+        \hline
+        Experiment     & SKA          & HIRAX              \\
+        \hline
+        $T_{\rm inst}$ & 25K          & 50 K               \\
+        $t_{\rm tot}$  & $10^4$ h     & $2.8\times10^4$ h  \\
+        $N_{\rm dish}$ & 197          & 1024 ($32\times32$)\\
+        $D_{\rm dish}$ & 15 m         & 5 m                \\
+        freq. range    & 350-1050 MHz & 400-800 MHz    \\
+        $f_{\rm sky}$  & 0.4          & 0.4   \\
+        \hline
+      \end{tabular}}
+      \caption{Experimental specifications assumed for SKA and HIRAX.}
+      \label{tab:im_exp}
+    \end{table}
+    Intensity mapping (IM) is a novel observational technique that tries to circumvent the
+    long integration times needed to obtain reliable spectroscopic redshifts for individual
+    objects through an approach that is transverse to that used by photometric surveys.
+    The idea \TODO{cites} is to observe the unresolved combined emission of many line-emitting
+    sources in a relatively wide pixel at different frequencies. The signal-to-noise ratio
+    of the corresponding line emission is much stronger than that of the individual sources,
+    and thus, combining the intensity measured across the sky and relating the intensity
+    observed at a given frequency to the rest-frame wavelength of the emission line it is
+    possible to produce three-dimensional maps of the density of the line-emitting species.
+    This technique is particularly appealing for isolated spectral lines, as is the case
+    of the 21cm line caused by the spin-flip transition in neutral Hydrogen atoms (HI),
+    and thus HI intensity mapping has been proposed as an ideal method to cover vast
+    volumes at relatively low cost.
+    
+    A number of experiments have been proposed to carry out IM measurements of the baryon
+    acoustic oscillation scale, such as \TODO{add experiments with references}. The 
+    different instrumental approaches to IM can be broadly classified into two camps:
+    \begin{itemize}
+      \item {\sl Interferometers:} the sky emission is measured by a set of antennas, and
+      the measurements of pairs of antennas separated by a given baseline ${\bf d}$ are
+      cross-correlated to produce the measurement of an angular Fourier mode with scale
+      ${\bf l}\sim2\pi{\bf d}/\lambda$ (where $\lambda$ is the observed wavelength).
+      The intensity map is then reconstructed by combining pairs with different baselines.
+      \item {\sl Single-dish:} in this case the sky emission is measured and auto-correlated
+      by individual antennas. A band-limited intensity map with a resolution
+      $\delta\theta\sim\lambda/D_{\rm dish}$ is then produced by varying the antenna pointing,
+      where $D_{\rm dish}$ is the antenna diameter.
+    \end{itemize}
+    The expressions for the noise power spectrum for both cases are derived in Appendix
+    \ref{app:noise_im}, and can be summarized as:
+    \begin{equation}
+      N^\nu_{\bf l}=\frac{T_{\rm sys}^24\pi f_{\rm sky}}{\eta^2\Delta\nu t_{\rm tot}}
+      \left\{\begin{array}{ll}
+              \frac{1}{N_{\rm dish}B^2({\bf l})}, & \text{single dish}\\
+              \frac{\Omega_p}{N_d({\bf d}={\bf l}\lambda/(2\pi))\lambda^2}, & \text{interferometer}.
+             \end{array}\right.
+    \end{equation}
+    Here $T_{\rm sys}$ is the system temperature, given as a combination of instrumental and sky
+    temperature (see Appendix \ref{app:noise_im}), $f_{\rm sky}$ is the sky fraction covered
+    by the observations, $\eta^2$ is the antenna efficiency\footnote{$\eta$ is defined as the
+    ratio of the effective to real antenna area.}, $\Delta\nu$ is the band width in that channel,
+    $t_{\rm tot}$ is the total observation time for the survey, $N_{\rm dish}$ is the number of
+    dishes, $B({\bf l})$ is the harmonic transform of the antenna beam, $N_d({\bf d})$ is the
+    distribution of baselines and $\Omega_p$ is the solid angle covered per pointing. For all
+    experiments discussed here we will assume $\eta=1$, Gaussian beams so that
+    $B({\bf l})=\exp[-l(l+1)\theta_{\rm FWHM}^2/(16\log2)]$, and $\Omega_p=\theta_{\rm FWHM}^2$,
+    where $\theta_{\rm FWHM}$ is the beam full-width at half maximum, which will approximate
+    as $\theta_{\rm FWHM}=1.22\lambda/D_{\rm dish}$. Note that the baseline distribution $N_d$
+    is normalized such that:
+    \begin{equation}
+      \frac{N_{\rm dish}(N_{\rm dish}-1)}{2}=\int d{\bf d}^2\,N_d({\bf d}),
+    \end{equation}
+    where $N_{\rm dish}(N_{\rm dish}-1)/2$ is the total number of independent baselines.
 
-  \subsection{Photometric redshift surveys}\label{ssec:method.phz}
-    \TODO{
-      \begin{itemize}
-        \item Describe models used for LSST.
-        \item Describe binning scheme.
-      \end{itemize}
-    }
+    \TODO{Introduce and describe SKA and HIRAX. See specifications in Table \ref{tab:im_exp}.}
+    
+    Besides SKA and HIRAX we will also explore the capabilities of generic single-dish and
+    interferometer experiments in terms of photo-$z$ calibration. We will parametrize these
+    in terms of their instrument temperature $T_{\rm inst}$ and the minimum or maximum angular
+    scale that they are able to probe. On the one hand, single-dish experiments are limited
+    on small angular scales by the beam size, which is governed by the dish diameter
+    $D_{\rm dish}$. On the other hand, interferometers are limited on large scales by their
+    shortest baseline $d_{\rm min}$ which, assuming a closed-pack configuration, is also
+    given by $d_{\rm min}=D_{\rm dish}$. Thus we will explore the capabilities of generic
+    experiments in the $T_{\rm inst}-D_{\rm dish}$ plane, and in the case of interferometers
+    we will assume a flat baseline distribution \TODO{cite}:
+    \begin{equation}
+      N_d(d)=\left\{\begin{array}{cc}
+                      \frac{N_{\rm dish}(N_{\rm dish}-1)}{2\pi(d_{\rm max}^2-D^2_{\rm dish})}
+                      & {\rm if}\,D_{\rm dish}<d\leq d_{\rm max},\\
+                      0 & \text{otherwise}
+                    \end{array}\right.
+    \end{equation}
 
+    
+    \TODO{Discuss foregrounds.}
+ 
   \subsection{Forecasting formalism}\label{ssec:method.fisher}
     Our formalism will distinguish between two types of tracers of the density field:
     \begin{itemize}
@@ -184,8 +304,8 @@
     Now let $q_i$ be a set of parameters modelling $\cov$, including (but not limited to)
     the parameters describing the photometric redshift distribution. A maximum-likelihood
     estimator for $q_i$ can be defined by using an iterative Newton-Raphson method to
-    minimize the likelihood in Eq. \ref{eq:like}. This is described in \TODO{CITES}, and
-    yields the iterative algorithm:
+    minimize Eq. \ref{eq:like}. This is described in \cite{1998ApJ...499..555T,
+    1998PhRvD..57.2117B,2013MNRAS.433.2857M}, and yields the iterative algorithm:
     \begin{align}\label{eq:nr_ml}
       &q_i^{n}=q_i^{n-1}+[\fsh^{-1}]_{ij}
       \left[{\sf a}^\dag\cov^{-1}\cov_{,j}\cov^{-1}{\sf a}-
@@ -200,9 +320,9 @@
     simplified a pure Newton-Raphson iteration by taking the ensemble average of the likelihood
     Hessian (i.e. the Fisher matrix). Furthermore, in the case where the likelihood is
     well-approximated by a Gaussian, $\fsh^{-1}$ is the covariance matrix of the $q_i$.
-    Eq. \ref{eq:nr_ml} is the basis of the method proposed in \TODO{CITE} (with a number of
-    simplifications) and used in \TODO{CITE} to constrain the redshift distribution of galaxies
-    in the KiDS survey.
+    Eq. \ref{eq:nr_ml} is the basis of the method proposed in \cite{2013MNRAS.433.2857M} (with a
+    number of simplifications) and used in \cite{2017MNRAS.465.4118J} to constrain the redshift
+    distribution of galaxies in the KiDS survey.
 
     In our case, we mainly care about the uncertainty in the redshift distribution parameters
     included in the $q_i$, and therefore we will simply estimate the Fisher matrix $\fsh$. In
@@ -240,7 +360,50 @@
     $\ell_{\rm max}={\rm min}(\chi k_{\rm max},2000)$).
 
 \section{Results} \label{sec:results}
+  In order to forecast for the ability of future experiments to constrain photometric
+  redshift distributions, in the following sections we will use the formalism 
+  described in Section \ref{ssec:method.fisher} with a data vector given by
+  ${\sf a}_{\ell m}=(p_{\ell m},s^1_{\ell m},...,s^{N_s}_{\ell m})$, where $p$ is
+  a photometric redshift bin and $s^i$ are a set of overlapping redshift bins for
+  a spectroscopic tracer (either an intensity mapping experiment or a spectroscopic
+  galaxy survey). The number $N_s$, width and redshift range of the spectroscopic
+  redshift bins is chosen in order to adequatly sample the changes in the photometric
+  redshift distribution. We choose the redshift bin width to be $33\%$ of the
+  photo-$z$ uncertainty $\sigma_z$, which governs the variability of the redshift
+  distribution (i.e. each redshift interval of $\sigma_z$ is sampled in 3 points).
+  In order to sample the tails of the distribution we then define the redshift 
+  range of the set of spectroscopic bins as $[z_b^i-3\sigma_z,z_b^f+3\sigma_z]$,
+  where $z_b^i$ and $z_b^f$ are the edges of the photometric redshift bin. The
+  number of spectroscopic redshift bins $N_s$ is then defined in terms of these
+  numbers.
+  
+  The model parameters $q_i$ in the following sections will be given by:
+  \begin{itemize}
+    \item All of the parameters needed to determine the redshift distribution
+          ($\sigma_z$, $\Delta z$, $\gamma_L$ or the amplitude $N(z)$ in different
+          spectroscopic bins, depending on the case).
+    \item Two overall clustering bias parameters, $b_{\rm p}$ and $b_{\rm s}$,
+          corresponding to the bias of the photometric and spectroscopic tracers.
+    \item We will also include $\Omega_M$ in $q_i$, in order to account for the
+          possible cosmology dependence of the results.
+  \end{itemize}
+  
+  We will change this setup in Section \ref{ssec:results.cosmo}, where we will
+  explore the impact of the achieved constraints on the photo-$z$ parameters on
+  the final cosmological constraints achievable by LSST. In this section
+  ${\sf a}$ will correspond to the 15 photometric redshift bins for LSST, for
+  both galaxy clustering and weak lensing (i.e. 30 sets of spherical harmonics).
+  Likewise $q_i$ will contain the cosmological parameters
+  $(\omega_c,\omega_b,h,w_0,w_a,A_s,n_s,\tau_{\rm reio})$ as well as all the
+  baseline photo-$z$ parameters ($\Delta z$ and $\sigma_z$ for all redshift
+  bins), with priors corresponding to the constraints found in the preceding
+  sections.
+
   \subsection{Baseline forecasts} \label{ssec:results.baseline}
+    \begin{itemize}
+     \item First run: see Fig. \ref{fig:fisher}
+    \end{itemize}
+
     \TODO{
       \begin{itemize}
         \item Describe results for SKA and HIRAX in comparison with DESI, Euclid, WFIRST.
@@ -275,6 +438,9 @@
       \end{itemize}
     }
     
+  \subsection{Impact on cosmological constraints} \label{ssec:results.cosmo}
+    \TODO{Show effect of achieved photo-$z$ priors on final cosmological parameters}
+
     \begin{figure}
       \centering
       \includegraphics[width=0.49\textwidth]{photoz_calib_compare}
@@ -301,6 +467,35 @@
     \TODO{
       Describe models used for the angular power spectra
     }
+  
+  \section{Noise power spectrum for intensity mapping experiments}\label{app:noise_im}
+    \TODO{
+      Power spectrum models used here
+    }
+  
+  \section{Voigt profile}\label{app:voigt}
+    A Voigt profile is given by a convolution of a Gaussian and a Cauchy or Lorentzian
+    distribution, and is thus parametrized by the half-width at half-maximum of
+    both component ($\gamma_G$ and $\gamma_L$ respectively here):
+    \begin{align}\label{eq:voigt}
+      p_V(x;\gamma_G,\gamma_L)\equiv&\int_{-\infty}^{\infty}dx' p_G(x';\gamma_G)\,p_L(x-x';\gamma_L),\\
+      p_G(x;\gamma_G)\equiv\sqrt{\frac{{\rm ln} 2}{\pi\gamma_G^2}}\exp&\left[-{\rm ln}(2)x^2/\gamma_G^2\right],\hspace{12pt}
+      p_L(x;\gamma_L)\equiv\frac{\gamma_L}{\pi}\frac{1}{\gamma_L^2+x^2}.
+    \end{align}
+    In order to avoid the computational complexity of evaluating Eq. \ref{eq:voigt}, we
+    will use an approximate pseudo-Voigt profile:
+    \begin{align}\label{eq:pvoigt}
+      \tilde{p}_V(x;\gamma_G,\gamma_L)=\eta p_L(x;\bar{\gamma})+(1-\eta)\,p_G(x;\bar{\gamma}),
+    \end{align}
+    with expressions for $\eta$ and $\bar{\gamma}$ in terms of $\gamma_G$ and $\gamma_L$ given
+%    in \cite{pvoigt}.
+    by \cite{pvoigt}:
+    \begin{align}
+      &\bar{\gamma}(\gamma_G,\gamma_L)=\left[\gamma_G^5+2.69269\gamma_G^4\gamma_L+2.42843\gamma_G^3\gamma_L^2 + 4.47163\gamma_G^2\gamma_L^3 + 0.07842\gamma_G\gamma_L^4 + \gamma_L^5\right]^{1/5},\\
+      &\eta(\gamma_G,\gamma_L)=1.36603\frac{\gamma_L}{\bar{\gamma}}-0.47719\left(\frac{\gamma_L}{\bar{\gamma}}\right)^2+0.11116\left(\frac{\gamma_L}{\bar{\gamma}}\right)^3
+    \end{align}
+
+
 \end{widetext}
 
 \end{document}

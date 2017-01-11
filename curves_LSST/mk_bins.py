@@ -33,6 +33,7 @@ def plot_bins(fname,z_max,nz_func) :
     zc_arr=(data[1]+data[0])/2
     zw_arr=(data[1]-data[0])/2
     sz_arr=data[2]
+    npar=0
     for i in np.arange(len(zc_arr)) :
         zc=zc_arr[i]
         zw=zw_arr[i]
@@ -47,17 +48,22 @@ def plot_bins(fname,z_max,nz_func) :
         denom=1./(np.sqrt(2)*sz)
         zarr=zmin+(zmax-zmin)*(np.arange(nz_plot)+0.5)/nz_plot
         nzarr=np.array([nz_func(z) for z in zarr])
-        wzarr=np.array([erf((zf-z)*denom)-erf((z0-z)*denom) for z in zarr])
-        wzarr/=np.amax(wzarr)
+        wzarr=0.5*np.array([erf((zf-z)*denom)-erf((z0-z)*denom) for z in zarr])
+#        wzarr/=np.amax(wzarr) 
         nwarr=nzarr*wzarr
+        npar+=np.sum(nwarr)*(zarr[1]-zarr[0])
         if plot_stuff :
             plt.plot(zarr,nwarr)
     z_global_arr=z_max*1.2*(np.arange(nz_plot)+0.5)/nz_plot
     nz_global_arr=np.array([nz_func(z) for z in z_global_arr])
     if plot_stuff :
-        plt.plot(z_global_arr,nz_global_arr,'k--')
-        plt.xlim([0,z_max*1.2])
+        plt.plot(z_global_arr,nz_global_arr,'k-',linewidth=2)
+        plt.xlim([0,z_max])#*1.2])
+        plt.xlabel('$z$',fontsize=16)
+        plt.ylabel('$N(z)\\,[{\\rm arcmin}^{-2}]$',fontsize=16)
+        plt.savefig('nz_lsst.pdf',bbox_inches='tight')
         plt.show()
+    print npar,np.sum(nz_global_arr)*(z_global_arr[1]-z_global_arr[0])
 
 def get_kmax(pcs,dz,st) :
     def sig_minus_target(lk) :
