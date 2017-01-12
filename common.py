@@ -462,7 +462,7 @@ class ParamRun:
 
             #Intensity mapping
             tz_file=None; dish_size=None; t_inst=None; t_total=None; n_dish=None;
-            area_efficiency=None; fsky_im=None; is_singledish=None; base_file=None;
+            area_efficiency=None; fsky_im=None; im_type=None; base_file=None;
             if config.has_option(sec_title,'tz_file') :
                 tz_file=config.get(sec_title,'tz_file')
             if config.has_option(sec_title,'dish_size') :
@@ -477,8 +477,8 @@ class ParamRun:
                 area_efficiency=config.getfloat(sec_title,'area_efficiency')
             if config.has_option(sec_title,'fsky_im') :
                 fsky_im=config.getfloat(sec_title,'fsky_im')
-            if config.has_option(sec_title,'is_single_dish') :
-                is_singledish=config.getboolean(sec_title,'is_single_dish')
+            if config.has_option(sec_title,'instrument_type') :
+                im_type=config.get(sec_title,'instrument_type')
             if config.has_option(sec_title,'base_file') :
                 base_file=config.get(sec_title,'base_file')
 
@@ -508,7 +508,7 @@ class ParamRun:
                                            abias_file,rfrac_file,sigma_gamma,
                                            has_t,has_p,sigma_t,sigma_p,beam_amin,l_transition,
                                            tz_file,dish_size,t_inst,t_total,n_dish,
-                                           area_efficiency,fsky_im,is_singledish,base_file,
+                                           area_efficiency,fsky_im,im_type,base_file,
                                            n_tracers,consider_tracer,lmin,lmax))
         self.n_tracers=n_tracers
 

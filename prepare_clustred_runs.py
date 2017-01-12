@@ -130,7 +130,7 @@ def write_param_file(xp_photo,xp_im,bins_photo,bz_photo,bins_im,bz_im,output_dir
     stout+="n_dish= %d\n"%xp_im['n_dish']
     stout+="area_efficiency= %.3lf\n"%xp_im['area_eff']
     stout+="fsky_im= %.3lf\n"%fsky
-    stout+="is_single_dish= "+xp_im['is_sd']+"\n"
+    stout+="instrument_type= "+xp_im['im_type']+"\n"
     stout+="base_file= "+xp_im['base_file']+"\n"
     stout+="use_tracer= yes\n"
     stout+="\n"
@@ -168,8 +168,20 @@ def write_param_file(xp_photo,xp_im,bins_photo,bz_photo,bins_im,bz_im,output_dir
     f.write(stout)
     f.close()
 
-def prepare_bin(z0,zf,sz,lmx,predir,ibin,lmax_im=2000,sthr=None,fac_sigma=3) :
-    fname_bin_single=predir+"/bins_photoz_b%d.txt"%ibin
+def get_bin_fnames(predir,ibin,sthr) :
+    if sthr==None :
+        fname_bin_single=predir+"/bins_photoz_b%d_lmax2000.txt"%ibin
+        fname_im=predir+"/bins_im_b%d_lmax2000.txt"%ibin
+        fname_params=predir+"/params_b%d_lmax2000"%ibin
+    else :
+        fname_bin_single=predir+"/bins_photoz_b%d_"%ibin+"sthr%.3lf.txt"%sthr
+        fname_im=predir+"/bins_im_b%d_"%ibin+"sthr%.3lf.txt"%sthr
+        fname_params=predir+"/params_b%d_"%ibin+"sthr%.3lf"%sthr
+
+    return fname_bin_single,fname_im,fname_params
+
+def prepare_bin(z0,zf,sz,lmx,predir,ibin,lmax_im=2000,sthr=None,fac_sigma=3,fac_sample_sigma=2) :
+    fname_bin_single,fname_im,fname_params=get_bin_fnames(predir,ibin,sthr)
     data_line=np.array([z0,zf,sz,lmx])
     np.savetxt(fname_bin_single,data_line[None,:],
                fmt="%lf %lf %lf 1 1 %d",
@@ -177,8 +189,8 @@ def prepare_bin(z0,zf,sz,lmx,predir,ibin,lmax_im=2000,sthr=None,fac_sigma=3) :
 
     z0_im=np.amax([z0-fac_sigma*sz,0])
     zf_im=zf+fac_sigma*sz
-    nz=int(fac_sample_sigma*(zf_spec-z0_spec)/sz); dz=(zf_spec-z0_spec)/nz
-    z0_arr=z0_spec+(np.arange(nz)+0)*dz; zf_arr=z0_spec+(np.arange(nz)+1)*dz; zm_arr=0.5*(z0_arr+zf_arr)
+    nz=int(fac_sample_sigma*(zf_im-z0_im)/(sz-1E-5)); dz=(zf_im-z0_im)/nz
+    z0_arr=z0_im+(np.arange(nz)+0)*dz; zf_arr=z0_im+(np.arange(nz)+1)*dz; zm_arr=0.5*(z0_arr+zf_arr)
 #    nu0=nuHI/(1+zf_im); nuf=nuHI/(1+z0_im); dnu=get_dnu(0.5*(z0+zf),20.);
 #    nnu=2*3*fac_sigma; #nnu=int((nuf-nu0)/dnu); nz=nnu
 #    dnu=(nuf-nu0)/nnu;
@@ -190,7 +202,6 @@ def prepare_bin(z0,zf,sz,lmx,predir,ibin,lmax_im=2000,sthr=None,fac_sigma=3) :
         for i in np.arange(nz) :
             lmax_arr[i]=np.amin([lmax_arr[i],get_lmax(zm_arr[i],sthr)])
 
-    fname_im=predir+"/bins_im_b%d.txt"%ibin
     np.savetxt(fname_im,np.transpose([z0_arr,zf_arr,lmax_arr]),
                fmt="%lf %lf 0.0 0 0 %d",
                header="[1]-z0 [2]-zf [3]-sz [4]-marg_sz [5]-marg_bz [6]-lmax")
@@ -199,6 +210,7 @@ def prepare_files(xp_photo,xp_im,bins_photo,sth_im,predir,fsky,fishname=None) :
     os.system('mkdir -p '+predir)
     z0_ph_arr,zf_ph_arr,sz_ph_arr,dum1,dum2,lmx_arr=np.loadtxt(bins_photo,unpack=True)
     for i in np.arange(len(z0_ph_arr)) :
+        fname_bins_photo,fname_bins_im,fname_params=get_bin_fnames(predir,i,sth_im)
         prepare_bin(z0_ph_arr[i],zf_ph_arr[i],sz_ph_arr[i],lmx_arr[i],predir,i,sthr=sth_im)
         zm=0.5*(z0_ph_arr[i]+zf_ph_arr[i])
         z,bz,ms=np.loadtxt(xp_photo['bzfi'],unpack=True); bzf=interp1d(z,bz);
@@ -208,10 +220,10 @@ def prepare_files(xp_photo,xp_im,bins_photo,sth_im,predir,fsky,fishname=None) :
         zarr=np.array([z[0],zm,z[-1]]); bzarr=bzf(zarr); mask=np.array([0,1,0])
         np.savetxt(predir+"/bz_im_b%d.txt"%i    ,np.transpose([zarr,bzarr,mask]),fmt='%lf %lf %d')
         write_param_file(xp_photo,xp_im,
-                         predir+"/bins_photoz_b%d.txt"%i,predir+"/bz_photoz_b%d.txt"%i,
-                         predir+"/bins_im_b%d.txt"%i,predir+"/bz_im_b%d.txt"%i,
-                         predir+"/output_b%d"%i,predir+"/params_b%d.ini"%i,fsky,fishname=fishname)
-        os.system("python main.py "+predir+"/params_b%d.ini"%i)
+                         fname_bins_photo,predir+"/bz_photoz_b%d.txt"%i,
+                         fname_bins_im,predir+"/bz_im_b%d.txt"%i,
+                         predir+"/output_b%d"%i,fname_params+".ini",fsky,fishname=fishname)
+#        os.system("python main.py "+predir+"/params_b%d.ini"%i)
 
 def run_fsky(xp_photo,xp_im,bins_photo,sth_im,predir,fsky,fishname=None) :
     if fishname==None :
@@ -220,33 +232,38 @@ def run_fsky(xp_photo,xp_im,bins_photo,sth_im,predir,fsky,fishname=None) :
         fish_name=fishname
     z0_ph_arr,zf_ph_arr,sz_ph_arr,dum1,dum2,lmx_arr=np.loadtxt(bins_photo,unpack=True)
     for i in np.arange(len(z0_ph_arr)) :
-        parname=predir+"/params_fs%.3lf"%fsky+"_b%d.ini"%i
+        fname_bins_photo,fname_bins_im,fname_params=get_bin_fnames(predir,i,sth_im)
+        parname=fname_params+"_fs%.3lf.ini"%fsky
         write_param_file(xp_photo,xp_im,
-                         predir+"/bins_photoz_b%d.txt"%i,predir+"/bz_photoz_b%d.txt"%i,
-                         predir+"/bins_im_b%d.txt"%i,predir+"/bz_im_b%d.txt"%i,
+                         fname_bins_photo,predir+"/bz_photoz_b%d.txt"%i,
+                         fname_bins_im,predir+"/bz_im_b%d.txt"%i,
                          predir+"/output_b%d"%i,parname,fsky,fishname=fish_name+"_fs%.3lf"%fsky)
-        os.system("python main.py "+parname)
+#        os.system("python main.py "+parname)
 
-#prepare_files(xp.phoz_LSSTgold,xp.im_HIRAX_32_6,"curves_LSST/bins_gold_lmax2000.txt",None,"HIRAX_32_6",0.4)
-#prepare_files(xp.phoz_LSSTgold,xp.im_HIRAX_32_7,"curves_LSST/bins_gold_lmax2000.txt",None,"HIRAX_32_7",0.4)
-#prepare_files(xp.phoz_LSSTgold,xp.im_SKA_SD    ,"curves_LSST/bins_gold_lmax2000.txt",None,"SKA_SD"    ,0.4)
+for exper in [xp.im_HIRAX_32_6,xp.im_SKA_SD,xp.im_SKA_IF,xp.im_SKA] :
+    prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_lmax2000.txt",None,"runs/"+exper['name'],exper['fsky'])
+    prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p75.txt",0.75,"runs/"+exper['name'],exper['fsky'],fishname="Fisher_sthr0p75")
+    for fs in fsky_arr :
+        run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_lmax2000.txt",None,"runs/"+exper['name'],fs)
+        run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p75.txt",None,"runs/"+exper['name'],fs,fishname="Fisher_sthr0p75")
+
+
+#prepare_files(xp.phoz_LSSTgold,xp.im_HIRAX_32_6,"curves_LSST/bins_gold_lmax2000.txt",None,"runs/HIRAX_32_6",0.4)
+#prepare_files(xp.phoz_LSSTgold,xp.im_SKA_SD    ,"curves_LSST/bins_gold_lmax2000.txt",None,"runs/SKA_SD"    ,0.4)
+#prepare_files(xp.phoz_LSSTgold,xp.im_SKA       ,"curves_LSST/bins_gold_lmax2000.txt",None,"runs/SKA"       ,0.4)
 #fsky_arr=np.array([0.05,0.1,0.2,0.4])
 #for fs in fsky_arr :
-#    run_fsky(xp.phoz_LSSTgold,xp.im_HIRAX_32_6,"curves_LSST/bins_gold_lmax2000.txt",None,"HIRAX_32_6",fs)
-#    run_fsky(xp.phoz_LSSTgold,xp.im_HIRAX_32_7,"curves_LSST/bins_gold_lmax2000.txt",None,"HIRAX_32_7",fs)
-#    run_fsky(xp.phoz_LSSTgold,xp.im_SKA_SD    ,"curves_LSST/bins_gold_lmax2000.txt",None,"SKA_SD"    ,fs)
-
-prepare_files(xp.phoz_LSSTgold,xp.im_HIRAX_32_6,"curves_LSST/bins_gold_sthr0p75.txt",
-              0.75,"HIRAX_32_6",0.4,fishname="Fisher_sthr0p75")
-#prepare_files(xp.phoz_LSSTgold,xp.im_HIRAX_32_7,"curves_LSST/bins_gold_sthr0p75.txt",
-#              0.75,"HIRAX_32_7",0.4,fishname="Fisher_sthr0p75")
-prepare_files(xp.phoz_LSSTgold,xp.im_SKA_SD    ,"curves_LSST/bins_gold_sthr0p75.txt",
-              0.75,"SKA_SD"    ,0.4,fishname="Fisher_sthr0p75")
+#    run_fsky(xp.phoz_LSSTgold,xp.im_HIRAX_32_6,"curves_LSST/bins_gold_lmax2000.txt",None,"runs/HIRAX_32_6",fs)
+#    run_fsky(xp.phoz_LSSTgold,xp.im_SKA_SD    ,"curves_LSST/bins_gold_lmax2000.txt",None,"runs/SKA_SD"    ,fs)
+#prepare_files(xp.phoz_LSSTgold,xp.im_HIRAX_32_6,"curves_LSST/bins_gold_sthr0p75.txt",
+#              0.75,"runs/HIRAX_32_6",0.4,fishname="Fisher_sthr0p75")
+#prepare_files(xp.phoz_LSSTgold,xp.im_SKA_SD    ,"curves_LSST/bins_gold_sthr0p75.txt",
+#              0.75,"runs/SKA_SD"    ,0.4,fishname="Fisher_sthr0p75")
+#prepare_files(xp.phoz_LSSTgold,xp.im_SKA       ,"curves_LSST/bins_gold_sthr0p75.txt",
+#              0.75,"runs/SKA"       ,0.4,fishname="Fisher_sthr0p75")
 #fsky_arr=np.array([0.05,0.1,0.2,0.4])
 #for fs in fsky_arr :
 #    run_fsky(xp.phoz_LSSTgold,xp.im_HIRAX_32_6,"curves_LSST/bins_gold_sthr0p75.txt",
-#             0.75,"HIRAX_32_6",fs,fishname="Fisher_sthr0p75")
-#    run_fsky(xp.phoz_LSSTgold,xp.im_HIRAX_32_7,"curves_LSST/bins_gold_sthr0p75.txt",
-#             0.75,"HIRAX_32_7",fs,fishname="Fisher_sthr0p75")
+#             0.75,"runs/HIRAX_32_6",fs,fishname="Fisher_sthr0p75")
 #    run_fsky(xp.phoz_LSSTgold,xp.im_SKA_SD    ,"curves_LSST/bins_gold_sthr0p75.txt",
-#             0.75,"SKA_SD"    ,fs,fishname="Fisher_sthr0p75")
+#             0.75,"runs/SKA_SD"    ,fs,fishname="Fisher_sthr0p75")

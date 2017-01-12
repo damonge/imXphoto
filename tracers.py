@@ -191,7 +191,7 @@ class Tracer :
     n_dish=200
     area_efficiency=1.
     fsky_im=1.
-    is_singledish=True
+    im_type=True
     base_file="none"
 
     #Parameters for CMB
@@ -218,7 +218,7 @@ class Tracer :
                  abias_file,rfrac_file,sigma_gamma,
                  has_t,has_p,sigma_t,sigma_p,beam_amin,l_transition,
                  tz_file,dish_size,t_inst,t_total,n_dish,
-                 area_efficiency,fsky_im,is_singledish,base_file,
+                 area_efficiency,fsky_im,im_type,base_file,
                  number,consider,lmin,lmax) :
         self.lmin=lmin
         self.lmax=lmax
@@ -261,7 +261,7 @@ class Tracer :
             if par.include_gr_vel or par.include_gr_pot :
                 self.nuisance_ebias=NuisanceFunction("ebias_"+name+"_",ebias_file,nz_file,
                                                      par.output_dir+"/","bias")
-            self.is_singledish=is_singledish
+            self.im_type=im_type
             self.dish_size=dish_size
             self.area_efficiency=area_efficiency
             self.t_inst=t_inst
@@ -390,18 +390,22 @@ def get_cross_noise(tr1,tr2,lmax) :
             #Compute beam factor
             l=np.arange(lmax+1)
             beam_fwhm=CLIGHT/(tr1.dish_size*nu_arr)
-            if tr1.is_singledish :
+            if ((tr1.im_type=="single_dish") or (tr1.im_type=="hybrid")) :
                 beam_rad=beam_fwhm*FWHM2G
-                factor_beam=tr1.n_dish*np.exp(-(l*(l+1))[None,:]*(beam_rad**2)[:,None])
+                factor_beam_sd=tr1.n_dish*np.exp(-(l*(l+1))[None,:]*(beam_rad**2)[:,None])
             else :
+                factor_beam_sd=np.zeros([len(nu_arr),len(l)])
+            if ((tr1.im_type=="interferometer") or (tr1.im_type=="hybrid")) :
                 lambda_arr=CLIGHT/nu_arr
                 dist,nbase=np.loadtxt(tr1.base_file,unpack=True)
                 ndistint=interp1d(dist,nbase*dist*2*np.pi,bounds_error=False,fill_value=0.)
                 norm=0.5*tr1.n_dish*(tr1.n_dish-1.)/quad(ndistint,dist[0],dist[-1])[0]
                 nbase*=norm; ndist=interp1d(dist,nbase,bounds_error=False,fill_value=0.)
                 n_baselines=ndist(l[None,:]*lambda_arr[:,None]/(2*np.pi))
-                factor_beam=n_baselines[:,:]*((lambda_arr/beam_fwhm)**2)[:,None]
-
+                factor_beam_if=n_baselines[:,:]*((lambda_arr/beam_fwhm)**2)[:,None]
+            else :
+                factor_beam_if=np.zeros([len(nu_arr),len(l)])
+            factor_beam=np.fmax(factor_beam_sd,factor_beam_if)
             for i in np.arange(nbins1) :
                 cl_noise[:,i,i]=sigma2_noise[i]/np.fmax(factor_beam[i,:],1E-16)
 #            for i in np.arange(nbins1) :
