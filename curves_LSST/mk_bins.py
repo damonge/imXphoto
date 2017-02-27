@@ -132,4 +132,6 @@ get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
 get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
          fname_out="bins_gold_sthr0p75.txt",sigma_thr=0.75)
 get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
+         fname_out="bins_gold_sthr1p00.txt",sigma_thr=1.00)
+get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
          fname_out="bins_gold_lmax2000.txt",sigma_thr=None)

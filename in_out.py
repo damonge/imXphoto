@@ -296,7 +296,7 @@ def read_cls(par,fname) :
         return read_cls_class(fname)
 
 def write_camb_param_file(par,param_vary,sign_vary,prefix_out) :
-    """ Generates CLASS param file """
+    """ Generates CAMB param file """
     och2,doch2,osid_och2=par.get_param_properties("och2")
     obh2,dobh2,osid_obh2=par.get_param_properties("obh2")
     hh,dhh,osid_hh=par.get_param_properties("hh")
@@ -811,7 +811,7 @@ def write_class_param_file(par,param_vary,sign_vary,prefix_out) :
     strout+="l_switch_limber= 10.\n"   #%(par.lmin_limber)
     strout+="l_switch_limber_for_cl_density= %.1lf\n"%(par.lmin_limber)
     strout+="l_switch_limber_for_cl_lensing= %.1lf\n"%(par.lmin_limber)
-    strout+="selection_sampling_bessel=2.\n"
+    strout+="selection_sampling_bessel=6.\n"
     strout+="k_step_trans_scalars=0.4\n"
     strout+="q_linstep=0.4\n"
     strout+="k_scalar_max_tau0_over_l_max= 2.\n"

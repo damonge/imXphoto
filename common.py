@@ -104,6 +104,8 @@ class ParamRun:
     include_gr_pot=False #
     use_nonlinear=False
     plot_ext=".png"
+    include_im_fg=False
+    fit_im_fg=False
 
     #BAO
     n_bao=0
@@ -463,6 +465,8 @@ class ParamRun:
             #Intensity mapping
             tz_file=None; dish_size=None; t_inst=None; t_total=None; n_dish=None;
             area_efficiency=None; fsky_im=None; im_type=None; base_file=None;
+            include_fg=False; fit_fg=False;
+            a_fg=None; alp_fg=None; bet_fg=None; xi_fg=None; nux_fg=None; lx_fg=None; 
             if config.has_option(sec_title,'tz_file') :
                 tz_file=config.get(sec_title,'tz_file')
             if config.has_option(sec_title,'dish_size') :
@@ -481,6 +485,35 @@ class ParamRun:
                 im_type=config.get(sec_title,'instrument_type')
             if config.has_option(sec_title,'base_file') :
                 base_file=config.get(sec_title,'base_file')
+            if config.has_option(sec_title,'include_foregrounds') :
+                include_fg=config.getboolean(sec_title,'include_foregrounds')
+                if include_fg :
+                    if config.has_option(sec_title,'fit_foregrounds') :
+                        fit_fg=config.getboolean(sec_title,'fit_foregrounds')
+                    if config.has_option(sec_title,'A_fg') :
+                        a_fg=config.getfloat(sec_title,'A_fg')
+                    if config.has_option(sec_title,'alpha_fg') :
+                        alp_fg=config.getfloat(sec_title,'alpha_fg')
+                    if config.has_option(sec_title,'beta_fg') :
+                        bet_fg=config.getfloat(sec_title,'beta_fg')
+                    if config.has_option(sec_title,'xi_fg') :
+                        xi_fg=config.getfloat(sec_title,'xi_fg')
+                    if config.has_option(sec_title,'nux_fg') :
+                        nux_fg=config.getfloat(sec_title,'nux_fg')
+                    if config.has_option(sec_title,'lx_fg') :
+                        lx_fg=config.getfloat(sec_title,'lx_fg')
+                    if self.include_im_fg==False :
+                        self.include_im_fg=include_fg
+                        self.fit_im_fg=fit_fg*include_fg
+                        if self.fit_im_fg :
+                            self.params_all.append(fsh.ParamFisher(a_fg,0.1*a_fg,"im_fg_a_fg",
+                                                                   "$A_{\\rm FG}$",True,True,0))
+                            self.params_all.append(fsh.ParamFisher(alp_fg,0.1*alp_fg,"im_fg_alp_fg",
+                                                                   "$\\alpha_{\\rm FG}$",True,True,0))
+                            self.params_all.append(fsh.ParamFisher(bet_fg,0.1*bet_fg,"im_fg_bet_fg",
+                                                                   "$\\beta_{\\rm FG}$",True,True,0))
+                            self.params_all.append(fsh.ParamFisher(xi_fg,0.1*xi_fg,"im_fg_xi_fg",
+                                                                   "$\\xi_{\\rm FG}$",True,True,0))
 
             if (tr_type=="gal_clustering") or (tr_type=="intensity_mapping") :
                 self.has_gal_clustering=True
@@ -509,6 +542,7 @@ class ParamRun:
                                            has_t,has_p,sigma_t,sigma_p,beam_amin,l_transition,
                                            tz_file,dish_size,t_inst,t_total,n_dish,
                                            area_efficiency,fsky_im,im_type,base_file,
+                                           a_fg,alp_fg,bet_fg,xi_fg,nux_fg,lx_fg,
                                            n_tracers,consider_tracer,lmin,lmax))
         self.n_tracers=n_tracers
 
@@ -553,9 +587,11 @@ class ParamRun:
         allfound=True
         allfound*=ino.start_running(self,"none",0)
         for i in np.arange(self.npar_vary) :
-            allfound*=ino.start_running(self,self.params_fshr[i].name,1)
-            allfound*=ino.start_running(self,self.params_fshr[i].name,-1)
-
+            pname=self.params_fshr[i].name
+            if pname.startswith("im_fg") :
+                continue
+            allfound*=ino.start_running(self,pname,1)
+            allfound*=ino.start_running(self,pname,-1)
         if self.just_run_cls :
             return
 
@@ -565,8 +601,11 @@ class ParamRun:
                 allfound=True
                 allfound*=ino.cls_are_there(self,"none",0,False)
                 for i in np.arange(self.npar_vary) :
-                    allfound*=ino.cls_are_there(self,self.params_fshr[i].name,1,False)
-                    allfound*=ino.cls_are_there(self,self.params_fshr[i].name,-1,False)
+                    pname=self.params_fshr[i].name
+                    if pname.startswith("im_fg") :
+                        continue
+                    allfound*=ino.cls_are_there(self,pname,1,False)
+                    allfound*=ino.cls_are_there(self,pname,-1,False)
                 if not allfound :
                     time.sleep(20)
             time.sleep(5)
@@ -575,9 +614,12 @@ class ParamRun:
         self.cl_fid_arr[:,:,:]=(ino.get_cls(self,"none",0)).reshape((self.lmax+1)/NLB,NLB,self.nbins_total,self.nbins_total).mean(axis=1)
 
         for i in np.arange(self.npar_vary) :
-            print "Deriv for "+self.params_fshr[i].name
-            clp=(ino.get_cls(self,self.params_fshr[i].name,1)).reshape((self.lmax+1)/NLB,NLB,self.nbins_total,self.nbins_total).mean(axis=1)
-            clm=(ino.get_cls(self,self.params_fshr[i].name,-1)).reshape((self.lmax+1)/NLB,NLB,self.nbins_total,self.nbins_total).mean(axis=1)
+            pname=self.params_fshr[i].name
+            if pname.startswith("im_fg") :
+                continue
+            print "Deriv for "+pname
+            clp=(ino.get_cls(self,pname, 1)).reshape((self.lmax+1)/NLB,NLB,self.nbins_total,self.nbins_total).mean(axis=1)
+            clm=(ino.get_cls(self,pname,-1)).reshape((self.lmax+1)/NLB,NLB,self.nbins_total,self.nbins_total).mean(axis=1)
             if self.params_fshr[i].onesided==0 :
                 self.dcl_arr[i,:,:,:]=(clp-clm)/(2*self.params_fshr[i].dval)
             else :
@@ -587,6 +629,34 @@ class ParamRun:
                 cl0=self.cl_fid_arr[:,:,:]
                 self.dcl_arr[i,:,:,:]=(-3*cl0+4*clm-clp)/(2*sig*self.params_fshr[i].dval)
 
+        if self.include_im_fg :
+            print "Adding IM foregrounds"
+            nbt1=0
+            for tr1 in self.tracers :
+                if tr1.consider_tracer==False :
+                    continue
+                nbt2=0
+                nb1=tr1.nbins
+                print "   "+tr1.name
+                for tr2 in self.tracers :
+                    if tr2.consider_tracer==False :
+                        continue
+                    nb2=tr2.nbins
+                    if tr1.tracer_type=='intensity_mapping' :
+                        if tr2.tracer_type=='intensity_mapping' :
+                            cls=(trc.get_foreground_cls(tr1,tr2,self.lmax,"none"))
+                            self.cl_fid_arr[:,nbt1:nbt1+nb1,nbt2:nbt2+nb2]+=cls.reshape((self.lmax+1)/NLB,NLB,nb1,nb2).mean(axis=1)
+                            if self.fit_im_fg :
+                                for ip in np.arange(self.npar_vary) :
+                                    pname=self.params_fshr[ip].name 
+                                    if pname.startswith("im_fg") :
+                                        dcls=trc.get_foreground_cls(tr1,tr2,self.lmax,pname)
+                                        self.dcl_arr[ip,:,nbt1:nbt1+nb1,nbt2:nbt2+nb2]=dcls.reshape((self.lmax+1)/NLB,NLB,nb1,nb2).mean(axis=1)
+                    nbt2+=nb2
+                nbt1+=nb1
+
+#        for i in np.arange(self.npar_vary) :
+#            print "Deriv for "+self.params_fshr[i].name
 #            toplot=[]
 #            larr=np.arange(len(self.dcl_arr[i,:,0,0]))
 #            toplot.append(larr)
@@ -808,4 +878,4 @@ class ParamRun:
             plt.ylabel("$C_\\ell$",fontsize=fs)
             plt.xlabel("$\\ell$",fontsize=fs)
             plt.savefig(self.output_dir+"/"+self.output_fisher+"/Cls_"+tr.name+self.plot_ext)
-#            plt.show()
+#        plt.show()

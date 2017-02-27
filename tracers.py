@@ -193,6 +193,12 @@ class Tracer :
     fsky_im=1.
     im_type=True
     base_file="none"
+    a_fg=None
+    alp_fg=None
+    bet_fg=None
+    xi_fg=None
+    nux_fg=None
+    lx_fg=None
 
     #Parameters for CMB
     sigma_t=[0.]
@@ -219,6 +225,7 @@ class Tracer :
                  has_t,has_p,sigma_t,sigma_p,beam_amin,l_transition,
                  tz_file,dish_size,t_inst,t_total,n_dish,
                  area_efficiency,fsky_im,im_type,base_file,
+                 a_fg,alp_fg,bet_fg,xi_fg,nux_fg,lx_fg,
                  number,consider,lmin,lmax) :
         self.lmin=lmin
         self.lmax=lmax
@@ -268,6 +275,12 @@ class Tracer :
             self.t_total=t_total
             self.n_dish=n_dish
             self.fsky_im=fsky_im
+            self.a_fg=a_fg
+            self.alp_fg=alp_fg
+            self.bet_fg=bet_fg
+            self.xi_fg=xi_fg
+            self.nux_fg=nux_fg
+            self.lx_fg=lx_fg
             #Get number of bins
             data=np.loadtxt(self.bins_file,unpack=True)
             self.nbins=len(np.atleast_1d(data[0]))
@@ -334,7 +347,7 @@ class Tracer :
 #            self.lmax_bins=self.lmax*np.ones(self.nbins)
         elif (self.tracer_type=="cmb_lensing") :
             self.lmax_bins=self.lmax*np.ones(self.nbins)
-        elif (self.tracer_type=="cmb_lensing") or (self.tracer_type=="cmb_primary") :
+        elif (self.tracer_type=="cmb_primary") :
             self.lmax_bins=self.lmax*np.ones(self.nbins)
             self.lmax_bins[0]=3000.
             self.lmax_bins[1]=5000.
@@ -342,12 +355,48 @@ class Tracer :
 
         return self.nbins
 
+def get_foreground_cls(tr1,tr2,lmax,pname) :
+    z,tz=np.loadtxt(tr1.tz_file,unpack=True)
+    tofz=interp1d(z,tz)
+
+    data1=np.loadtxt(tr1.bins_file,unpack=True)
+    z_arr1=np.atleast_1d(0.5*(data1[0]+data1[1]))
+    tbg_arr1=np.array([tofz(z) for z in z_arr1])
+    nu_arr1=NU_21/(1+z_arr1)
+    data2=np.loadtxt(tr2.bins_file,unpack=True)
+    z_arr2=np.atleast_1d(0.5*(data2[0]+data2[1]))
+    tbg_arr2=np.array([tofz(z) for z in z_arr2])
+    nu_arr2=NU_21/(1+z_arr2)
+    
+    larr=np.arange(lmax+1)
+    cl=np.zeros([lmax+1,tr1.nbins,tr2.nbins])
+    cl[:,:,:]=(tr1.a_fg/(tbg_arr1[:,None]*tbg_arr2[None,:]))[None,:,:]
+    cl[:,:,:]*=(((nu_arr1[:,None]*nu_arr2[None,:])/tr1.nux_fg**2)**tr1.alp_fg)[None,:,:]
+    cl[:,:,:]*=(np.exp(-0.5*(np.log(nu_arr1[:,None]/nu_arr2[None,:])/tr1.xi_fg)**2))[None,:,:]
+    cl[:,:,:]*=(((larr+1.)/(tr1.lx_fg+1.))**tr1.bet_fg)[:,None,None]
+
+    if pname.startswith("im_fg_a_fg") :
+        cl/=tr1.a_fg
+    elif pname.startswith("im_fg_alp_fg") :
+        cl*=(np.log((nu_arr1[:,None]*nu_arr2[None,:])/tr1.nux_fg**2))[None,:,:]
+    elif pname.startswith("im_fg_bet_fg") :
+        cl*=(np.log((larr+1.)/(tr1.lx_fg+1.)))[:,None,None]
+    elif pname.startswith("im_fg_xi_fg") :
+        cl*=((np.log(nu_arr1[:,None]/nu_arr2[None,:]))**2/tr1.xi_fg**3)[None,:,:]
+    elif pname=="none" :
+        cl*=1
+    else :
+        print "Wrong parameter "+pname
+        exit(1)
+
+    return cl
+
 def get_cross_noise(tr1,tr2,lmax) :
     nbins1=tr1.nbins
     nbins2=tr2.nbins
 
     cl_noise=np.zeros([lmax+1,nbins1,nbins2])
-    if tr1.name==tr2.name :
+    if ((tr1.name==tr2.name) and (tr1.tracer_type==tr2.tracer_type)) :
         if tr1.tracer_type=='gal_clustering' :
             data1=np.loadtxt(tr1.bins_file,unpack=True)
             z0_arr1=np.atleast_1d(data1[0])
@@ -517,11 +566,9 @@ def get_cross_noise(tr1,tr2,lmax) :
     return cl_noise
 
 def get_lensing_noise(ell, cl_fid, nl, fields, q):
-    #    print fields
     lmin = int(ell[0])
     lmax = int(ell[-1])
 
-    #    print 'lmin =', lmin, 'lmax =', lmax
     cl_tot = {}
     for key in ['TT','EE','BB','TE','Td','dd']:
         if key != 'dd' and key !='Td': 
@@ -685,7 +732,7 @@ def get_lensing_noise(ell, cl_fid, nl, fields, q):
             NL['EB'] = Ls**2 * (Ls+1)**2 * np.array(NL['EB']) / 4.
 		
     NL_mv = np.zeros(np.shape(Ls))
-    # Assumes negligible correlation between noise terms print lensingSpec
+    # Assumes negligible correlation between noise terms
     for field in lensingSpec:
         NL_mv += 1./NL[field]
     NL_mv = 1./NL_mv

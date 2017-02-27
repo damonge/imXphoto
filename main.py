@@ -24,7 +24,7 @@ print "<> Reading parameters"
 par=com.ParamRun(fname_params)
 print " "
 
-if (not os.path.isfile(par.output_dir+"/"+par.output_fisher+"/fisher_raw_ll.npy")) :
+if (not os.path.isfile(par.output_dir+"/"+par.output_fisher+"/fisher_raw_l.npy")) :
     if par.just_run_cls==False :
         print "<> Computing relevant noise power spectra"
         par.get_cls_noise()
