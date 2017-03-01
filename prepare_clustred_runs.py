@@ -7,6 +7,9 @@ import os
 
 nuHI=1420.405
 run_cls=False
+include_fg=True
+xi_fg=0.1
+marg_A=True
 
 pcs=csm.PcsPar()
 pcs.background_set(0.3,0.7,0.05,-1,0,0.7,2.7255)
@@ -65,7 +68,10 @@ def write_param_file(xp_photo,xp_im,bins_photo,bz_photo,bins_im,bz_im,output_dir
     if run_cls :
         stout+="is_free= yes\n"
     else :
-        stout+="is_free= no\n"
+        if marg_A :
+            stout+="is_free= yes\n"
+        else :
+            stout+="is_free= no\n"
     stout+="onesided= 0\n"
     stout+="\n"
     stout+="[ns]\n"
@@ -132,6 +138,18 @@ def write_param_file(xp_photo,xp_im,bins_photo,bz_photo,bins_im,bz_im,output_dir
     stout+="fsky_im= %.3lf\n"%fsky
     stout+="instrument_type= "+xp_im['im_type']+"\n"
     stout+="base_file= "+xp_im['base_file']+"\n"
+    if include_fg :
+        stout+="include_foregrounds= yes\n"
+        stout+="fit_foregrounds= yes\n"
+    else :
+        stout+="include_foregrounds= no\n"
+        stout+="fit_foregrounds= no\n"
+    stout+="A_fg=0.1\n"
+    stout+="alpha_fg=-2.7\n"
+    stout+="beta_fg=-2.0\n"
+    stout+="xi_fg=%.3lf\n"%xi_fg
+    stout+="nux_fg=130.\n"
+    stout+="lx_fg=1000.\n"
     stout+="use_tracer= yes\n"
     stout+="\n"
     stout+="[CLASS parameters]\n"
@@ -166,16 +184,26 @@ def write_param_file(xp_photo,xp_im,bins_photo,bz_photo,bins_im,bz_im,output_dir
     f.close()
 
 def get_bin_fnames(predir,expname,ibin,sthr) :
+    fisher_prefix="Fisher_"
+    if marg_A :
+        fisher_prefix+="wA_"
+    else :
+        fisher_prefix+="woA_"
+    if include_fg :
+        fisher_prefix+="wFG_xi%.3lf_"%xi_fg
+    else :
+        fisher_prefix+="woFG_"
+
     if sthr==None :
         fname_bin_single=predir+"/bins_photoz_b%d_lmax2000.txt"%ibin
         fname_im=predir+"/bins_im_b%d_lmax2000.txt"%ibin
         fname_params=predir+"/params_b%d_"%ibin+expname+"_lmax2000"
-        fname_fisher="Fisher_noA_"+expname+"_lmax2000"
+        fname_fisher=fisher_prefix+expname+"_lmax2000"
     else :
         fname_bin_single=predir+"/bins_photoz_b%d_"%ibin+"sthr%.3lf.txt"%sthr
         fname_im=predir+"/bins_im_b%d_"%ibin+"sthr%.3lf.txt"%sthr
         fname_params=predir+"/params_b%d_"%ibin+expname+"_sthr%.3lf"%sthr
-        fname_fisher="Fisher_noA_"+expname+"_sthr%.3lf"%sthr
+        fname_fisher=fisher_prefix+expname+"_sthr%.3lf"%sthr
 
     return fname_bin_single,fname_im,fname_params,fname_fisher
 
@@ -234,8 +262,8 @@ def run_fsky(xp_photo,xp_im,bins_photo,sth_im,predir,fsky) :
         os.system("python main.py "+parname)
 
 exper_array=[xp.im_HIRAX_32_6,
-             xp.im_SKA_SD,xp.im_SKA_IF,xp.im_SKA,
-             xp.im_MeerKAT_SD,xp.im_MeerKAT_IF,xp.im_MeerKAT_IF]
+             xp.im_SKA_SD,    xp.im_SKA_IF,    xp.im_SKA,
+             xp.im_MeerKAT_SD,xp.im_MeerKAT_IF,xp.im_MeerKAT]
 #exper_array=[xp.im_SKA_SD,xp.im_SKA_IF,xp.im_SKA,xp.im_MeerKAT_SD,xp.im_MeerKAT_IF,xp.im_MeerKAT_IF]
 #exper_array=[xp.im_HIRAX_32_6]
 fsky_arr=[0.05,0.1,0.2,0.4]
@@ -252,8 +280,8 @@ else :
                       "runs/IMAP",exper['fsky'])
         prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr1p00.txt",1.00,
                       "runs/IMAP",exper['fsky'])
-        for fs in fsky_arr :
-            run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_lmax2000.txt",None,"runs/IMAP",fs)
-            run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p50.txt",0.50,"runs/IMAP",fs)
-            run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p75.txt",0.75,"runs/IMAP",fs)
-            run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr1p00.txt",1.00,"runs/IMAP",fs)
+#        for fs in fsky_arr :
+#            run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_lmax2000.txt",None,"runs/IMAP",fs)
+#            run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p50.txt",0.50,"runs/IMAP",fs)
+#            run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p75.txt",0.75,"runs/IMAP",fs)
+#            run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr1p00.txt",1.00,"runs/IMAP",fs)

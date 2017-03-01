@@ -7,8 +7,8 @@ import os
 
 nuHI=1420.405
 run_cls=False
+marg_A=True
 
-#exper_array=[xp.spec_DESI]
 exper_array=[xp.spec_DESI,xp.spec_Euclid,xp.spec_WFIRST]
 
 pcs=csm.PcsPar()
@@ -68,7 +68,10 @@ def write_param_file(xp_photo,xp_spec,bins_photo,bz_photo,bins_spec,bz_spec,outp
     if run_cls :
         stout+="is_free= yes\n"
     else :
-        stout+="is_free= no\n"
+        if marg_A :
+            stout+="is_free= yes\n"
+        else :
+            stout+="is_free= no\n"
     stout+="onesided= 0\n"
     stout+="\n"
     stout+="[ns]\n"
@@ -161,19 +164,27 @@ def write_param_file(xp_photo,xp_spec,bins_photo,bz_photo,bins_spec,bz_spec,outp
     f.close()
 
 def get_bin_fnames(predir,ibin,sthr) :
+    fisher_prefix="Fisher_"
+    if marg_A :
+        fisher_prefix+="wA"
+    else :
+        fisher_prefix+="woA"
+
     if sthr==None :
         fname_bin_single=predir+"/bins_photoz_b%d_lmax2000.txt"%ibin
         fname_spec=predir+"/bins_spec_b%d_lmax2000.txt"%ibin
         fname_params=predir+"/params_b%d_lmax2000"%ibin
+        fname_fisher=fisher_prefix+"_lmax2000"
     else :
         fname_bin_single=predir+"/bins_photoz_b%d_"%ibin+"sthr%.3lf.txt"%sthr
         fname_spec=predir+"/bins_spec_b%d_"%ibin+"sthr%.3lf.txt"%sthr
         fname_params=predir+"/params_b%d_"%ibin+"sthr%.3lf"%sthr
+        fname_fisher=fisher_prefix+"_sthr%.3lf"%sthr
 
-    return fname_bin_single,fname_spec,fname_params
+    return fname_bin_single,fname_spec,fname_params,fname_fisher
 
 def prepare_bin(z0,zf,sz,lmx,predir,ibin,lmax_spec=2000,sthr=None,fac_sigma=3,fac_sample_sigma=2.) :
-    fname_bin_single,fname_spec,fname_params=get_bin_fnames(predir,ibin,sthr)
+    fname_bin_single,fname_spec,fname_params,fname_fisher=get_bin_fnames(predir,ibin,sthr)
     data_line=np.array([z0,zf,sz,lmx])
     np.savetxt(fname_bin_single,data_line[None,:],
                fmt="%lf %lf %lf 1 1 %d",
@@ -192,11 +203,11 @@ def prepare_bin(z0,zf,sz,lmx,predir,ibin,lmax_spec=2000,sthr=None,fac_sigma=3,fa
                fmt="%lf %lf 1.0E-5 0 0 %d",
                header="[1]-z0 [2]-zf [3]-sz [4]-marg_sz [5]-marg_bz [6]-lmax")
 
-def prepare_files(xp_photo,xp_spec,bins_photo,sth_spec,predir,fsky,fishname) :
+def prepare_files(xp_photo,xp_spec,bins_photo,sth_spec,predir,fsky) :
     os.system('mkdir -p '+predir)
     z0_ph_arr,zf_ph_arr,sz_ph_arr,dum1,dum2,lmx_arr=np.loadtxt(bins_photo,unpack=True)
     for i in np.arange(len(z0_ph_arr)) :
-        fname_bins_photo,fname_bins_spec,fname_params=get_bin_fnames(predir,i,sth_spec)
+        fname_bins_photo,fname_bins_spec,fname_params,fname_fisher=get_bin_fnames(predir,i,sth_spec)
         prepare_bin(z0_ph_arr[i],zf_ph_arr[i],sz_ph_arr[i],lmx_arr[i],predir,i,sthr=sth_spec)
         zm=0.5*(z0_ph_arr[i]+zf_ph_arr[i])
         z,bz,ms=np.loadtxt(xp_photo['bzfi'],unpack=True); bzf=interp1d(z,bz)
@@ -208,35 +219,36 @@ def prepare_files(xp_photo,xp_spec,bins_photo,sth_spec,predir,fsky,fishname) :
         write_param_file(xp_photo,xp_spec,
                          fname_bins_photo,predir+"/bz_photoz_b%d.txt"%i,
                          fname_bins_spec,predir+"/bz_spec_b%d.txt"%i,
-                         predir+"/output_b%d"%i,fname_params+".ini"%i,fsky,fishname)
+                         predir+"/output_b%d"%i,fname_params+".ini"%i,fsky,fname_fisher)
         if run_cls :
             os.system("addqueuecmb \"1h "+xp_spec['name']+" bin %d\" "%i
                       +"1x12 /usr/local/shared/python/2.7.6-gcc/bin/python main.py "+fname_params+".ini")
         else :
             os.system("python main.py "+fname_params+".ini")
 
-def run_fsky(xp_photo,xp_spec,bins_photo,sth_spec,predir,fsky,fishname) :
+def run_fsky(xp_photo,xp_spec,bins_photo,sth_spec,predir,fsky) :
     z0_ph_arr,zf_ph_arr,sz_ph_arr,dum1,dum2,lmx_arr=np.loadtxt(bins_photo,unpack=True)
     for i in np.arange(len(z0_ph_arr)) :
-        fname_bins_photo,fname_bins_spec,fname_params=get_bin_fnames(predir,i,sth_spec)
+        fname_bins_photo,fname_bins_spec,fname_params,fname_fisher=get_bin_fnames(predir,i,sth_spec)
         parname=fname_params+"_fs%.3lf.ini"%fsky
+        fishname=fname_fisher+"_fs%.3lf.ini"%fsky
         write_param_file(xp_photo,xp_spec,
                          fname_bins_photo,predir+"/bz_photoz_b%d.txt"%i,
                          fname_bins_spec,predir+"/bz_spec_b%d.txt"%i,
-                         predir+"/output_b%d"%i,parname,fsky,fishname+"_fs%.3lf"%fsky)
+                         predir+"/output_b%d"%i,parname,fsky,fishname)
         os.system("python main.py "+parname)
 
 if run_cls :
     for exper in exper_array :
         prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_lmax2000.txt",None,
-                      "runs/"+exper['name'],exper['fsky'],"Fisher_noA_lmax2000")
+                      "runs/"+exper['name'],exper['fsky'])
 else :
     for exper in exper_array :
         prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_lmax2000.txt",None,
-                      "runs/"+exper['name'],exper['fsky'],"Fisher_noA_lmax2000")
+                      "runs/"+exper['name'],exper['fsky'])
         prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p50.txt",0.50,
-                      "runs/"+exper['name'],exper['fsky'],"Fisher_noA_sthr0.500")
+                      "runs/"+exper['name'],exper['fsky'])
         prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p75.txt",0.75,
-                      "runs/"+exper['name'],exper['fsky'],"Fisher_noA_sthr0.750")
+                      "runs/"+exper['name'],exper['fsky'])
         prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr1p00.txt",1.00,
-                      "runs/"+exper['name'],exper['fsky'],"Fisher_noA_sthr1.000")
+                      "runs/"+exper['name'],exper['fsky'])
