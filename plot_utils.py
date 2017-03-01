@@ -91,8 +91,8 @@ if whichfig=='fig1' or whichfig=='all':
 if whichfig=='fig2' or whichfig=='all':
     plt.figure()
     zarr_HIRAX ,err_sthz_HIRAX_arr ,err_bthz_HIRAX_arr =compute_errors("runs/IMAP"  ,"Fisher_woA_woFG_HIRAX_32_6_sthr1.000",col_HIRAX,0.00,3.00,"HIRAX-6m")
-    zarr_SKAFL ,err_sthz_SKAFL_arr ,err_bthz_SKAFL_arr =compute_errors("runs/IMAP"  ,"Fisher_woA_woFG_SKA_sthr1.000"       ,col_SKA,0.00,3.00,"SKA full")
-    zarr_MKTFL ,err_sthz_MKTFL_arr ,err_bthz_MKTFL_arr =compute_errors("runs/IMAP"  ,"Fisher_woA_woFG_MeerKAT_sthr1.000"   ,col_MKT,0.00,3.00,"MeerKAT full")
+    zarr_SKAFL ,err_sthz_SKAFL_arr ,err_bthz_SKAFL_arr =compute_errors("runs/IMAP"  ,"Fisher_woA_woFG_SKA_sthr1.000"       ,col_SKA,0.00,3.00,"SKA")
+    zarr_MKTFL ,err_sthz_MKTFL_arr ,err_bthz_MKTFL_arr =compute_errors("runs/IMAP"  ,"Fisher_woA_woFG_MeerKAT_sthr1.000"   ,col_MKT,0.00,3.00,"MeerKAT")
     plt.plot([-1,-1],[-1,-2],'k-',lw=2,label="$\\sigma_z$")
     plt.plot([-1,-1],[-1,-2],'k--',lw=2,label="$\\Delta z$")
     plt.xlim([0,2.7])
