@@ -465,6 +465,7 @@ class ParamRun:
             #Intensity mapping
             tz_file=None; dish_size=None; t_inst=None; t_total=None; n_dish=None;
             area_efficiency=None; fsky_im=None; im_type=None; base_file=None;
+            baseline_min=None; baseline_max=None;
             include_fg=False; fit_fg=False;
             a_fg=None; alp_fg=None; bet_fg=None; xi_fg=None; nux_fg=None; lx_fg=None; 
             if config.has_option(sec_title,'tz_file') :
@@ -485,6 +486,10 @@ class ParamRun:
                 im_type=config.get(sec_title,'instrument_type')
             if config.has_option(sec_title,'base_file') :
                 base_file=config.get(sec_title,'base_file')
+            if config.has_option(sec_title,'baseline_min') :
+                baseline_min=config.getfloat(sec_title,'baseline_min')
+            if config.has_option(sec_title,'baseline_max') :
+                baseline_max=config.getfloat(sec_title,'baseline_max')
             if config.has_option(sec_title,'include_foregrounds') :
                 include_fg=config.getboolean(sec_title,'include_foregrounds')
                 if include_fg :
@@ -541,7 +546,7 @@ class ParamRun:
                                            abias_file,rfrac_file,sigma_gamma,
                                            has_t,has_p,sigma_t,sigma_p,beam_amin,l_transition,
                                            tz_file,dish_size,t_inst,t_total,n_dish,
-                                           area_efficiency,fsky_im,im_type,base_file,
+                                           area_efficiency,fsky_im,im_type,base_file,baseline_min,baseline_max,
                                            a_fg,alp_fg,bet_fg,xi_fg,nux_fg,lx_fg,
                                            n_tracers,consider_tracer,lmin,lmax))
         self.n_tracers=n_tracers

@@ -8,7 +8,8 @@ import os
 nuHI=1420.405
 run_cls=False
 include_fg=True
-xi_fg=0.1
+a_fg=1.0
+xi_fg=1.0
 marg_A=True
 
 pcs=csm.PcsPar()
@@ -28,6 +29,28 @@ def get_lmax(z,st) :
     lmax=int(kmax*chi)
 
     return lmax
+
+def mk_xp_generic(sigmaT,dmin,dmax,fsky,name) :
+    xpr = {
+        "name" : name,
+        "nzfi" : "curves_IM/nz_HI.txt",
+        "bzfi" : "curves_IM/bz_HI.txt",
+        "szfi" : "curves_IM/sz_HI.txt",
+        "ezfi" : "curves_IM/ez_HI.txt",
+        "tzfi" : "curves_IM/tz_HI.txt",
+        "dish_size" : 13.5,
+        "t_inst" : sigmaT,
+        "t_total" : 4000.,
+        "n_dish" : 64,
+        "area_eff" : 1.0,
+        "im_type" : "generic",
+        "base_file" : "none",
+        "base_min" : dmin,
+        "base_max" : dmax,
+        "fsky" : fsky
+        }
+
+    return xpr;
 
 def write_param_file(xp_photo,xp_im,bins_photo,bz_photo,bins_im,bz_im,output_dir,parfile,fsky,fishname,
                      inc_align='no',inc_rsd='no',inc_mag='no',inc_gr='no') :
@@ -138,13 +161,15 @@ def write_param_file(xp_photo,xp_im,bins_photo,bz_photo,bins_im,bz_im,output_dir
     stout+="fsky_im= %.3lf\n"%fsky
     stout+="instrument_type= "+xp_im['im_type']+"\n"
     stout+="base_file= "+xp_im['base_file']+"\n"
+    stout+="baseline_min= %.3lf\n"%xp_im['base_min']
+    stout+="baseline_max= %.3lf\n"%xp_im['base_max']
     if include_fg :
         stout+="include_foregrounds= yes\n"
         stout+="fit_foregrounds= yes\n"
     else :
         stout+="include_foregrounds= no\n"
         stout+="fit_foregrounds= no\n"
-    stout+="A_fg=0.1\n"
+    stout+="A_fg= %.3lf\n"%a_fg
     stout+="alpha_fg=-2.7\n"
     stout+="beta_fg=-2.0\n"
     stout+="xi_fg=%.3lf\n"%xi_fg
@@ -190,7 +215,7 @@ def get_bin_fnames(predir,expname,ibin,sthr) :
     else :
         fisher_prefix+="woA_"
     if include_fg :
-        fisher_prefix+="wFG_xi%.3lf_"%xi_fg
+        fisher_prefix+="wFG_a%.3lf_"%a_fg+"xi%.3lf_"%xi_fg
     else :
         fisher_prefix+="woFG_"
 
@@ -271,7 +296,8 @@ if run_cls :
     prepare_files(xp.phoz_LSSTgold,xp.im_HIRAX_32_6,"curves_LSST/bins_gold_lmax2000.txt",None,
                   "runs/IMAP",xp.im_HIRAX_32_6['fsky'])
 else :
-    for exper in exper_array :
+#    for exper in exper_array :
+    for exper in [xp.im_HIRAX_32_6,xp.im_SKA,xp.im_MeerKAT] :
         prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_lmax2000.txt",None,
                       "runs/IMAP",exper['fsky'])
         prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p50.txt",0.50,
@@ -285,3 +311,24 @@ else :
 #            run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p50.txt",0.50,"runs/IMAP",fs)
 #            run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p75.txt",0.75,"runs/IMAP",fs)
 #            run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr1p00.txt",1.00,"runs/IMAP",fs)
+#
+#    #Study noise level
+#    for texp in [1.0,1.5,2.0,2.5,3.0,3.5] :
+#        tinst=10.**(-texp); name="gen_sT%.3lf"%texp
+#        xpr=mk_xp_generic(tinst,6.,180.,0.4,name)
+#        prepare_files(xp.phoz_LSSTgold,xpr,"curves_LSST/bins_gold_sthr1p00.txt",1.00,
+#                      "runs/IMAP",xpr['fsky'])
+#
+#    #Study minimum baseline for interferometers
+#    for dmin in [0.,1.5,3.,6.,12.,24.,48.] :
+#        name="gen_dmn%.3lf"%dmin
+#        xpr=mk_xp_generic(1E-3,dmin,1000.,0.4,name)
+#        prepare_files(xp.phoz_LSSTgold,xpr,"curves_LSST/bins_gold_sthr1p00.txt",1.00,
+#                      "runs/IMAP",xpr['fsky'])
+#
+#    #Study maximum baseline for single-dish
+#    for dmax in [7.5,15.,30.,60.,120.,240.] :
+#        name="gen_dmx%.3lf"%dmax
+#        xpr=mk_xp_generic(1E-3,0,dmax,0.4,name)
+#        prepare_files(xp.phoz_LSSTgold,xpr,"curves_LSST/bins_gold_sthr1p00.txt",1.00,
+#                      "runs/IMAP",xpr['fsky'])

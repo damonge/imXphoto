@@ -50,6 +50,8 @@ im_HIRAX_32_6 = {
     "area_eff" : 1.0,
     "im_type" : "interferometer",
     "base_file" : "curves_IM/baseline_file_HIRAX_6m.txt",
+    "base_min" : 6.,
+    "base_max" : 180.,
     "fsky" : 0.4
 }
 
@@ -67,6 +69,8 @@ im_HIRAX_32_7 = {
     "area_eff" : 1.0,
     "im_type" : "interferometer",
     "base_file" : "curves_IM/baseline_file_HIRAX_7m.txt",
+    "base_min" : 6.,
+    "base_max" : 180.,
     "fsky" : 0.4
 }
 
@@ -84,6 +88,8 @@ im_SKA_SD = {
     "area_eff" : 1.0,
     "im_type" : "single_dish",
     "base_file" : "none",
+    "base_min" : 0.,
+    "base_max" : 15.,
     "fsky" : 0.4
 }
 
@@ -101,6 +107,8 @@ im_SKA_IF = {
     "area_eff" : 1.0,
     "im_type" : "interferometer",
     "base_file" : "curves_IM/baseline_file_SKA.txt",
+    "base_min" : 15.,
+    "base_max" : 1000.,
     "fsky" : 0.4
 }
 
@@ -118,6 +126,8 @@ im_SKA = {
     "area_eff" : 1.0,
     "im_type" : "hybrid",
     "base_file" : "curves_IM/baseline_file_SKA.txt",
+    "base_min" : 0.,
+    "base_max" : 1000.,
     "fsky" : 0.4
 }
 
@@ -135,6 +145,8 @@ im_MeerKAT_SD = {
     "area_eff" : 1.0,
     "im_type" : "single_dish",
     "base_file" : "none",
+    "base_min" : 0.,
+    "base_max" : 15.,
     "fsky" : 0.1
 }
 
@@ -152,6 +164,8 @@ im_MeerKAT_IF = {
     "area_eff" : 1.0,
     "im_type" : "interferometer",
     "base_file" : "curves_IM/baseline_file_MeerKAT.txt",
+    "base_min" : 15.,
+    "base_max" : 1000.,
     "fsky" : 0.1
 }
 
@@ -169,5 +183,7 @@ im_MeerKAT = {
     "area_eff" : 1.0,
     "im_type" : "hybrid",
     "base_file" : "curves_IM/baseline_file_MeerKAT.txt",
+    "base_min" : 0.,
+    "base_max" : 1000.,
     "fsky" : 0.1
 }
