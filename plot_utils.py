@@ -86,7 +86,7 @@ if whichfig=='fig1' or whichfig=='all':
 #plt.plot([-1,-1],[-1,-2],'k-',lw=2,label="$\\sigma_z$")
 #plt.plot([-1,-1],[-1,-2],'k--',lw=2,label="$\\Delta z$")
     plt.legend(loc='lower left',frameon=False,labelspacing=0.1,ncol=3)
-    plt.savefig("compare_spec.pdf",bbox_inches='tight')
+    plt.savefig("bak/compare_spec.pdf",bbox_inches='tight')
 
 if whichfig=='fig2' or whichfig=='all':
     plt.figure()
@@ -102,7 +102,7 @@ if whichfig=='fig2' or whichfig=='all':
     plt.ylabel('$\\sigma(\\sigma_z,\\Delta z)$',fontsize=16)
     plt.plot(zarr_HIRAX,1E-3*(1+zarr_HIRAX),'k-',label='LSST req.')
     plt.legend(loc='lower right',frameon=False,labelspacing=0.1,ncol=2)
-    plt.savefig("compare_wbias.pdf",bbox_inches='tight')
+    plt.savefig("bak/compare_wbias.pdf",bbox_inches='tight')
 
 if whichfig=='fig3' or whichfig=='all':
     plt.figure()
@@ -119,7 +119,7 @@ if whichfig=='fig3' or whichfig=='all':
     plt.ylabel('$\\sigma(\\sigma_z)$',fontsize=16)
     plt.plot(zarr_SKAFL,1E-3*(1+zarr_SKAFL),'k-')#,label='LSST req.')
     plt.legend(loc='lower left',frameon=False,labelspacing=0.1,ncol=2)
-    plt.savefig("compare_if_sd.pdf",bbox_inches='tight')
+    plt.savefig("bak/compare_if_sd.pdf",bbox_inches='tight')
 
 if whichfig=='fig4' or whichfig=='all':
     plt.figure()
@@ -146,7 +146,7 @@ if whichfig=='fig4' or whichfig=='all':
     plt.ylabel('$\\sigma(\\sigma_z)$',fontsize=16)
     plt.plot(zarr_HIRAX,1E-3*(1+zarr_HIRAX),'k-')#,label='LSST req.')
     plt.legend(loc='lower right',frameon=False,labelspacing=0.1,ncol=2)
-    plt.savefig("compare_nlin.pdf",bbox_inches='tight')
+    plt.savefig("bak/compare_nlin.pdf",bbox_inches='tight')
 
 if whichfig=='fig5' or whichfig=='all' :
     nu0=650.
@@ -219,7 +219,7 @@ if whichfig=='fig5' or whichfig=='all' :
     plt.ylabel('$N(k_\\perp)\\,\\,[{\\rm Mpc}\\,h^{-1}]^3$',fontsize=18)
     plt.xlim([1E-3,3])
     plt.ylim([1E2,1E6])
-    plt.savefig("nk.pdf",bbox_inches='tight')
+    plt.savefig("bak/nk.pdf",bbox_inches='tight')
 plt.show()
 exit(1)
 
