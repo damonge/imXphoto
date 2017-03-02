@@ -186,17 +186,19 @@
       \renewcommand*{\arraystretch}{1.2}
       \begin{tabular}{|c|c|c|}
         \hline
-        Experiment     & SKA          & HIRAX              \\
+        Experiment     & SKA / MeeKAT     & HIRAX              \\
         \hline
-        $T_{\rm inst}$ & 25K          & 50 K               \\
-        $t_{\rm tot}$  & $10^4$ h     & $2.8\times10^4$ h  \\
-        $N_{\rm dish}$ & 197          & 1024 ($32\times32$)\\
-        $D_{\rm dish}$ & 15 m         & 6 m                \\
-        freq. range    & 350-1050 MHz & 400-800 MHz    \\
-        $f_{\rm sky}$  & 0.4          & 0.4   \\
+        $T_{\rm inst}$ & 25K            & 50 K               \\
+        $t_{\rm tot}$  & 10000 / 4000 h & $2.8\times10^4$ h  \\
+        $N_{\rm dish}$ & 197 / 64       & 1024 ($32\times32$)\\
+        $D_{\rm dish}$ & 15 / 13.5 m    & 6 m                \\
+        freq. range    & 350-1050 MHz   & 400-800 MHz    \\
+        $f_{\rm sky}$  & 0.4 / 0.1      & 0.4   \\
         \hline
       \end{tabular}}
-      \caption{Experimental specifications assumed for SKA and HIRAX.}
+      \caption{Experimental specifications assumed for SKA, MeerKAT and HIRAX. The baseline
+               distributions for each experiment are described in Sections
+               \ref{sssec:method.imap.ska} and \ref{sssec:method.imap.hirax}.}
       \label{tab:im_exp}
     \end{table}
     Intensity mapping (IM) is a novel observational technique that tries to circumvent the
@@ -229,7 +231,7 @@
     \end{itemize}
     The expressions for the noise power spectrum for both cases are derived in Appendix
     \ref{app:noise_im}, and can be summarized as:
-    \begin{equation}
+    \begin{equation}\label{eq:nl_im}
       N^\nu_{\bf l}=\frac{T_{\rm sys}^24\pi f_{\rm sky}}{\eta^2\Delta\nu t_{\rm tot}}
       \left\{\begin{array}{ll}
               \frac{1}{N_{\rm dish}B^2({\bf l})}, & \text{single dish}\\
@@ -252,8 +254,21 @@
       \frac{N_{\rm dish}(N_{\rm dish}-1)}{2}=\int d{\bf d}^2\,N_d({\bf d}),
     \end{equation}
     where $N_{\rm dish}(N_{\rm dish}-1)/2$ is the total number of independent baselines.
+    
+    Given their expected full overlap with LSST, we will consider here the two main currently
+    envisaged southern-hemisphere intensity mapping experiments: SKA (and its pathfinder,
+    MeerKAT) and HIRAX.
+
 
     \TODO{Introduce and describe SKA and HIRAX. See specifications in Table \ref{tab:im_exp}.}
+    
+    \subsubsection{SKA and MeerKAT}\label{sssec:method.imap.ska}
+      \TODO{Matt?}
+      
+    \subsubsection{HIRAX}\label{sssec:method.imap.hirax}
+      \TODO{Kavi?}
+      
+    \subsubsection{Generic IM experiment}\label{sssec:method.imap.generic}
     
     Besides SKA and HIRAX we will also explore the capabilities of generic single-dish and
     interferometer experiments in terms of photo-$z$ calibration. We will parametrize these
@@ -275,6 +290,38 @@
 
     
     \TODO{Discuss foregrounds.}
+ 
+  \subsection{Spectroscopic surveys}\label{ssec:method.spec}
+    \begin{figure}
+      \centering
+      \includegraphics[width=0.49\textwidth]{nz_spec}
+      \caption{Angular number density of galaxies as a function of redshift for the three
+               spectroscopic surveys considered here: DESI (solid), Euclid (dashed) and
+               WFIRST (dot-dashed).}
+      \label{fig:nz_spec}
+    \end{figure}
+    In order to showcase the possibility of calibrating redshift distributions through
+    cross-correlation with future intensity mapping experiments we will compare their
+    forecast performance against that of the most relevant future spectroscopic suveys:
+    \begin{itemize}
+      \item The Dark Energy Spectroscopic Instrument (DESI) \TODO{cite} is a spectroscopic galaxy
+            survey planned to cover $\sim14000\,{\rm deg}^2$ from its northern-hemisphere
+            location at Kitt Peak National Observatory. We assume an area overlap of
+            $f_{\rm sky}=0.2$ with LSST, and we model the number density and clustering bias
+            of the two galaxy samples considered here (Luminous Red Galaxies and Emmision Line
+            Galaxies) as done in \TODO{cite}.
+      \item The Euclid galaxy survey \TODO{cite} is a space-borne infrared spectrograph that
+            will aim to detect $\sim5\times10^7$ H$\alpha$-emitting galaxies in the redshift
+            range $0.65<z<2$ over $\sim15000\,{\rm deg}^2$. We assume full overlap with LSST,
+            and we model the number density and bias as in \TODO{cite}.
+      \item The Wide Field Infrared Survey Telescope (WFIRST) \TODO{cite} is a future space
+            observatory in the infrared that will measure sources for $\sim2.6\time10^7$ objects
+            over $\sim2000\,{\rm deg}^2$. The deep nature of WFIRST will make it ideal to
+            to calibrate the LSST redshift distribution at high redshifts. We model the number
+            density and bias of the WFIRST sample as in \TODO{cite}, and we assume a full
+            overlap with LSST ($f_{\rm sky}=0.05$).
+    \end{itemize}
+    Figure \ref{fig:nz_spec} shows the redshift distributions for these three experiments.
  
   \subsection{Forecasting formalism}\label{ssec:method.fisher}
     Our formalism will distinguish between two types of tracers of the density field:
@@ -400,8 +447,30 @@
   sections.
 
   \subsection{Baseline forecasts} \label{ssec:results.baseline}
+    \begin{figure*}
+      \centering
+      \includegraphics[width=0.49\textwidth]{compare_spec}
+      \includegraphics[width=0.49\textwidth]{compare_wbias}
+      \caption{\TODO{}}
+      \label{fig:compare_spec}
+    \end{figure*}
+    \begin{figure}
+      \centering
+      \includegraphics[width=0.49\textwidth]{compare_if_sd}
+      \caption{\TODO{}}
+      \label{fig:compare_if_sd}
+    \end{figure}
+    \begin{figure}
+      \centering
+      \includegraphics[width=0.49\textwidth]{compare_nlin}
+      \caption{\TODO{}}
+      \label{fig:compare_nlin}
+    \end{figure}
     \begin{itemize}
-     \item First run: see Fig. \ref{fig:fisher}
+     \item Comparison against spectroscopic surveys: left panel of Fig. \ref{fig:compare_spec}
+     \item Constraints on $\sigma_z$ and $\Delta z$: right panel of Fig. \ref{fig:compare_spec}
+     \item Interferometer vs single dish for SKA and MeerKAT: Fig. \ref{fig:compare_if_sd}
+     \item Effect of non-linearities: Fig. \ref{fig:compare_nlin}
     \end{itemize}
 
     \TODO{
@@ -441,13 +510,6 @@
   \subsection{Impact on cosmological constraints} \label{ssec:results.cosmo}
     \TODO{Show effect of achieved photo-$z$ priors on final cosmological parameters}
 
-    \begin{figure}
-      \centering
-      \includegraphics[width=0.49\textwidth]{photoz_calib_compare}
-      \caption{\TODO{}}
-      \label{fig:fisher}
-    \end{figure}
-
 \section{Discussion}\label{ssec:discuss}
   \TODO{\lipsum[12]}
 
@@ -464,11 +526,59 @@
     }
     
   \section{Angular power spectra}\label{app:cls}
-    \TODO{
-      Describe models used for the angular power spectra
-    }
-  
+    This section describes the theoretical models used for the angular power spectra entering
+    the computation of the Fisher matrix (Eq. \ref{eq:fisher}).
+    
+    The cross-power spectrum between two tracers of the cosmic density field, $a$ and $b$,
+    can be estimated as:
+    \begin{equation}\label{eq:int_cl}
+      C^{ab}_\ell=4\pi\int_0^\infty\frac{dk}{k}{\cal P}_\Phi(k)W^a_\ell(k)W^b_\ell(k),
+    \end{equation}
+    where ${\cal P}_\Phi(k)$ is the power spectrum of the primordial curvature perturbations
+    and $W^a_\ell(k)$ is the window function for tracer $a$, containing information
+    about the different contributions to the total anisotropy in that tracer and about
+    its redshift distribution.
+    
+    In the case of galaxy clustering and intensity mapping, and neglecting contributions
+    from magnification bias and large-scale relativistic effects, $W^a$ is given by:
+    \begin{equation}
+      W^a_\ell(k)=\int_0^\infty dz\,\phi_a(z)\left[b_a(z)T_\delta(k,z)j_\ell(k\chi(z))+
+                   \frac{1+z}{H(z)}T_\theta(k,z)j''_\ell(k\chi(z))\right],
+    \end{equation}
+    where $H(z)$ and $\chi(z)$ are the expansion rate and radial comoving distance at
+    redshift $z$ respectively, $\phi_a(z)$ is the source redshift distribution, and
+    $T_\delta$ and $T_\theta$ are the transfer functions of the matter overdensity
+    and velocity divergence fields. Note that, even though we include the effect of
+    non-linearities using the non-linear transfer function for $\delta$ (through
+    the prescription of \TODO{cite halofit}), we only introduce the effect of
+    redshift-space distortions at the linear level, and only consider a deterministic
+    linear bias $b_a(z)$. This is, nevertheless, a more rigorous treatment than has
+    been used in the literature, and the procedure used to mitigate the effect of
+    non-linearities described in Section \ref{ssec:method.fisher} should minimize
+    the corresponding impact on the forecasts presented here.
+    
+    For galaxy shear tracers of weak lensing, the expression for the window function
+    is:
+    \begin{equation}
+      W^a_\ell(k)=-\frac{1}{2}\sqrt{\frac{(\ell+2)!}{(\ell-2)!}}\int_0^\infty
+      \frac{dz}{H(z)}\int_z^\infty dz'\phi_a(z')\frac{\chi(z')-\chi(z)}{\chi(z')\chi(z)}
+      T_{\phi+\psi}(k,z)\,j_\ell(k\chi(z)),
+    \end{equation}
+    where $T_{\phi+\psi}$ is the transfer function for the sum of the two metric
+    potentials in the Newtonian gauge.
+    
+    The computation of Eq. \ref{eq:int_cl} was carried out using a modified version of
+    the Boltzmann code CLASS \TODO{cite}.
+    
   \section{Noise power spectrum for intensity mapping experiments}\label{app:noise_im}
+    \begin{figure}
+      \centering
+      \includegraphics[width=0.49\textwidth]{nk}
+      \caption{\TODO{}}
+      \label{fig:nk}
+    \end{figure}
+    This section derives the expression for the noise power spectra of single-dish
+    experiments and interferometers presented in Eq. \ref{eq:nl_im}
     \TODO{
       Power spectrum models used here
     }
@@ -488,7 +598,6 @@
       \tilde{p}_V(x;\gamma_G,\gamma_L)=\eta p_L(x;\bar{\gamma})+(1-\eta)\,p_G(x;\bar{\gamma}),
     \end{align}
     with expressions for $\eta$ and $\bar{\gamma}$ in terms of $\gamma_G$ and $\gamma_L$ given
-%    in \cite{pvoigt}.
     by \cite{pvoigt}:
     \begin{align}
       &\bar{\gamma}(\gamma_G,\gamma_L)=\left[\gamma_G^5+2.69269\gamma_G^4\gamma_L+2.42843\gamma_G^3\gamma_L^2 + 4.47163\gamma_G^2\gamma_L^3 + 0.07842\gamma_G\gamma_L^4 + \gamma_L^5\right]^{1/5},\\
