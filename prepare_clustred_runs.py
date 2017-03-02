@@ -8,8 +8,8 @@ import os
 nuHI=1420.405
 run_cls=False
 include_fg=True
-a_fg=1.0
-xi_fg=1.0
+a_fg=10.0
+xi_fg=0.1
 marg_A=True
 
 pcs=csm.PcsPar()

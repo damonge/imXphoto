@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import py_cosmo_mad as csm
 from scipy.interpolate import interp1d
+from scipy.integrate import quad
 
 plot_stuff=True
 nz=256
@@ -13,6 +14,11 @@ bWFIRST=0.76
 pcs=csm.PcsPar()
 pcs.background_set(0.3,0.7,0.05,-1.,0.,0.7,2.7255)
 
+def get_numtot(zarr,nzarr,area) :
+    intg_arr=np.array([nzarr[i]*area*60**2 for i in np.arange(len(zarr))])
+    func=interp1d(zarr,intg_arr,bounds_error=False,fill_value=0)
+    return quad(func,0,3)[0]
+
 zDESI_in,nzDESI_in=np.loadtxt("nz_DESI_deg.txt",unpack=True); 
 nzf=interp1d(zDESI_in,nzDESI_in,bounds_error=False,fill_value=0)
 zDESI=zmax*np.arange(nz)/(nz-1.)
@@ -22,6 +28,7 @@ np.savetxt("nz_DESI.txt",np.transpose([zDESI,nzDESI]))
 np.savetxt("bz_DESI.txt",np.transpose([zDESI,bzDESI]))
 np.savetxt("sz_DESI.txt",np.transpose([zDESI,0.4*np.ones(nz)]))
 np.savetxt("ez_DESI.txt",np.transpose([zDESI,np.zeros(nz)]))
+print get_numtot(zDESI,nzDESI,14000.)
 
 zEuclid_in,nzEuclid_in=np.loadtxt("nz_Euclid_deg.txt",unpack=True); 
 nzf=interp1d(zEuclid_in,nzEuclid_in,bounds_error=False,fill_value=0)
@@ -32,6 +39,7 @@ np.savetxt("nz_Euclid.txt",np.transpose([zEuclid,nzEuclid]))
 np.savetxt("bz_Euclid.txt",np.transpose([zEuclid,bzEuclid]))
 np.savetxt("sz_Euclid.txt",np.transpose([zEuclid,0.4*np.ones(nz)]))
 np.savetxt("ez_Euclid.txt",np.transpose([zEuclid,np.zeros(nz)]))
+print get_numtot(zEuclid,nzEuclid,15000.)
 
 zWFIRST_in,nzWFIRST_in=np.loadtxt("nz_WFIRST_deg.txt",unpack=True); 
 nzf=interp1d(zWFIRST_in,nzWFIRST_in,bounds_error=False,fill_value=0)
@@ -42,6 +50,7 @@ np.savetxt("nz_WFIRST.txt",np.transpose([zWFIRST,nzWFIRST]))
 np.savetxt("bz_WFIRST.txt",np.transpose([zWFIRST,bzWFIRST]))
 np.savetxt("sz_WFIRST.txt",np.transpose([zWFIRST,0.4*np.ones(nz)]))
 np.savetxt("ez_WFIRST.txt",np.transpose([zWFIRST,np.zeros(nz)]))
+print get_numtot(zWFIRST,nzWFIRST,2000.)
 
 
 if plot_stuff :

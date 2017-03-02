@@ -283,6 +283,7 @@ if whichfig=='test_sigmaT' :
 if whichfig=='fig6' or whichfig=='all':
     plt.figure()
     zarr_nofg ,err_sthz_nofg_arr ,err_bthz_nofg_arr =compute_errors("runs/IMAP","Fisher_wA_woFG_HIRAX_32_6_sthr1.000"       ,'#009900',0.00,3.00,'No foregrounds')
+    zarr_x1p0 ,err_sthz_x1p0_arr ,err_bthz_x1p0_arr =compute_errors("runs/IMAP","Fisher_wA_wFG_a0.100_xi10.000_HIRAX_32_6_sthr1.000",'#999900',0.00,3.00,'$\\xi=10$'  )
     zarr_x1p0 ,err_sthz_x1p0_arr ,err_bthz_x1p0_arr =compute_errors("runs/IMAP","Fisher_wA_wFG_a0.100_xi1.000_HIRAX_32_6_sthr1.000",'#6600CC',0.00,3.00,'$\\xi=1$'  )
     zarr_x0p1 ,err_sthz_x0p1_arr ,err_bthz_x0p1_arr =compute_errors("runs/IMAP","Fisher_wA_wFG_a0.100_xi0.100_HIRAX_32_6_sthr1.000",'#009999',0.00,3.00,'$\\xi=0.1$')
     plt.plot([-1,-1],[-1,-2],'k-',lw=2,label="$\\sigma_z$")
@@ -324,7 +325,7 @@ if whichfig=='fig8' or whichfig=='all' :
 
     plt.figure()
     icol=0
-    for dmin in [240.,120.,60.,30.,15.,7.5,3.] :
+    for dmin in [200.,100.,50.,25.,12.,6.,3.,0.] :
         if dmin==7.5 :
             num="%.1lf"%dmin
         else :
@@ -362,6 +363,22 @@ if whichfig=='fig9' or whichfig=='all' :
     plt.plot(z,1E-3*(1+z),'k-')#,label='LSST req.')
     plt.legend(loc='upper left',frameon=False,labelspacing=0.1,ncol=2)
     plt.savefig("bak/compare_dmax.pdf",bbox_inches='tight');
+
+if whichfig=='fig10' or whichfig=='all' :
+    def plot_nz(fname,area,lt,label) :
+        z,nz=np.loadtxt(fname,unpack=True)
+        plt.plot(z,nz*area*60**2/area,'k'+lt,lw=2,label=label)
+
+    plt.figure()
+    plot_nz("curves_spec/nz_DESI.txt"  ,14000.,'-' ,'DESI')
+    plot_nz("curves_spec/nz_Euclid.txt",15000.,'--','Euclid')
+    plot_nz("curves_spec/nz_WFIRST.txt", 2000.,'-.','WFIRST')
+    plt.yscale('log')
+    plt.xlim([0,3]); plt.ylim([1E2,3E4]);
+    plt.xlabel('$z$',fontsize=16)
+    plt.ylabel('$dN/dz\\,d\\Omega\\,[{\\rm deg}^{-2}]$',fontsize=16)
+    plt.legend(loc='upper left',frameon=False,labelspacing=0.1)
+    plt.savefig("bak/nz_spec.pdf",bbox_inches='tight')
 
 plt.show()
 exit(1)
