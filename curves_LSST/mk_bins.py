@@ -76,14 +76,16 @@ def get_bins(s_photoz,z_max,n_photoz_width,nzfile=None,fname_out=None,sigma_thr=
     print "%d bins"%(len(zc))
 
     if fname_out!=None :
-        data_write=np.zeros([6,len(zc)])
+        data_write=np.zeros([8,len(zc)])
         data_write[0]=zc-zw
         data_write[1]=zc+zw
         data_write[2]=sz
-        data_write[3,:]=0
+        data_write[3,:]=0.
         data_write[4,:]=0
-        data_write[5,:]=lmax
-        
+        data_write[5,:]=0
+        data_write[6,:]=0
+        data_write[7,:]=lmax
+
         pcs=csm.PcsPar()
         pcs.set_verbosity(0)
         pcs.background_set(0.3,0.7,0.05,-1.0,0.0,0.7,2.7255)
@@ -97,9 +99,10 @@ def get_bins(s_photoz,z_max,n_photoz_width,nzfile=None,fname_out=None,sigma_thr=
                 kmax=get_kmax(pcs,gf,sigma_thr)
                 ell=min(int(chi*kmax),lmax)
                 print z,ell
-                data_write[5,i]=ell
+                data_write[7,i]=ell
 
-        np.savetxt(fname_out,np.transpose(data_write),fmt="%lf %lf %lf %d %d %d",header="[1]-z0 [2]-zf [3]-sz [4]-marg_sz [5]-marg_bz [6]-lmax")
+        np.savetxt(fname_out,np.transpose(data_write),fmt="%lf %lf %lf %lf %d %d %d %d",
+                   header="[1]-z0 [2]-zf [3]-sz [4]-lz [5]-marg_sz [6]-marg_bz [7]-marg_lz [8]-lmax")
 
     if nzfile!=None :
         z,nz=np.loadtxt(nzfile,unpack=True)

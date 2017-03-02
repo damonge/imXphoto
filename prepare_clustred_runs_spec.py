@@ -183,15 +183,18 @@ def get_bin_fnames(predir,ibin,sthr) :
 
     return fname_bin_single,fname_spec,fname_params,fname_fisher
 
-def prepare_bin(z0,zf,sz,lmx,predir,ibin,lmax_spec=2000,sthr=None,fac_sigma=3,fac_sample_sigma=2.) :
+def prepare_bin(z0,zf,sz,lmx,predir,ibin,lmax_spec=2000,sthr=None,fac_sigma=3,fac_sample_sigma=2.,marg_lz=False) :
     fname_bin_single,fname_spec,fname_params,fname_fisher=get_bin_fnames(predir,ibin,sthr)
-    data_line=np.array([z0,zf,sz,lmx])
+    i_marg_lz=0
+    if marg_lz :
+        i_marg_lz=1
+    data_line=np.array([z0,zf,sz,i_marg_lz,lmx])
     np.savetxt(fname_bin_single,data_line[None,:],
-               fmt="%lf %lf %lf 1 1 %d",
-               header="[1]-z0 [2]-zf [3]-sz [4]-marg_sz [5]-marg_bz [6]-lmax")
+               fmt="%lf %lf %lf 0.0 1 1 %d %d",
+               header="[1]-z0 [2]-zf [3]-sz [4]-lz [5]-marg_sz [6]-marg_bz [7]-marg_lz [8]-lmax")
 
-    z0_spec=np.amax([z0-fac_sigma*sz,0])
-    zf_spec=zf+fac_sigma*sz
+    z0_spec=np.amax([z0-(fac_sigma+2*i_marg_lz)*sz,0])
+    zf_spec=zf+(fac_sigma+2*i_marg_lz)*sz
     nz=int(fac_sample_sigma*(zf_spec-z0_spec)/(sz-1E-5)); dz=(zf_spec-z0_spec)/nz
     z0_arr=z0_spec+(np.arange(nz)+0)*dz; zf_arr=z0_spec+(np.arange(nz)+1)*dz; zm_arr=0.5*(z0_arr+zf_arr)
     lmax_arr=np.ones_like(z0_arr)*lmax_spec;
@@ -200,15 +203,15 @@ def prepare_bin(z0,zf,sz,lmx,predir,ibin,lmax_spec=2000,sthr=None,fac_sigma=3,fa
             lmax_arr[i]=np.amin([lmax_arr[i],get_lmax(zm_arr[i],sthr)])
 
     np.savetxt(fname_spec,np.transpose([z0_arr,zf_arr,lmax_arr]),
-               fmt="%lf %lf 1.0E-5 0 0 %d",
-               header="[1]-z0 [2]-zf [3]-sz [4]-marg_sz [5]-marg_bz [6]-lmax")
+               fmt="%lf %lf 1.0E-5 0.0 0 0 0 %d",
+               header="[1]-z0 [2]-zf [3]-sz [4]-lz [5]-marg_sz [6]-marg_bz [7]-marg_lz [8]-lmax")
 
-def prepare_files(xp_photo,xp_spec,bins_photo,sth_spec,predir,fsky) :
+def prepare_files(xp_photo,xp_spec,bins_photo,sth_spec,predir,fsky,marg_lz=False) :
     os.system('mkdir -p '+predir)
-    z0_ph_arr,zf_ph_arr,sz_ph_arr,dum1,dum2,lmx_arr=np.loadtxt(bins_photo,unpack=True)
+    z0_ph_arr,zf_ph_arr,sz_ph_arr,dum1,dum2,dum3,dum4,lmx_arr=np.loadtxt(bins_photo,unpack=True)
     for i in np.arange(len(z0_ph_arr)) :
         fname_bins_photo,fname_bins_spec,fname_params,fname_fisher=get_bin_fnames(predir,i,sth_spec)
-        prepare_bin(z0_ph_arr[i],zf_ph_arr[i],sz_ph_arr[i],lmx_arr[i],predir,i,sthr=sth_spec)
+        prepare_bin(z0_ph_arr[i],zf_ph_arr[i],sz_ph_arr[i],lmx_arr[i],predir,i,sthr=sth_spec,marg_lz=marg_lz)
         zm=0.5*(z0_ph_arr[i]+zf_ph_arr[i])
         z,bz,ms=np.loadtxt(xp_photo['bzfi'],unpack=True); bzf=interp1d(z,bz)
         zarr=np.array([z[0],zm,z[-1]]); bzarr=bzf(zarr); mask=np.array([0,1,0])
@@ -227,7 +230,7 @@ def prepare_files(xp_photo,xp_spec,bins_photo,sth_spec,predir,fsky) :
             os.system("python main.py "+fname_params+".ini")
 
 def run_fsky(xp_photo,xp_spec,bins_photo,sth_spec,predir,fsky) :
-    z0_ph_arr,zf_ph_arr,sz_ph_arr,dum1,dum2,lmx_arr=np.loadtxt(bins_photo,unpack=True)
+    z0_ph_arr,zf_ph_arr,sz_ph_arr,dum1,dum2,dum3,dum4,lmx_arr=np.loadtxt(bins_photo,unpack=True)
     for i in np.arange(len(z0_ph_arr)) :
         fname_bins_photo,fname_bins_spec,fname_params,fname_fisher=get_bin_fnames(predir,i,sth_spec)
         parname=fname_params+"_fs%.3lf.ini"%fsky
@@ -241,14 +244,14 @@ def run_fsky(xp_photo,xp_spec,bins_photo,sth_spec,predir,fsky) :
 if run_cls :
     for exper in exper_array :
         prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_lmax2000.txt",None,
-                      "runs/"+exper['name'],exper['fsky'])
+                      "runs/"+exper['name'],exper['fsky'],marg_lz=False)
 else :
     for exper in exper_array :
         prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_lmax2000.txt",None,
-                      "runs/"+exper['name'],exper['fsky'])
+                      "runs/"+exper['name'],exper['fsky'],marg_lz=False)
         prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p50.txt",0.50,
-                      "runs/"+exper['name'],exper['fsky'])
+                      "runs/"+exper['name'],exper['fsky'],marg_lz=False)
         prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p75.txt",0.75,
-                      "runs/"+exper['name'],exper['fsky'])
+                      "runs/"+exper['name'],exper['fsky'],marg_lz=False)
         prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr1p00.txt",1.00,
-                      "runs/"+exper['name'],exper['fsky'])
+                      "runs/"+exper['name'],exper['fsky'],marg_lz=False)

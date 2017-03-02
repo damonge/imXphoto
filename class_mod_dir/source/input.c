@@ -2586,10 +2586,11 @@ int input_read_parameters(
     else {
       int nz_here=0;
       short *tracer_type;
-      double *z_means,*z_widths,*z_sz;
+      double *z_means,*z_widths,*z_sz,*z_gz;
       z_means=malloc(_SELECTION_NUM_MAX_*sizeof(double));
       z_widths=malloc(_SELECTION_NUM_MAX_*sizeof(double));
       z_sz=malloc(_SELECTION_NUM_MAX_*sizeof(double));
+      z_gz=malloc(_SELECTION_NUM_MAX_*sizeof(double));
       tracer_type=malloc(_SELECTION_NUM_MAX_*sizeof(short));
       
       read_words(string1,ptr->n_tracers_nc,words);
@@ -2612,8 +2613,8 @@ int input_read_parameters(
 		   "least this number",nz_here+int1);
 
 	for(jj=nz_here;jj<nz_here+int1;jj++) {
-	  int stat=fscanf(fi,"%lf %lf %lf",&(z_means[jj]),&(z_widths[jj]),&(z_sz[jj]));
-	  if(stat!=3)
+	  int stat=fscanf(fi,"%lf %lf %lf %lf",&(z_means[jj]),&(z_widths[jj]),&(z_sz[jj]),&(z_gz[jj]));
+	  if(stat!=4)
 	    my_abort(1,"Error reading file %s, line %d\n",words[ii],jj+1-nz_here);
 	  tracer_type[jj]=ii;
 	}
@@ -2638,11 +2639,12 @@ int input_read_parameters(
 	ptr->selection_mean_nc[i] = z_means[bin_id];
 	ptr->selection_width_nc[i] = z_widths[bin_id];
 	ptr->selection_sz_nc[i] = z_sz[bin_id];
+	ptr->selection_gz_nc[i] = z_gz[bin_id];
 	ptr->selection_tracer_nc[i]=tracer_type[bin_id];
 #ifdef _CLASST_DEBUG
-	  printf("Bin %d mean %lf, width %lf, photo-z %lf, tracer %d\n",
+	  printf("Bin %d mean %lf, width %lf, photo-z [%lf,%lf], tracer %d\n",
 		 bin_id,ptr->selection_mean_nc[i],ptr->selection_width_nc[i],
-		 ptr->selection_sz_nc[i],ptr->selection_tracer_nc[i]);
+		 ptr->selection_sz_nc[i],ptr->selection_gz_nc[i],ptr->selection_tracer_nc[i]);
 #endif //_CLASST_DEBUG
       }
       if(z_means[0]<=ppt->selection_mean_min)
@@ -2650,6 +2652,7 @@ int input_read_parameters(
       free(z_means);
       free(z_widths);
       free(z_sz);
+      free(z_gz);
       free(tracer_type);
     }
 
@@ -2798,10 +2801,11 @@ int input_read_parameters(
     else {
       int nz_here=0;
       short *tracer_type;
-      double *z_means,*z_widths,*z_sz;
+      double *z_means,*z_widths,*z_sz,*z_gz;
       z_means=malloc(_SELECTION_NUM_MAX_*sizeof(double));
       z_widths=malloc(_SELECTION_NUM_MAX_*sizeof(double));
       z_sz=malloc(_SELECTION_NUM_MAX_*sizeof(double));
+      z_gz=malloc(_SELECTION_NUM_MAX_*sizeof(double));
       tracer_type=malloc(_SELECTION_NUM_MAX_*sizeof(short));
       
       read_words(string1,ptr->n_tracers_wl,words);
@@ -2824,8 +2828,8 @@ int input_read_parameters(
 		   "least this number",nz_here+int1);
 
 	for(jj=nz_here;jj<nz_here+int1;jj++) {
-	  int stat=fscanf(fi,"%lf %lf %lf",&(z_means[jj]),&(z_widths[jj]),&(z_sz[jj]));
-	  if(stat!=3)
+	  int stat=fscanf(fi,"%lf %lf %lf",&(z_means[jj]),&(z_widths[jj]),&(z_sz[jj]),&(z_gz[jj]));
+	  if(stat!=4)
 	    my_abort(1,"Error reading file %s, line %d\n",words[ii],jj+1-nz_here);
 	  tracer_type[jj]=ii;
 	}
@@ -2850,11 +2854,12 @@ int input_read_parameters(
 	ptr->selection_mean_wl[i] = z_means[bin_id];
 	ptr->selection_width_wl[i] = z_widths[bin_id];
 	ptr->selection_sz_wl[i] = z_sz[bin_id];
+	ptr->selection_gz_wl[i] = z_gz[bin_id];
 	ptr->selection_tracer_wl[i]=tracer_type[bin_id];
 #ifdef _CLASST_DEBUG
-	  printf("Bin %d mean %lf, width %lf, photo-z %lf, tracer %d\n",
+	  printf("Bin %d mean %lf, width %lf, photo-z [%lf,%lf], tracer %d\n",
 		 bin_id,ptr->selection_mean_wl[i],ptr->selection_width_wl[i],
-		 ptr->selection_sz_wl[i],ptr->selection_tracer_wl[i]);
+		 ptr->selection_sz_wl[i],ptr->selection_gz_wl[i],ptr->selection_tracer_wl[i]);
 #endif //_CLASST_DEBUG
       }
       if(z_means[0]<=ppt->selection_mean_min)
@@ -2862,6 +2867,7 @@ int input_read_parameters(
       free(z_means);
       free(z_widths);
       free(z_sz);
+      free(z_gz);
       free(tracer_type);
     }
 
@@ -3713,6 +3719,12 @@ int input_default_params(
     ptr->aI_size[ii]=0;
     ptr->fred_size[ii]=0;
   }
+  ptr->selection_num_wl=1;
+  ptr->selection_mean_wl[0]=1.;
+  ptr->selection_width_wl[0]=0.1;
+  ptr->selection_sz_wl[0]=0.0;
+  ptr->selection_gz_wl[0]=0.0;
+
   ptr->n_tracers_nc=0;
   for(ii=0;ii<_TRACER_NUM_MAX_;ii++) {
     ptr->selection_nc[ii]=gaussian;
@@ -3726,6 +3738,8 @@ int input_default_params(
   ptr->selection_mean_nc[0]=1.;
   ptr->selection_width_nc[0]=0.1;
   ptr->selection_sz_nc[0]=0.0;
+  ptr->selection_gz_nc[0]=0.0;
+
   ptr->lcmb_rescale=1.;
   ptr->lcmb_pivot=0.1;
   ptr->lcmb_tilt=0.;

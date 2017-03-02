@@ -14,9 +14,20 @@ NU_21=1420.405751786
 CLIGHT=299.792458
 FWHM2G=0.42466090014
 
-def pdf_photo(z,z0,zf,sz) :
-    denom=1./np.sqrt(2*sz*sz)
-    return 0.5*(erf((zf-z)*denom)-erf((z0-z)*denom))
+def pdf_photo(z,z0,zf,sz,lz) :
+    gz=sz*2.355
+    sqrtln2=np.sqrt(np.log(2.))
+    if lz<=0 :
+        lorentz=0
+        eta=0
+        geff=gz
+    else :
+        geff=(gz**5+2.69269*gz**4*lz+2.42843*gz**3*lz**2+4.47163*gz**2*lz**3+0.07842*gz*lz**4+lz**5)**0.2
+        grat=lz/geff
+        eta=1.36603*grat-0.47719*grat**2+0.11116*grat**3
+        lorentz=eta*(np.arctan((zf-z)/geff)-np.arctan((z0-z)/geff))
+    gauss=(1-eta)*0.5*(erf((zf-z)*sqrtln2/geff)-erf((z0-z)*sqrtln2/geff))
+    return lorentz+gauss
 
 class NuisanceFunction :
     """ NuisanceFunction """
@@ -30,6 +41,7 @@ class NuisanceFunction :
     df_arr=[] #Numerical derivative interval for this node
     der_rel=0.05 #Relative interval for numerical derivatives
     der_abs=0.01 #Absolute interval for numerical derivatives
+    onesided=0
 
     def __init__(self,name="none",fname="none",fname_nz="none",prefix="none",typ="bias",
                  der_rel=0.05,der_abs=0.01) :
@@ -63,32 +75,40 @@ class NuisanceFunction :
                     if self.i_marg[i]!=0 :
                         self.write_bias_file(i,1)
                         self.write_bias_file(i,-1)
-            elif typ=="sphz" or typ=="bphz" :
+            elif typ=="sphz" or typ=="bphz" or typ=="lphz" :
                 data=np.loadtxt(self.file_name,unpack=True)
                 z0_arr=np.atleast_1d(data[0])
                 zf_arr=np.atleast_1d(data[1])
                 s_ph_arr=np.atleast_1d(data[2])
-                i_marg_sphz=np.atleast_1d(data[3])
-                i_marg_bphz=np.atleast_1d(data[4])
+                l_ph_arr=np.atleast_1d(data[3])
+                i_marg_sphz=np.atleast_1d(data[4])
+                i_marg_bphz=np.atleast_1d(data[5])
+                i_marg_lphz=np.atleast_1d(data[6])
                 self.z_arr=0.5*(z0_arr+zf_arr)
                 if typ=="sphz" :
                     self.f_arr=s_ph_arr
                     self.df_arr=0.05*s_ph_arr
                     self.i_marg=i_marg_sphz
+                    self.onesided=1
                 elif typ=="bphz" :
                     self.f_arr=np.zeros_like(z0_arr)
                     self.df_arr=0.005*np.ones_like(z0_arr)
                     self.i_marg=i_marg_bphz
+                elif typ=="lphz" :
+                    self.f_arr=l_ph_arr
+                    self.df_arr=0.005*np.ones_like(z0_arr)
+                    self.i_marg=i_marg_lphz
                 else :
                     print "WTF"
                     exit(1)
                 if typ=="sphz" :
-                    self.write_bins_file(z0_arr,zf_arr,s_ph_arr,-1,0,typ)
+                    self.write_bins_file(z0_arr,zf_arr,s_ph_arr,l_ph_arr,-1,0,typ)
                 for i in np.arange(len(self.z_arr)) :
                     if (((typ=="sphz") and (i_marg_sphz[i]!=0)) or
-                        ((typ=="bphz") and (i_marg_bphz[i]!=0))) :
-                        self.write_bins_file(z0_arr,zf_arr,s_ph_arr,i, 1,typ)
-                        self.write_bins_file(z0_arr,zf_arr,s_ph_arr,i,-1,typ)
+                        ((typ=="bphz") and (i_marg_bphz[i]!=0)) or
+                        ((typ=="lphz") and (i_marg_lphz[i]!=0))) :
+                        self.write_bins_file(z0_arr,zf_arr,s_ph_arr,l_ph_arr,i, 1,typ)
+                        self.write_bins_file(z0_arr,zf_arr,s_ph_arr,l_ph_arr,i,-1,typ)
 
     def get_filename(self,i_node,sig) :
         if sig>0 :
@@ -101,7 +121,7 @@ class NuisanceFunction :
         else :
             return self.prefix+self.name+"fid"
 
-    def write_bins_file(self,z0,zf,sigma_z,i_node,sig,phoz_type) :
+    def write_bins_file(self,z0,zf,sigma_z,lor_z,i_node,sig,phoz_type) :
         if self.name=="none" :
             return self.name
 
@@ -114,15 +134,18 @@ class NuisanceFunction :
         zm=0.5*(zf+z0)
         dz=0.5*(zf-z0)
         sz=sigma_z.copy()
+        lz=lor_z.copy()
         if phoz_type=="sphz" :
             sz+=mask*sig*self.df_arr
+        elif phoz_type=="lphz" :
+            lz+=mask*(1.5+0.5*sig)*self.df_arr
         elif phoz_type=="bphz" :
             zm+=mask*sig*self.df_arr
         fname=self.get_filename(i_node,sig)+"_bins.txt"
         if os.path.isfile(fname) :
             pass
         else :
-            np.savetxt(fname,np.transpose([zm,dz,sz]))
+            np.savetxt(fname,np.transpose([zm,dz,sz,lz]))
 
         return fname
 
@@ -170,6 +193,7 @@ class Tracer :
 
     #Photo-z
     nuisance_sphz =NuisanceFunction()
+    nuisance_lphz =NuisanceFunction()
     nuisance_bphz =NuisanceFunction()
 
     #Parameters for galaxy clustering
@@ -254,6 +278,8 @@ class Tracer :
             self.nbins=len(np.atleast_1d(data[0]))
             self.nuisance_sphz=NuisanceFunction("sphz_"+name+"_",self.bins_file,self.nz_file,
                                                 par.output_dir+"/","sphz")
+            self.nuisance_lphz=NuisanceFunction("lphz_"+name+"_",self.bins_file,self.nz_file,
+                                                par.output_dir+"/","lphz")
             self.nuisance_bphz=NuisanceFunction("bphz_"+name+"_",self.bins_file,self.nz_file,
                                                 par.output_dir+"/","bphz")
         elif type_str=="intensity_mapping" :
@@ -290,6 +316,8 @@ class Tracer :
             self.nbins=len(np.atleast_1d(data[0]))
             self.nuisance_sphz=NuisanceFunction("sphz_"+name+"_",self.bins_file,self.nz_file,
                                                 par.output_dir+"/","sphz")
+            self.nuisance_lphz=NuisanceFunction("lphz_"+name+"_",self.bins_file,self.nz_file,
+                                                par.output_dir+"/","lphz")
             self.nuisance_bphz=NuisanceFunction("bphz_"+name+"_",self.bins_file,self.nz_file,
                                                 par.output_dir+"/","bphz")
         elif type_str=="gal_shear" :
@@ -307,6 +335,8 @@ class Tracer :
             self.nbins=len(np.atleast_1d(data[0]))
             self.nuisance_sphz=NuisanceFunction("sphz_"+name+"_",self.bins_file,self.nz_file,
                                                 par.output_dir+"/","sphz")
+            self.nuisance_lphz=NuisanceFunction("lphz_"+name+"_",self.bins_file,self.nz_file,
+                                                par.output_dir+"/","lphz")
             self.nuisance_bphz=NuisanceFunction("bphz_"+name+"_",self.bins_file,self.nz_file,
                                                 par.output_dir+"/","bphz")
         elif type_str=="cmb_lensing" :
@@ -342,8 +372,8 @@ class Tracer :
         if ((self.tracer_type=="gal_clustering") or (self.tracer_type=="intensity_mapping") or
             (self.tracer_type=="gal_shear")) :
             data=np.loadtxt(self.bins_file,unpack=True)
-            if len(data)>5 :
-                self.lmax_bins=np.atleast_1d(data[5])
+            if len(data)>7 :
+                self.lmax_bins=np.atleast_1d(data[7])
             else :
                 self.lmax_bins=self.lmax*np.ones(self.nbins)
 
@@ -406,6 +436,7 @@ def get_cross_noise(tr1,tr2,lmax) :
             z0_arr1=np.atleast_1d(data1[0])
             zf_arr1=np.atleast_1d(data1[1])
             sz_arr1=np.atleast_1d(data1[2])
+            lz_arr1=np.atleast_1d(data1[3])
             z_nz_arr,nz_nz_arr=np.loadtxt(tr1.nz_file,unpack=True)
             if NZ_IN_AMIN==True :
                 nz_nz_arr*=(180.*60/np.pi)**2
@@ -413,12 +444,12 @@ def get_cross_noise(tr1,tr2,lmax) :
             nzf=interp1d(z_nz_arr,nz_nz_arr,bounds_error=False,fill_value=0)
             for i in np.arange(nbins1) :
                 def integ(z) :
-                    return nzf(z)*pdf_photo(z,z0_arr1[i],zf_arr1[i],sz_arr1[i])
+                    return nzf(z)*pdf_photo(z,z0_arr1[i],zf_arr1[i],sz_arr1[i],lz_arr1[i])
                 ndens=quad(integ,z0_arr1[i]-5*sz_arr1[i],zf_arr1[i]+5*sz_arr1[i])[0]#
-#                parr=pdf_photo(z_nz_arr,z0_arr1[i],zf_arr1[i],sz_arr1[i])
+#                parr=pdf_photo(z_nz_arr,z0_arr1[i],zf_arr1[i],sz_arr1[i],lz_arr1[i])
 #                integ=interp1d(z_nz_arr,parr*nz_nz_arr)
 #                ndens=quad(integ,z_nz_arr[0],z_nz_arr[-1])[0];
-                print i, ndens,z0_arr1[i],zf_arr1[i],sz_arr1[i]
+                print i, ndens,z0_arr1[i],zf_arr1[i],sz_arr1[i],lz_arr1[i]
                 cl_noise[:,i,i]=1./np.fmax(ndens,1E-16)
         elif tr1.tracer_type=='intensity_mapping' :
             #Compute background temperature
@@ -483,12 +514,13 @@ def get_cross_noise(tr1,tr2,lmax) :
             z0_arr1=np.atleast_1d(data1[0])
             zf_arr1=np.atleast_1d(data1[1])
             sz_arr1=np.atleast_1d(data1[2])
+            lz_arr1=np.atleast_1d(data1[3])
             z_nz_arr,nz_nz_arr=np.loadtxt(tr1.nz_file,unpack=True)
             if NZ_IN_AMIN==True :
                 nz_nz_arr*=(180.*60/np.pi)**2
             dz_arr=z_nz_arr[1:]-z_nz_arr[:-1]
             for i in np.arange(nbins1) :
-                parr=pdf_photo(z_nz_arr,z0_arr1[i],zf_arr1[i],sz_arr1[i])
+                parr=pdf_photo(z_nz_arr,z0_arr1[i],zf_arr1[i],sz_arr1[i],lz_arr1[i])
                 integ=interp1d(z_nz_arr,parr*nz_nz_arr)
                 ndens=quad(integ,z_nz_arr[0],z_nz_arr[-1])[0]
                 cl_noise[:,i,i]=tr1.sigma_gamma**2/ndens

@@ -56,6 +56,37 @@ double erf_mine(double x)
   }
 }
 
+#define SQRTLN2 0.8325546111576977
+static double phoz_window(double z,double zmean,double zwidth,
+			  double sigmaG,double gammaL)
+{
+  double gammaG=2.355*gammaL;
+
+  if(gammaL<=0)
+    return 0.5*(erf_mine((zmean+zwidth-z)*SQRTLN2/gammaG)-erf_mine((zmean-zwidth-z)*SQRTLN2/gammaG));
+  else if(gammaG<=0)
+    return (atan((zmean+zwidth-z)/gammaL)-atan((zmean-zwidth-z)/gammaL))/M_PI;
+  else {
+    double gammaG2=gammaG*gammaG;
+    double gammaG3=gammaG2*gammaG;
+    double gammaG4=gammaG3*gammaG;
+    double gammaG5=gammaG4*gammaG;
+    double gammaL2=gammaL*gammaL;
+    double gammaL3=gammaL2*gammaL;
+    double gammaL4=gammaL3*gammaL;
+    double gammaL5=gammaL4*gammaL;
+    double gammaB=pow(gammaG5+2.69269*gammaG4*gammaL+2.42843*gammaG3*gammaL2+
+		      4.47163*gammaG2*gammaL3+0.07842*gammaG*gammaL4+gammaL5,0.2);
+    double gamma_ratio=gammaL/gammaB;
+    double gamma_ratio2=gamma_ratio*gamma_ratio;
+    double eta=1.36603*gamma_ratio-0.47719*gamma_ratio2+0.11116*gamma_ratio2*gamma_ratio;
+    double lorentz=eta*(atan((zmean+zwidth-z)/gammaB)-atan((zmean-zwidth-z)/gammaB))/M_PI;
+    double gauss=(1-eta)*0.5*(erf_mine((zmean+zwidth-z)*SQRTLN2/gammaB)-
+			      erf_mine((zmean-zwidth-z)*SQRTLN2/gammaB));
+    return lorentz+gauss;
+  }
+}
+
 void free_selection_functions_dam(
 				  struct perturbs * ppt,
 				  struct transfers * ptr
@@ -1223,7 +1254,7 @@ int transfer_indices_of_transfers(
       ((unsigned long long)(ptr->l_size[index_md]*ptr->q_size));
     d_tsize_GB=(double)d_tsize/(1024.*1024.*1024.);
     printf("Final transfers\n");
-    printf("          %.3lf GB for transfer functions here\n",index_md,d_tsize_GB);
+    printf("          %.3lf GB for transfer functions here\n",d_tsize_GB);
     printf("          tt_size = %d, l_size= %d, q_size= %d\n",
 	   ptr->tt_size_all[index_md],ptr->l_size[index_md],(int)(ptr->q_size));
 #endif //_CLASST_DEBUG
@@ -3631,8 +3662,8 @@ int transfer_selection_function_nc(
        delta x = 0.1*width
     */
     if(ptr->has_photoz_nc[itr]==_TRUE_) {
-      *selection=erf_mine((ptr->selection_mean_nc[bin]+ptr->selection_width_nc[bin]-z)/(M_SQRT2*ptr->selection_sz_nc[bin]))-
-	erf_mine((ptr->selection_mean_nc[bin]-ptr->selection_width_nc[bin]-z)/(M_SQRT2*ptr->selection_sz_nc[bin]));
+      *selection=phoz_window(z,ptr->selection_mean_nc[bin],ptr->selection_width_nc[bin],
+			     ptr->selection_sz_nc[bin],ptr->selection_gz_nc[bin]);
     }
     else
       *selection=(1.-tanh((x-ptr->selection_width_nc[bin])/(ppr->selection_tophat_edge*ptr->selection_width_nc[bin])))/2.;
@@ -3725,8 +3756,8 @@ int transfer_selection_function_wl(
        delta x = 0.1*width
     */
     if(ptr->has_photoz_wl[itr]==_TRUE_) {
-      *selection=erf_mine((ptr->selection_mean_wl[bin]+ptr->selection_width_wl[bin]-z)/(M_SQRT2*ptr->selection_sz_wl[bin]))-
-	erf_mine((ptr->selection_mean_wl[bin]-ptr->selection_width_wl[bin]-z)/(M_SQRT2*ptr->selection_sz_wl[bin]));
+      *selection=phoz_window(z,ptr->selection_mean_wl[bin],ptr->selection_width_wl[bin],
+			     ptr->selection_sz_wl[bin],ptr->selection_gz_wl[bin]);
     }
     else
       *selection=(1.-tanh((x-ptr->selection_width_wl[bin])/(ppr->selection_tophat_edge*ptr->selection_width_wl[bin])))/2.;
@@ -4089,8 +4120,10 @@ int transfer_selection_times_nc(
     z = ptr->selection_mean_nc[bin]+ptr->selection_width_nc[bin]*ppr->selection_cut_at_sigma;
   }
   if (ptr->selection_nc[itr]==tophat) {
-    if(ptr->has_photoz_nc[itr]==_TRUE_)
-      z = ptr->selection_mean_nc[bin]+ptr->selection_width_nc[bin]+3*ptr->selection_sz_nc[bin];
+    if(ptr->has_photoz_nc[itr]==_TRUE_) {
+      z = ptr->selection_mean_nc[bin]+ptr->selection_width_nc[bin]+
+	3*ptr->selection_sz_nc[bin]+2*ptr->selection_gz_nc[bin];
+    }
     else 
       z = ptr->selection_mean_nc[bin]+(1.+ppr->selection_cut_at_sigma*ppr->selection_tophat_edge)*ptr->selection_width_nc[bin];
   }
@@ -4107,8 +4140,10 @@ int transfer_selection_times_nc(
     z = MAX(ptr->selection_mean_nc[bin]-ptr->selection_width_nc[bin]*ppr->selection_cut_at_sigma,0.);
   }
   if (ptr->selection_nc[itr]==tophat) {
-    if(ptr->has_photoz_nc[itr]==_TRUE_)
-      z = MAX(ptr->selection_mean_nc[bin]-ptr->selection_width_nc[bin]-3*ptr->selection_sz_nc[bin],0.);
+    if(ptr->has_photoz_nc[itr]==_TRUE_) {
+      z = MAX(ptr->selection_mean_nc[bin]-ptr->selection_width_nc[bin]-
+	      3*ptr->selection_sz_nc[bin]-2*ptr->selection_gz_nc[bin],0.);
+    }
     else
       z = MAX(ptr->selection_mean_nc[bin]-(1.+ppr->selection_cut_at_sigma*ppr->selection_tophat_edge)*ptr->selection_width_nc[bin],0.);
   }
@@ -4169,8 +4204,10 @@ int transfer_selection_times_wl(
     z = ptr->selection_mean_wl[bin]+ptr->selection_width_wl[bin]*ppr->selection_cut_at_sigma;
   }
   if (ptr->selection_wl[itr]==tophat) {
-    if(ptr->has_photoz_wl[itr]==_TRUE_)
-      z = ptr->selection_mean_wl[bin]+ptr->selection_width_wl[bin]+3*ptr->selection_sz_wl[bin];
+    if(ptr->has_photoz_wl[itr]==_TRUE_) {
+      z = ptr->selection_mean_wl[bin]+ptr->selection_width_wl[bin]+
+	3*ptr->selection_sz_wl[bin]+2*ptr->selection_gz_wl[bin];
+    }
     else 
       z = ptr->selection_mean_wl[bin]+(1.+ppr->selection_cut_at_sigma*ppr->selection_tophat_edge)*ptr->selection_width_wl[bin];
   }
@@ -4187,8 +4224,10 @@ int transfer_selection_times_wl(
     z = MAX(ptr->selection_mean_wl[bin]-ptr->selection_width_wl[bin]*ppr->selection_cut_at_sigma,0.);
   }
   if (ptr->selection_wl[itr]==tophat) {
-    if(ptr->has_photoz_wl[itr]==_TRUE_)
-      z = MAX(ptr->selection_mean_wl[bin]-ptr->selection_width_wl[bin]-3*ptr->selection_sz_wl[bin],0.);
+    if(ptr->has_photoz_wl[itr]==_TRUE_) {
+      z = MAX(ptr->selection_mean_wl[bin]-ptr->selection_width_wl[bin]-
+	      3*ptr->selection_sz_wl[bin]+2*ptr->selection_gz_wl[bin],0.);
+    }
     else
       z = MAX(ptr->selection_mean_wl[bin]-(1.+ppr->selection_cut_at_sigma*ppr->selection_tophat_edge)*ptr->selection_width_wl[bin],0.);
   }

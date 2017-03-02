@@ -73,7 +73,7 @@ def my_parser(string) :
         id1=0
         if ((prefix!="bias") and (prefix!="sbias") and (prefix!="ebias") and
             (prefix!="abias") and (prefix!="rfrac") and
-            (prefix!="sphz") and (prefix!="bphz")) :
+            (prefix!="sphz") and (prefix!="bphz") and (prefix!="lphz")) :
             tr_name="none"
             i_n=-1
         else :
@@ -625,6 +625,8 @@ def write_class_param_file(par,param_vary,sign_vary,prefix_out) :
         tr=par.tracers[i]
         if tr.name==tr_name and nuisance_name=="sphz" :
                 bins_fname =tr.nuisance_sphz.get_filename(inode,sign_vary)+"_bins.txt"
+        elif tr.name==tr_name and nuisance_name=="lphz" :
+                bins_fname =tr.nuisance_lphz.get_filename(inode,sign_vary)+"_bins.txt"
         elif tr.name==tr_name and nuisance_name=="bphz" :
                 bins_fname =tr.nuisance_bphz.get_filename(inode,sign_vary)+"_bins.txt"
         else :

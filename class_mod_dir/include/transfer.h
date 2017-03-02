@@ -104,6 +104,7 @@ struct transfers {
   double selection_mean_nc[_SELECTION_NUM_MAX_]; /**< centers of selection functions */
   double selection_width_nc[_SELECTION_NUM_MAX_];  /**< widths of selection functions */
   double selection_sz_nc[_SELECTION_NUM_MAX_];  /**< photo-z rms of selection functions */
+  double selection_gz_nc[_SELECTION_NUM_MAX_];  /**< photo-z lorentz tail of selection functions */
   short selection_tracer_nc[_SELECTION_NUM_MAX_];  //Sample type for the bins stored in this node
   short has_photoz_nc[_TRACER_NUM_MAX_];
   //@}
@@ -139,6 +140,7 @@ struct transfers {
   double selection_mean_wl[_SELECTION_NUM_MAX_]; /**< centers of selection functions */
   double selection_width_wl[_SELECTION_NUM_MAX_];  /**< widths of selection functions */
   double selection_sz_wl[_SELECTION_NUM_MAX_];  /**< photo-z rms of selection functions */
+  double selection_gz_wl[_SELECTION_NUM_MAX_];  /**< photo-z lorentz tail of selection functions */
   short selection_tracer_wl[_SELECTION_NUM_MAX_];  //Sample type for the bins stored in this node
   short has_photoz_wl[_TRACER_NUM_MAX_];
 

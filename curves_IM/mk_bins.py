@@ -26,6 +26,7 @@ def mk_binfiles(prefix_out,nu0,nuf,nnu,sigma_thr=None,lmax=2000) :
     zfarr=z0arr+dz
     zmarr=z0arr+0.5*dz
     szarr=np.zeros_like(z0arr)
+    lzarr=np.zeros_like(z0arr)
     larr=np.ones_like(z0arr)*lmax
 
     if sigma_thr!=None :
@@ -37,9 +38,9 @@ def mk_binfiles(prefix_out,nu0,nuf,nnu,sigma_thr=None,lmax=2000) :
             print z,ell
             larr[i]=ell
 
-    np.savetxt(prefix_out+".txt",np.transpose([z0arr,zfarr,szarr,larr]),
-               fmt="%.3lE %.3lE %.3lE 0 0 %d",
-               header='[1]-z0 [2]-zf [3]-sz [4]-marg_sz [5]-marg_bz [6]-lmax')
+    np.savetxt(prefix_out+".txt",np.transpose([z0arr,zfarr,szarr,lzarr,larr]),
+               fmt="%.3lE %.3lE %.3lE %.3lE 0 0 0 %d",
+               header='[1]-z0 [2]-zf [3]-sz [4]-lz [5]-marg_sz [6]-marg_bz [7]-marg_lz [8]-lmax')
 
 nbins=[50,100,200]
 for nb in nbins :

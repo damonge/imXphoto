@@ -569,7 +569,7 @@ class ParamRun:
                         if new_nuisance :
                             list_nuisance.append(nui_name)
                             self.params_all.append(fsh.ParamFisher(nu.f_arr[i],nu.df_arr[i],
-                                                                   nui_name,nui_name,True,False,0))
+                                                                   nui_name,nui_name,True,False,nu.onesided))
         for tr in self.tracers :
             if tr.consider_tracer :
                 add_nuisance(tr.nuisance_bias)
@@ -578,6 +578,7 @@ class ParamRun:
                 add_nuisance(tr.nuisance_abias)
                 add_nuisance(tr.nuisance_rfrac)
                 add_nuisance(tr.nuisance_sphz)
+                add_nuisance(tr.nuisance_lphz)
                 add_nuisance(tr.nuisance_bphz)
             
     def get_param_properties(self,parname) :

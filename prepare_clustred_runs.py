@@ -232,12 +232,15 @@ def get_bin_fnames(predir,expname,ibin,sthr) :
 
     return fname_bin_single,fname_im,fname_params,fname_fisher
 
-def prepare_bin(z0,zf,sz,lmx,predir,expname,ibin,lmax_im=2000,sthr=None,fac_sigma=3,fac_sample_sigma=2) :
+def prepare_bin(z0,zf,sz,lmx,predir,expname,ibin,lmax_im=2000,sthr=None,fac_sigma=3,fac_sample_sigma=2,marg_lz=False) :
     fname_bin_single,fname_im,fname_params,fname_fisher=get_bin_fnames(predir,expname,ibin,sthr)
-    data_line=np.array([z0,zf,sz,lmx])
+    i_marg_lz=0
+    if marg_lz :
+        i_marg_lz=1
+    data_line=np.array([z0,zf,sz,i_marg_lz,lmx])
     np.savetxt(fname_bin_single,data_line[None,:],
-               fmt="%lf %lf %lf 1 1 %d",
-               header="[1]-z0 [2]-zf [3]-sz [4]-marg_sz [5]-marg_bz [6]-lmax")
+               fmt="%lf %lf %lf 0.0 1 1 %d %d",
+               header="[1]-z0 [2]-zf [3]-sz [4]-lz [5]-marg_sz [6]-marg_bz [7]-marg_lz [8]-lmax")
 
     z0_im=np.amax([z0-fac_sigma*sz,0])
     zf_im=zf+fac_sigma*sz
@@ -249,15 +252,16 @@ def prepare_bin(z0,zf,sz,lmx,predir,expname,ibin,lmax_im=2000,sthr=None,fac_sigm
             lmax_arr[i]=np.amin([lmax_arr[i],get_lmax(zm_arr[i],sthr)])
 
     np.savetxt(fname_im,np.transpose([z0_arr,zf_arr,lmax_arr]),
-               fmt="%lf %lf 0.0 0 0 %d",
-               header="[1]-z0 [2]-zf [3]-sz [4]-marg_sz [5]-marg_bz [6]-lmax")
+               fmt="%lf %lf 0.0 0.0 0 0 0 %d",
+               header="[1]-z0 [2]-zf [3]-sz [4]-lz [5]-marg_sz [6]-marg_bz [7]-marg_lz [8]-lmax")
 
-def prepare_files(xp_photo,xp_im,bins_photo,sth_im,predir,fsky) :
+def prepare_files(xp_photo,xp_im,bins_photo,sth_im,predir,fsky,marg_lz=False) :
     os.system('mkdir -p '+predir)
-    z0_ph_arr,zf_ph_arr,sz_ph_arr,dum1,dum2,lmx_arr=np.loadtxt(bins_photo,unpack=True)
+    z0_ph_arr,zf_ph_arr,sz_ph_arr,dum1,dum2,dum3,dum4,lmx_arr=np.loadtxt(bins_photo,unpack=True)
     for i in np.arange(len(z0_ph_arr)) :
         fname_bins_photo,fname_bins_im,fname_params,fname_fisher=get_bin_fnames(predir,xp_im['name'],i,sth_im)
-        prepare_bin(z0_ph_arr[i],zf_ph_arr[i],sz_ph_arr[i],lmx_arr[i],predir,xp_im['name'],i,sthr=sth_im)
+        prepare_bin(z0_ph_arr[i],zf_ph_arr[i],sz_ph_arr[i],lmx_arr[i],predir,xp_im['name'],i,
+                    sthr=sth_im,marg_lz=marg_lz)
         zm=0.5*(z0_ph_arr[i]+zf_ph_arr[i])
         z,bz,ms=np.loadtxt(xp_photo['bzfi'],unpack=True); bzf=interp1d(z,bz);
         zarr=np.array([z[0],zm,z[-1]]); bzarr=bzf(zarr); mask=np.array([0,1,0])
@@ -275,7 +279,7 @@ def prepare_files(xp_photo,xp_im,bins_photo,sth_im,predir,fsky) :
             os.system("python main.py "+fname_params+".ini")
 
 def run_fsky(xp_photo,xp_im,bins_photo,sth_im,predir,fsky) :
-    z0_ph_arr,zf_ph_arr,sz_ph_arr,dum1,dum2,lmx_arr=np.loadtxt(bins_photo,unpack=True)
+    z0_ph_arr,zf_ph_arr,sz_ph_arr,dum1,dum2,dum3,dum4,lmx_arr=np.loadtxt(bins_photo,unpack=True)
     for i in np.arange(len(z0_ph_arr)) :
         fname_bins_photo,fname_bins_im,fname_params,fname_fisher=get_bin_fnames(predir,xp_im['name'],i,sth_im)
         parname=fname_params+"_fs%.3lf.ini"%fsky
@@ -294,18 +298,18 @@ exper_array=[xp.im_HIRAX_32_6,
 fsky_arr=[0.05,0.1,0.2,0.4]
 if run_cls :
     prepare_files(xp.phoz_LSSTgold,xp.im_HIRAX_32_6,"curves_LSST/bins_gold_lmax2000.txt",None,
-                  "runs/IMAP",xp.im_HIRAX_32_6['fsky'])
+                  "runs/IMAP",xp.im_HIRAX_32_6['fsky'],marg_lz=False)
 else :
 #    for exper in exper_array :
     for exper in [xp.im_HIRAX_32_6,xp.im_SKA,xp.im_MeerKAT] :
         prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_lmax2000.txt",None,
-                      "runs/IMAP",exper['fsky'])
+                      "runs/IMAP",exper['fsky'],marg_lz=False)
         prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p50.txt",0.50,
-                      "runs/IMAP",exper['fsky'])
+                      "runs/IMAP",exper['fsky'],marg_lz=False)
         prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p75.txt",0.75,
-                      "runs/IMAP",exper['fsky'])
+                      "runs/IMAP",exper['fsky'],marg_lz=False)
         prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr1p00.txt",1.00,
-                      "runs/IMAP",exper['fsky'])
+                      "runs/IMAP",exper['fsky'],marg_lz=False)
 #        for fs in fsky_arr :
 #            run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_lmax2000.txt",None,"runs/IMAP",fs)
 #            run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p50.txt",0.50,"runs/IMAP",fs)
@@ -317,18 +321,18 @@ else :
 #        tinst=10.**(-texp); name="gen_sT%.3lf"%texp
 #        xpr=mk_xp_generic(tinst,6.,180.,0.4,name)
 #        prepare_files(xp.phoz_LSSTgold,xpr,"curves_LSST/bins_gold_sthr1p00.txt",1.00,
-#                      "runs/IMAP",xpr['fsky'])
+#                      "runs/IMAP",xpr['fsky'],marg_lz=False)
 #
 #    #Study minimum baseline for interferometers
 #    for dmin in [0.,1.5,3.,6.,12.,24.,48.] :
 #        name="gen_dmn%.3lf"%dmin
 #        xpr=mk_xp_generic(1E-3,dmin,1000.,0.4,name)
 #        prepare_files(xp.phoz_LSSTgold,xpr,"curves_LSST/bins_gold_sthr1p00.txt",1.00,
-#                      "runs/IMAP",xpr['fsky'])
+#                      "runs/IMAP",xpr['fsky'],marg_lz=False)
 #
 #    #Study maximum baseline for single-dish
 #    for dmax in [7.5,15.,30.,60.,120.,240.] :
 #        name="gen_dmx%.3lf"%dmax
 #        xpr=mk_xp_generic(1E-3,0,dmax,0.4,name)
 #        prepare_files(xp.phoz_LSSTgold,xpr,"curves_LSST/bins_gold_sthr1p00.txt",1.00,
-#                      "runs/IMAP",xpr['fsky'])
+#                      "runs/IMAP",xpr['fsky'],marg_lz=False)
