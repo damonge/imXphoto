@@ -103,6 +103,10 @@ if whichfig=='fig2' or whichfig=='all':
     plt.plot(zarr_HIRAX,1E-3*(1+zarr_HIRAX),'k-',label='LSST req.')
     plt.legend(loc='lower right',frameon=False,labelspacing=0.1,ncol=2)
     plt.savefig("bak/compare_wbias.pdf",bbox_inches='tight')
+#    plt.figure()
+#    plt.plot(zarr_HIRAX,err_sthz_HIRAX_arr/err_bthz_HIRAX_arr,'-',color=col_HIRAX,lw=2)
+#    plt.plot(zarr_SKAFL,err_sthz_SKAFL_arr/err_bthz_SKAFL_arr,'-',color=col_SKA,lw=2)
+#    plt.plot(zarr_MKTFL,err_sthz_MKTFL_arr/err_bthz_MKTFL_arr,'-',color=col_MKT,lw=2)
 
 if whichfig=='fig3' or whichfig=='all':
     plt.figure()
