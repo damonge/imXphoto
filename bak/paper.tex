@@ -449,11 +449,31 @@
   \subsection{Baseline forecasts} \label{ssec:results.baseline}
     \begin{figure*}
       \centering
-      \includegraphics[width=0.49\textwidth]{compare_spec}
       \includegraphics[width=0.49\textwidth]{compare_wbias}
+      \includegraphics[width=0.49\textwidth]{compare_spec}
       \caption{\TODO{}}
       \label{fig:compare_spec}
     \end{figure*}
+    Using the formalism described above, and in the simplified scenario of Gaussian photo-$z$s,
+    we present, in the left panel of Figure \ref{fig:compare_spec}, the forecast constraints on the 
+    photo-$z$ bias ($\Delta z$) and variance ($\sigma_z$) for the key intensity mapping experiments
+    introduced in Section \ref{ssec:method.imap}. Two key features must be noted in this figure.
+    First, the uncertainties grow steeply at low redshifts. This is due to the reduced number of
+    modes available in that regime, associated with the smaller comoving volume and the impact of
+    non-linearities on lower values of $k$. Secondly, the ratio between $\sigma(\sigma_z)$ and
+    $\sigma(\Delta z)$ stays roughly constant ($\sim1.4$). This is compatible with the expected ratio
+    between the uncertainties associated to the maximum-likelihood estimates of the mean and standard
+    deviation of a Gaussian distribution from a finite number of samples
+    ($\sigma(\sigma)/\sigma(\mu)=\sqrt{2}$). This result holds for most of the cases explored here
+    (see Section \ref{ssec:results.foregrounds} for an exception), and thus we have omitted the
+    curves for $\sigma(\Delta z)$ in most of the subsequent figures.
+    
+    The right panel of Fig. \ref{fig:compare_spec} compares the constraints achievable by IM
+    experiments with those forecast for the spectroscopic surveys described in Section
+    \ref{ssec:method.spec}.
+    
+    
+    
     \begin{figure}
       \centering
       \includegraphics[width=0.49\textwidth]{compare_if_sd}
