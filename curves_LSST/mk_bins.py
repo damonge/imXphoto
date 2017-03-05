@@ -135,3 +135,23 @@ get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
          fname_out="bins_gold_sthr1p00.txt",sigma_thr=1.00)
 get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
          fname_out="bins_gold_lmax2000.txt",sigma_thr=None)
+
+
+get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
+         fname_out="bins_gold_sthr0p50_l3000.txt",sigma_thr=0.50,lmax=3000)
+get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
+         fname_out="bins_gold_sthr0p75_l3000.txt",sigma_thr=0.75,lmax=3000)
+get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
+         fname_out="bins_gold_sthr1p00_l3000.txt",sigma_thr=1.00,lmax=3000)
+get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
+         fname_out="bins_gold_lmax3000_l3000.txt",sigma_thr=None,lmax=3000)
+
+
+get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
+         fname_out="bins_gold_sthr0p50_l5000.txt",sigma_thr=0.50,lmax=5000)
+get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
+         fname_out="bins_gold_sthr0p75_l5000.txt",sigma_thr=0.75,lmax=5000)
+get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
+         fname_out="bins_gold_sthr1p00_l5000.txt",sigma_thr=1.00,lmax=5000)
+get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
+         fname_out="bins_gold_lmax5000_l5000.txt",sigma_thr=None,lmax=5000)

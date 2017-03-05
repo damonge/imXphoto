@@ -187,3 +187,44 @@ im_MeerKAT = {
     "base_max" : 1000.,
     "fsky" : 0.1
 }
+
+cmb_S3_opt = {
+    "name" : "S3_opt",
+    "sigma_t" : 8.5,
+    "beam_amin" : 1.4,
+    "lmin" : 2,
+    "fsky" : 0.4,
+}
+
+cmb_S4_opt = {
+    "name" : "S4_opt",
+    "sigma_t" : 1.0,
+    "beam_amin" : 1.4,
+    "lmin" : 2,
+    "fsky" : 0.4,
+
+}
+
+cmb_S3 = {
+    "name" : "S3",
+    "sigma_t" : 8.5,
+    "beam_amin" : 1.4,
+    "lmin" : 30,
+    "fsky" : 0.4,
+}
+
+cmb_S4 = {
+    "name" : "S4",
+    "sigma_t" : 1.0,
+    "beam_amin" : 1.4,
+    "lmin" : 30,
+    "fsky" : 0.4,
+}
+
+cmb_none = {
+    "name" : "none",
+    "sigma_t" : 1.0,
+    "beam_amin" : 1.4,
+    "lmin" : 30,
+    "fsky" : 0.4,
+}

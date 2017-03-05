@@ -684,7 +684,7 @@ def write_class_param_file(par,param_vary,sign_vary,prefix_out) :
         spectra_list+=", sCl"
     if (par.has_cmb_lensing==True) or (par.has_cmb_t==True) or (par.has_cmb_p==True) :
         spectra_list+=", lCl"
-    if (par.has_cmb_t==True) or (par.has_cmb_p==True) :
+    if (par.has_cmb_t==True) or (par.has_cmb_p==True) or (par.has_cmb_lensing==True) :
         spectra_list+=", tCl, pCl"
 
     strout="#CLASS param file by GoFish\n"
@@ -811,7 +811,7 @@ def write_class_param_file(par,param_vary,sign_vary,prefix_out) :
     strout+="l_switch_limber= 10.\n"   #%(par.lmin_limber)
     strout+="l_switch_limber_for_cl_density= %.1lf\n"%(par.lmin_limber)
     strout+="l_switch_limber_for_cl_lensing= %.1lf\n"%(par.lmin_limber)
-    strout+="selection_sampling_bessel=6.\n"
+    strout+="selection_sampling_bessel=10.\n"
     strout+="k_step_trans_scalars=0.4\n"
     strout+="q_linstep=0.4\n"
     strout+="k_scalar_max_tau0_over_l_max= 2.\n"
