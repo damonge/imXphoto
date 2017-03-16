@@ -7,10 +7,10 @@ import os
 
 nuHI=1420.405
 run_cls=False
-include_fg=True
-a_fg=10.0
-xi_fg=0.1
-marg_A=True
+include_fg=False
+a_fg=0.1
+xi_fg=0.01
+marg_A=False
 
 pcs=csm.PcsPar()
 pcs.background_set(0.3,0.7,0.05,-1,0,0.7,2.7255)
@@ -165,7 +165,7 @@ def write_param_file(xp_photo,xp_im,bins_photo,bz_photo,bins_im,bz_im,output_dir
     stout+="baseline_max= %.3lf\n"%xp_im['base_max']
     if include_fg :
         stout+="include_foregrounds= yes\n"
-        stout+="fit_foregrounds= yes\n"
+        stout+="fit_foregrounds= no\n"
     else :
         stout+="include_foregrounds= no\n"
         stout+="fit_foregrounds= no\n"
@@ -291,26 +291,27 @@ exper_array=[xp.im_HIRAX_32_6,
              xp.im_MeerKAT_SD,xp.im_MeerKAT_IF,xp.im_MeerKAT]
 #exper_array=[xp.im_SKA_SD,xp.im_SKA_IF,xp.im_SKA,xp.im_MeerKAT_SD,xp.im_MeerKAT_IF,xp.im_MeerKAT_IF]
 #exper_array=[xp.im_HIRAX_32_6]
-fsky_arr=[0.05,0.1,0.2,0.4]
+#fsky_arr=[0.05,0.1,0.2,0.4]
+fsky_arr=[0.01,0.02]
 if run_cls :
     prepare_files(xp.phoz_LSSTgold,xp.im_HIRAX_32_6,"curves_LSST/bins_gold_lmax2000.txt",None,
                   "runs/IMAP",xp.im_HIRAX_32_6['fsky'])
 else :
 #    for exper in exper_array :
     for exper in [xp.im_HIRAX_32_6,xp.im_SKA,xp.im_MeerKAT] :
-        prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_lmax2000.txt",None,
-                      "runs/IMAP",exper['fsky'])
-        prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p50.txt",0.50,
-                      "runs/IMAP",exper['fsky'])
-        prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p75.txt",0.75,
-                      "runs/IMAP",exper['fsky'])
-        prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr1p00.txt",1.00,
-                      "runs/IMAP",exper['fsky'])
-#        for fs in fsky_arr :
-#            run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_lmax2000.txt",None,"runs/IMAP",fs)
+#        prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_lmax2000.txt",None,
+#                      "runs/IMAP",exper['fsky'])
+#        prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p50.txt",0.50,
+#                      "runs/IMAP",exper['fsky'])
+#        prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p75.txt",0.75,
+#                      "runs/IMAP",exper['fsky'])
+#        prepare_files(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr1p00.txt",1.00,
+#                      "runs/IMAP",exper['fsky'])
+        for fs in fsky_arr :
+            run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_lmax2000.txt",None,"runs/IMAP",fs)
 #            run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p50.txt",0.50,"runs/IMAP",fs)
 #            run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr0p75.txt",0.75,"runs/IMAP",fs)
-#            run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr1p00.txt",1.00,"runs/IMAP",fs)
+            run_fsky(xp.phoz_LSSTgold,exper,"curves_LSST/bins_gold_sthr1p00.txt",1.00,"runs/IMAP",fs)
 #
 #    #Study noise level
 #    for texp in [1.0,1.5,2.0,2.5,3.0,3.5] :
