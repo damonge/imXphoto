@@ -32,8 +32,10 @@
 
 \begin{document}
 \title{Calibrating photometric redshifts with intensity mapping observations}
-\author{All of us$^1$}
-\affiliation{$^{1}$University of Wherever}
+\author{David Alonso$^1$, Pedro G. Ferreira$^1$, Matt J. Jarvis$^{1,2}$, Kavilan Moodley$^3$}
+\affiliation{$^{1}$Oxford Astrophysics, Department of Physics, Keble Road, Oxford, OX1 3RH, UK\\
+             $^{2}$Department of Physics, University of the Western Cape, Bellville 7535, South Africa\\
+             $^{3}$Astrophysics and Cosmology Research Unit, School of Mathematics.\\ Statistics and Computer Science, University of KwaZulu-Natal, Durban, 4041, South Africa}
 
 \begin{abstract}
   \TODO{\lipsum[1]}
@@ -434,6 +436,13 @@
     $\ell_{\rm max}={\rm min}(\chi k_{\rm max},2000)$).
 
 \section{Results} \label{sec:results}
+    \begin{figure*}
+      \centering
+      \includegraphics[width=0.49\textwidth]{compare_wbias}
+      \includegraphics[width=0.49\textwidth]{compare_spec}
+      \caption{\TODO{}}
+      \label{fig:compare_spec}
+    \end{figure*}
   In order to forecast for the ability of future experiments to constrain photometric
   redshift distributions, in the following sections we will use the formalism 
   described in Section \ref{ssec:method.fisher} with a data vector given by
@@ -474,19 +483,6 @@
   sections.
 
   \subsection{Baseline forecasts} \label{ssec:results.baseline}
-    \begin{figure*}
-      \centering
-      \includegraphics[width=0.49\textwidth]{compare_wbias}
-      \includegraphics[width=0.49\textwidth]{compare_spec}
-      \caption{\TODO{}}
-      \label{fig:compare_spec}
-    \end{figure*}
-    \begin{figure}
-      \centering
-      \includegraphics[width=0.49\textwidth]{compare_if_sd}
-      \caption{\TODO{}}
-      \label{fig:compare_if_sd}
-    \end{figure}
     Using the formalism described above, and in the simplified scenario of Gaussian photo-$z$s,
     we present, in the left panel of Figure \ref{fig:compare_spec}, the forecast constraints on the 
     photo-$z$ bias ($\Delta z$) and variance ($\sigma_z$) for the key intensity mapping experiments
@@ -500,6 +496,18 @@
     The latter effect is especially severe for HIRAX, given its inability to measure angular modes
     smaller than its beam size. Note, however, that this regime lies outside the proposed frequency
     ranges for both HIRAX ($0.8\lesssim z\lesssim2.5$) and SKA ($0.35\lesssim z\lesssim3$).
+    \begin{figure}
+      \centering
+      \includegraphics[width=0.49\textwidth]{compare_if_sd}
+      \caption{\TODO{}}
+      \label{fig:compare_if_sd}
+    \end{figure}
+    \begin{figure}
+      \centering
+      \includegraphics[width=0.49\textwidth]{compare_nlin}
+      \caption{\TODO{}}
+      \label{fig:compare_nlin}
+    \end{figure}
     
     Secondly, the ratio between $\sigma(\sigma_z)$ and $\sigma(\Delta z)$ stays roughly constant
     ($\sim1.4$). This is compatible with the expected ratio between the uncertainties associated
@@ -548,50 +556,56 @@
     $k_{\rm max}=0.1\,{\rm Mpc}^{-1}\,h$ at $z=0$) the LSST calibration requirements are satisfied
     in the redshift range corresponding to the HIRAX frequency band.
 
-    \begin{figure}
-      \centering
-      \includegraphics[width=0.49\textwidth]{compare_nlin}
-      \caption{\TODO{}}
-      \label{fig:compare_nlin}
-    \end{figure}
-    \begin{itemize}
-     \item Comparison against spectroscopic surveys: left panel of Fig. \ref{fig:compare_spec}
-     \item Constraints on $\sigma_z$ and $\Delta z$: right panel of Fig. \ref{fig:compare_spec}
-     \item Interferometer vs single dish for SKA and MeerKAT: Fig. \ref{fig:compare_if_sd}
-     \item Effect of non-linearities: Fig. \ref{fig:compare_nlin}
-    \end{itemize}
-
-    \TODO{
-      \begin{itemize}
-        \item Describe results for SKA and HIRAX in comparison with DESI, Euclid, WFIRST.
-        \item Show forecasts on parameters before and after calibration.
-      \end{itemize}
-    }
-
   \subsection{Dependence on experimental parameters} \label{ssec:results.params}
+    \begin{figure*}
+      \centering
+      \includegraphics[width=0.49\textwidth]{compare_dmax}
+      \includegraphics[width=0.49\textwidth]{compare_dmin}
+      \caption{\TODO{}}
+      \label{fig:compare_baselines}
+    \end{figure*}
     \TODO{
       \begin{itemize}
-        \item Show results as a function of $f_{\rm sky}$, and noise level.
-        \item Show results as a function of dish size for single-dish experiments
-        \item Show results as a function of minimum baseline for interferometers
+        \item Make figure showing dependence on $f_{\rm sky}$ (for fixed integration time).
+        \item Results as a function of dish size for single-dish experiments: left panel of Fig. \ref{fig:compare_baselines}.
+        \item Results as a function of minimum baseline interferometers: right panel of Fig. \ref{fig:compare_baselines}.
       \end{itemize}
     }
 
   \subsection{Foregrounds} \label{ssec:results.foregrounds}
+    \begin{figure}
+      \centering
+      \includegraphics[width=0.49\textwidth]{compare_FG}
+      \caption{\TODO{}}
+      \label{fig:fg_xi}
+    \end{figure}
     \TODO{
       \begin{itemize}
-        \item Show results in the presence of foreground residuals.
-        \item As a function of residual amplitude?
-        \item Discuss correlated extragalactic foregrounds?
+        \item Results in the presence of foreground residuals as a function of residual correlation length: \ref{fig:fg_xi}.
+        \item Similar plot as a function of residual amplitude?
+        \item Discuss correlated extragalactic foregrounds.
+      \end{itemize}
+    }
+
+  \subsection{CMB lensing} \label{ssec:results.cmblens}
+    \begin{figure}
+      \centering
+      \includegraphics[width=0.49\textwidth]{compare_CMBlens}
+      \caption{\TODO{}}
+      \label{fig:compare_cmblens}
+    \end{figure}
+    \TODO{
+      \begin{itemize}
+        \item Show how CMB lensing doesn't cut it even in a super-simplified scenario (see Fig. \ref{fig:compare_cmblens}
       \end{itemize}
     }
 
   \subsection{Generalized redshift distributions} \label{ssec:results.outliers}
     \TODO{
       \begin{itemize}
-        \item Include hard-tail parameters (e.g. Cauchy contribution - Voigt profile).
         \item Non-parametric calibration. Show results for bins of $dN/dz$ of fixed
           width as a function of experiment and redshift.
+        \item Include hard-tail parameters (e.g. Cauchy contribution - Voigt profile)?
       \end{itemize}
     }
     
@@ -671,6 +685,11 @@
       Power spectrum models used here
     }
   
+
+\end{widetext}
+
+\end{document}
+
   \section{Voigt profile}\label{app:voigt}
     A Voigt profile is given by a convolution of a Gaussian and a Cauchy or Lorentzian
     distribution, and is thus parametrized by the half-width at half-maximum of
@@ -699,7 +718,3 @@
       &\frac{1-\eta}{2}\left[{\rm erf}\left(\frac{(z_b^f-z)\sqrt{{\rm ln}2}}{\bar{\gamma}}\right)-{\rm erf}\left(\frac{(z_b^i-z)\sqrt{{\rm ln}2}}{\bar{\gamma}}\right)\right]
     \end{align}
 
-
-\end{widetext}
-
-\end{document}
