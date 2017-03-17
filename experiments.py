@@ -1,6 +1,7 @@
 
 
 phoz_LSSTgold = {
+    "type" : "gal_clustering",
     "name" : "LSST_gold",
     "nzfi" : "curves_LSST/nz_shear_fiducial.txt",
     "bzfi" : "curves_LSST/bz_gold.txt",
@@ -10,6 +11,7 @@ phoz_LSSTgold = {
     }
 
 spec_DESI = {
+    "type" : "gal_clustering",
     "name" : "DESI",
     "nzfi" : "curves_spec/nz_DESI.txt",
     "bzfi" : "curves_spec/bz_DESI.txt",
@@ -19,6 +21,7 @@ spec_DESI = {
     }
 
 spec_Euclid = {
+    "type" : "gal_clustering",
     "name" : "Euclid",
     "nzfi" : "curves_spec/nz_Euclid.txt",
     "bzfi" : "curves_spec/bz_Euclid.txt",
@@ -28,6 +31,7 @@ spec_Euclid = {
     }
 
 spec_WFIRST = {
+    "type" : "gal_clustering",
     "name" : "WFIRST",
     "nzfi" : "curves_spec/nz_WFIRST.txt",
     "bzfi" : "curves_spec/bz_WFIRST.txt",
@@ -37,6 +41,7 @@ spec_WFIRST = {
     }
 
 im_HIRAX_32_6 = {
+    "type" : "intensity_mapping",
     "name" : "HIRAX_32_6",
     "nzfi" : "curves_IM/nz_HI.txt",
     "bzfi" : "curves_IM/bz_HI.txt",
@@ -56,6 +61,7 @@ im_HIRAX_32_6 = {
 }
 
 im_HIRAX_32_7 = {
+    "type" : "intensity_mapping",
     "name" : "HIRAX_32_7",
     "nzfi" : "curves_IM/nz_HI.txt",
     "bzfi" : "curves_IM/bz_HI.txt",
@@ -75,6 +81,7 @@ im_HIRAX_32_7 = {
 }
 
 im_SKA_SD = {
+    "type" : "intensity_mapping",
     "name" : "SKA_SD",
     "nzfi" : "curves_IM/nz_HI.txt",
     "bzfi" : "curves_IM/bz_HI.txt",
@@ -94,6 +101,7 @@ im_SKA_SD = {
 }
 
 im_SKA_IF = {
+    "type" : "intensity_mapping",
     "name" : "SKA_IF",
     "nzfi" : "curves_IM/nz_HI.txt",
     "bzfi" : "curves_IM/bz_HI.txt",
@@ -113,6 +121,7 @@ im_SKA_IF = {
 }
 
 im_SKA = {
+    "type" : "intensity_mapping",
     "name" : "SKA",
     "nzfi" : "curves_IM/nz_HI.txt",
     "bzfi" : "curves_IM/bz_HI.txt",
@@ -132,6 +141,7 @@ im_SKA = {
 }
 
 im_MeerKAT_SD = {
+    "type" : "intensity_mapping",
     "name" : "MeerKAT_SD",
     "nzfi" : "curves_IM/nz_HI.txt",
     "bzfi" : "curves_IM/bz_HI.txt",
@@ -151,6 +161,7 @@ im_MeerKAT_SD = {
 }
 
 im_MeerKAT_IF = {
+    "type" : "intensity_mapping",
     "name" : "MeerKAT_IF",
     "nzfi" : "curves_IM/nz_HI.txt",
     "bzfi" : "curves_IM/bz_HI.txt",
@@ -170,6 +181,7 @@ im_MeerKAT_IF = {
 }
 
 im_MeerKAT = {
+    "type" : "intensity_mapping",
     "name" : "MeerKAT",
     "nzfi" : "curves_IM/nz_HI.txt",
     "bzfi" : "curves_IM/bz_HI.txt",
@@ -189,6 +201,7 @@ im_MeerKAT = {
 }
 
 cmb_S3_opt = {
+    "type" : "cmb_lensing",
     "name" : "S3_opt",
     "sigma_t" : 8.5,
     "beam_amin" : 1.4,
@@ -197,6 +210,7 @@ cmb_S3_opt = {
 }
 
 cmb_S4_opt = {
+    "type" : "cmb_lensing",
     "name" : "S4_opt",
     "sigma_t" : 1.0,
     "beam_amin" : 1.4,
@@ -206,6 +220,7 @@ cmb_S4_opt = {
 }
 
 cmb_S3 = {
+    "type" : "cmb_lensing",
     "name" : "S3",
     "sigma_t" : 8.5,
     "beam_amin" : 1.4,
@@ -214,6 +229,7 @@ cmb_S3 = {
 }
 
 cmb_S4 = {
+    "type" : "cmb_lensing",
     "name" : "S4",
     "sigma_t" : 1.0,
     "beam_amin" : 1.4,
@@ -222,6 +238,7 @@ cmb_S4 = {
 }
 
 cmb_none = {
+    "type" : "cmb_lensing",
     "name" : "none",
     "sigma_t" : 1.0,
     "beam_amin" : 1.4,

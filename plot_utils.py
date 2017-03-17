@@ -7,6 +7,7 @@ import py_cosmo_mad as csm
 import experiments as xpr
 from scipy.interpolate import interp1d
 from scipy.integrate import quad
+from mpl_toolkits.axes_grid1.inset_locator import mark_inset,zoomed_inset_axes
 
 NU_21=1420.405751786
 CLIGHT=299.792458
@@ -464,6 +465,109 @@ if whichfig=='fig12' or whichfig=='all':
     plt.legend(frameon=False,labelspacing=0.1,ncol=2,bbox_to_anchor=[0.65,1.0])
     plt.savefig("bak/compare_fsky.pdf",bbox_inches='tight')
 
+def plot_nz_err(fname,col,label,ax=None,plot_smooth=False) :
+    data=np.load(fname)
+    zm=data['z']
+    phi=data['phi']
+    ephi=data['err_phi']
+
+    dz=zm[-1]-zm[0]
+    if plot_smooth :
+        zarr=zm[0]-dz/2+2*dz*np.arange(256)/255.
+        phif=interp1d(zm,phi,kind='cubic',bounds_error=False,fill_value=0)
+        phiarr=phif(zarr)
+        ax.plot(zarr,phiarr,'k-',lw=1)
+    ax.errorbar(zm,phi,yerr=ephi,fmt='o',ecolor=col,color=col,label=label,ms=0.1,elinewidth=2)
+    return zm[0]-dz/10,zm[-1]+dz/5
+
+if whichfig=='fig13' or whichfig=='all':
+
+    ibin=4
+    plt.figure()
+    ax=plt.gca()
+    zr=plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_MeerKAT.npz",col_MKT,'MeerKAT',ax=ax,
+                   plot_smooth=True)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_SKA.npz",col_SKA,'SKA',ax=ax)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,'HIRAX',ax=ax)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_DESI.npz",'#00FF00','DESI',ax=ax)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_SKA.npz",col_SKA,None,ax=ax)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,None,ax=ax)
+    plt.legend(loc='upper left',frameon=False,numpoints=1)#,labelspacing=0.1)
+    axins=zoomed_inset_axes(ax,2.5,loc=1)
+    zr=plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_MeerKAT.npz",col_MKT,'MeerKAT',ax=axins,
+                   plot_smooth=True)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_SKA.npz",col_SKA,'SKA',ax=axins)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,'HIRAX',ax=axins)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_DESI.npz",'#00FF00','DESI',ax=axins)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_SKA.npz",col_SKA,None,ax=axins)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,None,ax=axins)
+    axins.get_xaxis().set_visible(False)
+    axins.get_yaxis().set_visible(False)
+    axins.set_xlim(0.48,0.52)
+    axins.set_ylim(0.12,0.17)
+    mark_inset(ax, axins, loc1=2, loc2=4, fc="none", ec="0.5")
+    ax.set_xlim(zr)
+    ax.set_ylim([-0.02,0.2])
+    ax.get_yaxis().set_ticks([])
+    ax.set_xlabel('$z$',fontsize=18)
+    ax.set_ylabel('$\\phi(z)$',fontsize=18)
+    plt.savefig("bak/compare_nonpar_bin%d.pdf"%ibin,bbox_inches='tight')
+
+    ibin=8
+    plt.figure()
+    ax=plt.gca()
+    zr=plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_MeerKAT.npz",col_MKT,'MeerKAT',ax=ax,
+                   plot_smooth=True)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_SKA.npz",col_SKA,'SKA',ax=ax)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,'HIRAX',ax=ax)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_DESI.npz",'#00FF00','DESI',ax=ax)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,None,ax=ax)
+    plt.legend(loc='upper left',frameon=False,numpoints=1)#,labelspacing=0.1)
+    axins=zoomed_inset_axes(ax,2.5,loc=1)
+    zr=plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_MeerKAT.npz",col_MKT,'MeerKAT',ax=axins,
+                   plot_smooth=True)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_SKA.npz",col_SKA,'SKA',ax=axins)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,'HIRAX',ax=axins)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_DESI.npz",'#00FF00','DESI',ax=axins)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,None,ax=axins)
+    axins.get_xaxis().set_visible(False)
+    axins.get_yaxis().set_visible(False)
+    axins.set_xlim(1.09,1.18)
+    axins.set_ylim(0.12,0.17)
+    mark_inset(ax, axins, loc1=2, loc2=4, fc="none", ec="0.5")
+    ax.set_xlim(zr)
+    ax.set_ylim([-0.02,0.2])
+    ax.get_yaxis().set_ticks([])
+    ax.set_xlabel('$z$',fontsize=18)
+    ax.set_ylabel('$\\phi(z)$',fontsize=18)
+    plt.savefig("bak/compare_nonpar_bin%d.pdf"%ibin,bbox_inches='tight')
+
+    ibin=11
+    plt.figure()
+    ax=plt.gca()
+    zr=plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_SKA.npz",col_SKA,'SKA',ax=ax,
+                   plot_smooth=True)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,'HIRAX',ax=ax)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_WFIRST.npz",'#00FF00','WFIRST',ax=ax)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,None,ax=ax)
+    plt.legend(loc='upper left',frameon=False,numpoints=1)#,labelspacing=0.1)
+    axins=zoomed_inset_axes(ax,2.5,loc=1)
+    zr=plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_SKA.npz",col_SKA,'SKA',ax=axins,
+                   plot_smooth=True)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,'HIRAX',ax=axins)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_WFIRST.npz",'#00FF00','WFIRST',ax=axins)
+    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,None,ax=axins)
+    axins.get_xaxis().set_visible(False)
+    axins.get_yaxis().set_visible(False)
+    axins.set_xlim(1.75,1.85)
+    axins.set_ylim(0.13,0.155)
+    mark_inset(ax, axins, loc1=2, loc2=4, fc="none", ec="0.5")
+    ax.set_xlim(zr)
+    ax.set_ylim([-0.02,0.17])
+    ax.get_yaxis().set_ticks([])
+    ax.set_xlabel('$z$',fontsize=18)
+    ax.set_ylabel('$\\phi(z)$',fontsize=18)
+    plt.savefig("bak/compare_nonpar_bin%d.pdf"%ibin,bbox_inches='tight')
 
 plt.show()
 exit(1)
