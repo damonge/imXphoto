@@ -87,7 +87,7 @@ def compute_errors(dirname,fishname,col,z_min,z_max,label,plot_bphz=True,plot_sp
 
 if whichfig=='fig1' or whichfig=='all':
     plt.figure()
-    zarr_HIRAX ,err_sthz_HIRAX_arr ,err_bthz_HIRAX_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_HIRAX_32_6_sthr1.000",col_HIRAX,0.00,3.00,"HIRAX-6m",plot_bphz=False)
+    zarr_HIRAX ,err_sthz_HIRAX_arr ,err_bthz_HIRAX_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_HIRAX_32_6_sthr1.000",col_HIRAX,0.00,3.00,"HIRAX",plot_bphz=False)
     zarr_SKAFL ,err_sthz_SKAFL_arr ,err_bthz_SKAFL_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_SKA_sthr1.000"       ,col_SKA,0.00,3.00,"SKA",plot_bphz=False)
     zarr_MKTFL ,err_sthz_MKTFL_arr ,err_bthz_MKTFL_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_MeerKAT_sthr1.000"   ,col_MKT,0.00,3.00,"MeerKAT",plot_bphz=False)
     zarr_DESI  ,err_sthz_DESI_arr  ,err_bthz_DESI_arr  =compute_errors("runs/DESI"  ,"Fisher_wA_sthr1.000"                ,'#000000',0.00,1.85,label="DESI",plot_bphz=False,lt='-')
@@ -96,50 +96,50 @@ if whichfig=='fig1' or whichfig=='all':
     plt.xlim([0,2.7])
     plt.ylim([5E-5,1E-2])
     plt.yscale('log')
-    plt.xlabel('$z$',fontsize=16)
-    plt.ylabel('$\\sigma(\\sigma_z)$',fontsize=16)
+    plt.xlabel('$z$',fontsize=18)
+    plt.ylabel('$\\sigma(\\sigma_z)$',fontsize=18)
     plt.plot(zreq,1E-3*(1+zreq),'k-',label='LSST req.')
     plt.plot(zreq,2E-3*(1+zreq),'k--',label='DES req.')
-#plt.plot([-1,-1],[-1,-2],'k-',lw=2,label="$\\sigma_z$")
-#plt.plot([-1,-1],[-1,-2],'k--',lw=2,label="$\\Delta z$")
-    plt.legend(loc='lower left',frameon=False,labelspacing=0.1,ncol=3)
+    plt.gca().tick_params(axis='x', labelsize=14)
+    plt.gca().tick_params(axis='y', labelsize=14)
+    plt.legend(loc='lower left',frameon=False,labelspacing=0.1,ncol=3,fontsize=16)
     plt.savefig("bak/compare_spec.pdf",bbox_inches='tight')
 
 if whichfig=='fig2' or whichfig=='all':
     plt.figure()
-    zarr_HIRAX ,err_sthz_HIRAX_arr ,err_bthz_HIRAX_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_HIRAX_32_6_sthr1.000",col_HIRAX,0.00,3.00,"HIRAX-6m")
+    zarr_HIRAX ,err_sthz_HIRAX_arr ,err_bthz_HIRAX_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_HIRAX_32_6_sthr1.000",col_HIRAX,0.00,3.00,"HIRAX")
     zarr_SKAFL ,err_sthz_SKAFL_arr ,err_bthz_SKAFL_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_SKA_sthr1.000"       ,col_SKA,0.00,3.00,"SKA")
     zarr_MKTFL ,err_sthz_MKTFL_arr ,err_bthz_MKTFL_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_MeerKAT_sthr1.000"   ,col_MKT,0.00,3.00,"MeerKAT")
     plt.plot([-1,-1],[-1,-2],'k-',lw=2,label="$\\sigma_z$")
     plt.plot([-1,-1],[-1,-2],'k--',lw=2,label="$\\Delta z$")
     plt.xlim([0,2.7])
     plt.ylim([5E-5,1E-2])
+    plt.gca().tick_params(axis='x', labelsize=14)
+    plt.gca().tick_params(axis='y', labelsize=14)
     plt.yscale('log')
-    plt.xlabel('$z$',fontsize=16)
-    plt.ylabel('$\\sigma(\\sigma_z,\\Delta z)$',fontsize=16)
+    plt.xlabel('$z$',fontsize=18)
+    plt.ylabel('$\\sigma(\\sigma_z,\\Delta z)$',fontsize=18)
     plt.plot(zreq,1E-3*(1+zreq),'k-',label='LSST req.')
-    plt.legend(loc='lower right',frameon=False,labelspacing=0.1,ncol=2)
+    plt.legend(loc='lower right',frameon=False,labelspacing=0.1,ncol=2,fontsize=16)
     plt.savefig("bak/compare_wbias.pdf",bbox_inches='tight')
-#    plt.figure()
-#    plt.plot(zarr_HIRAX,err_sthz_HIRAX_arr/err_bthz_HIRAX_arr,'-',color=col_HIRAX,lw=2)
-#    plt.plot(zarr_SKAFL,err_sthz_SKAFL_arr/err_bthz_SKAFL_arr,'-',color=col_SKA,lw=2)
-#    plt.plot(zarr_MKTFL,err_sthz_MKTFL_arr/err_bthz_MKTFL_arr,'-',color=col_MKT,lw=2)
 
 if whichfig=='fig3' or whichfig=='all':
     plt.figure()
-    zarr_SKAFL ,err_sthz_SKAFL_arr ,err_bthz_SKAFL_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_SKA_sthr1.000"       ,col_SKA,0.00,3.00,"SKA full",plot_bphz=False)
-    zarr_SKAFL ,err_sthz_SKASD_arr ,err_bthz_SKAFL_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_SKA_SD_sthr1.000"    ,col_SKA,0.00,3.00,"SKA single dish",lt='--',plot_bphz=False)
-    zarr_SKAFL ,err_sthz_SKAIF_arr ,err_bthz_SKAFL_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_SKA_IF_sthr1.000"    ,col_SKA,0.00,3.00,"SKA interferometer",lt='-.',plot_bphz=False)
-    zarr_MKTFL ,err_sthz_MKTFL_arr ,err_bthz_MKTFL_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_MeerKAT_sthr1.000"   ,col_MKT,0.00,3.00,"MeerKAT full",plot_bphz=False)
-    zarr_MKTFL ,err_sthz_MKTFL_arr ,err_bthz_MKTFL_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_MeerKAT_SD_sthr1.000",col_MKT,0.00,3.00,"MeerKAT single dish",lt='--',plot_bphz=False)
-    zarr_MKTFL ,err_sthz_MKTFL_arr ,err_bthz_MKTFL_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_MeerKAT_IF_sthr1.000",col_MKT,0.00,3.00,"MeerKAT interferometer",lt='-.',plot_bphz=False)
+    compute_errors("runs/IMAP","Fisher_wA_woFG_SKA_sthr1.000"       ,col_SKA,0.00,3.00,"SKA full",plot_bphz=False)
+    compute_errors("runs/IMAP","Fisher_wA_woFG_SKA_SD_sthr1.000"    ,col_SKA,0.00,3.00,"SKA sing. dish",lt='--',plot_bphz=False)
+    compute_errors("runs/IMAP","Fisher_wA_woFG_SKA_IF_sthr1.000"    ,col_SKA,0.00,3.00,"SKA interf.",lt='-.',plot_bphz=False)
+    compute_errors("runs/IMAP","Fisher_wA_woFG_MeerKAT_sthr1.000"   ,col_MKT,0.00,3.00,"MeerKAT full",plot_bphz=False)
+    compute_errors("runs/IMAP","Fisher_wA_woFG_MeerKAT_SD_sthr1.000",col_MKT,0.00,3.00,"MeerKAT sing. dish",lt='--',plot_bphz=False)
+    compute_errors("runs/IMAP","Fisher_wA_woFG_MeerKAT_IF_sthr1.000",col_MKT,0.00,3.00,"MeerKAT interf.",lt='-.',plot_bphz=False)
     plt.xlim([0,2.7])
     plt.ylim([5E-5,1E-2])
+    plt.gca().tick_params(axis='x', labelsize=14)
+    plt.gca().tick_params(axis='y', labelsize=14)
     plt.yscale('log')
-    plt.xlabel('$z$',fontsize=16)
-    plt.ylabel('$\\sigma(\\sigma_z)$',fontsize=16)
-    plt.plot(zreq,1E-3*(1+zreq),'k-')#,label='LSST req.')
-    plt.legend(loc='lower left',frameon=False,labelspacing=0.1,ncol=2)
+    plt.xlabel('$z$',fontsize=18)
+    plt.ylabel('$\\sigma(\\sigma_z)$',fontsize=18)
+    plt.plot(zreq,1E-3*(1+zreq),'k-')
+    plt.legend(loc='lower left',frameon=False,labelspacing=0.1,ncol=2,fontsize=16)
     plt.savefig("bak/compare_if_sd.pdf",bbox_inches='tight')
 
 if whichfig=='fig4' or whichfig=='all':
@@ -147,39 +147,28 @@ if whichfig=='fig4' or whichfig=='all':
     plt.plot([-1,-1],[-1,-2],'k:' ,lw=2,label="$\\sigma_{\\rm thr}=0.5$")
     plt.plot([-1,-1],[-1,-2],'k-.',lw=2,label="$\\sigma_{\\rm thr}=0.75$")
     plt.plot([-1,-1],[-1,-2],'k-' ,lw=2,label="$\\sigma_{\\rm thr}=1$")
-#    plt.plot([-1,-1],[-1,-2],'k--',lw=2,label="$\\ell\\leq 2000$")
-#    zarr_HIRAX ,err_sthz_HIRAX_arr ,err_bthz_HIRAX_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_HIRAX_32_6_sthr0.500",col_HIRAX,0.00,3.00,None      ,lt=':',plot_bphz=False)
-#    zarr_HIRAX ,err_sthz_HIRAX_arr ,err_bthz_HIRAX_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_HIRAX_32_6_sthr0.750",col_HIRAX,0.00,3.00,None      ,lt='-.',plot_bphz=False)
-#    zarr_HIRAX ,err_sthz_HIRAX_arr ,err_bthz_HIRAX_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_HIRAX_32_6_sthr1.000",col_HIRAX,0.00,3.00,"HIRAX-6m",lt='-',plot_bphz=False)
-#    zarr_HIRAX ,err_sthz_HIRAX_arr ,err_bthz_HIRAX_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_HIRAX_32_6_lmax2000" ,col_HIRAX,0.00,3.00,None      ,lt='--',plot_bphz=False)
-#    zarr_SKA ,err_sthz_SKA_arr ,err_bthz_SKA_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_SKA_sthr0.500",col_SKA,0.00,3.00,None      ,lt=':',plot_bphz=False)
-#    zarr_SKA ,err_sthz_SKA_arr ,err_bthz_SKA_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_SKA_sthr0.750",col_SKA,0.00,3.00,None      ,lt='-.',plot_bphz=False)
-#    zarr_SKA ,err_sthz_SKA_arr ,err_bthz_SKA_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_SKA_sthr1.000",col_SKA,0.00,3.00,"SKA"     ,lt='-',plot_bphz=False)
-#    zarr_SKA ,err_sthz_SKA_arr ,err_bthz_SKA_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_SKA_lmax2000" ,col_SKA,0.00,3.00,None      ,lt='--',plot_bphz=False)
-#    zarr_MeerKAT ,err_sthz_MeerKAT_arr ,err_bthz_MeerKAT_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_MeerKAT_sthr0.500",col_MKT,0.00,3.00,None      ,lt=':',plot_bphz=False)
-#    zarr_MeerKAT ,err_sthz_MeerKAT_arr ,err_bthz_MeerKAT_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_MeerKAT_sthr0.750",col_MKT,0.00,3.00,None      ,lt='-.',plot_bphz=False)
-#    zarr_MeerKAT ,err_sthz_MeerKAT_arr ,err_bthz_MeerKAT_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_MeerKAT_sthr1.000",col_MKT,0.00,3.00,"MeerKAT"     ,lt='-',plot_bphz=False)
-#    zarr_MeerKAT ,err_sthz_MeerKAT_arr ,err_bthz_MeerKAT_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_MeerKAT_lmax2000" ,col_MKT,0.00,3.00,None      ,lt='--',plot_bphz=False)
     plt.plot([-1,-1],[-1,-2],'k--',lw=2,label="$\\ell\\leq 5000$")
-    zarr_HIRAX ,err_sthz_HIRAX_arr ,err_bthz_HIRAX_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_HIRAX_32_6_sthr0.500_l5000",col_HIRAX,0.00,3.00,None      ,lt=':',plot_bphz=False,l5000=True)
-    zarr_HIRAX ,err_sthz_HIRAX_arr ,err_bthz_HIRAX_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_HIRAX_32_6_sthr0.750_l5000",col_HIRAX,0.00,3.00,None      ,lt='-.',plot_bphz=False,l5000=True)
-    zarr_HIRAX ,err_sthz_HIRAX_arr ,err_bthz_HIRAX_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_HIRAX_32_6_sthr1.000_l5000",col_HIRAX,0.00,3.00,"HIRAX-6m",lt='-',plot_bphz=False,l5000=True)
-    zarr_HIRAX ,err_sthz_HIRAX_arr ,err_bthz_HIRAX_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_HIRAX_32_6_lmax5000_l5000" ,col_HIRAX,0.00,3.00,None      ,lt='--',plot_bphz=False,l5000=True)
-    zarr_SKA ,err_sthz_SKA_arr ,err_bthz_SKA_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_SKA_sthr0.500_l5000",col_SKA,0.00,3.00,None      ,lt=':',plot_bphz=False,l5000=True)
-    zarr_SKA ,err_sthz_SKA_arr ,err_bthz_SKA_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_SKA_sthr0.750_l5000",col_SKA,0.00,3.00,None      ,lt='-.',plot_bphz=False,l5000=True)
-    zarr_SKA ,err_sthz_SKA_arr ,err_bthz_SKA_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_SKA_sthr1.000_l5000",col_SKA,0.00,3.00,"SKA"     ,lt='-',plot_bphz=False,l5000=True)
-    zarr_SKA ,err_sthz_SKA_arr ,err_bthz_SKA_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_SKA_lmax5000_l5000" ,col_SKA,0.00,3.00,None      ,lt='--',plot_bphz=False,l5000=True)
-    zarr_MeerKAT ,err_sthz_MeerKAT_arr ,err_bthz_MeerKAT_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_MeerKAT_sthr0.500_l5000",col_MKT,0.00,3.00,None      ,lt=':',plot_bphz=False,l5000=True)
-    zarr_MeerKAT ,err_sthz_MeerKAT_arr ,err_bthz_MeerKAT_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_MeerKAT_sthr0.750_l5000",col_MKT,0.00,3.00,None      ,lt='-.',plot_bphz=False,l5000=True)
-    zarr_MeerKAT ,err_sthz_MeerKAT_arr ,err_bthz_MeerKAT_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_MeerKAT_sthr1.000_l5000",col_MKT,0.00,3.00,"MeerKAT"     ,lt='-',plot_bphz=False,l5000=True)
-    zarr_MeerKAT ,err_sthz_MeerKAT_arr ,err_bthz_MeerKAT_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_MeerKAT_lmax5000_l5000" ,col_MKT,0.00,3.00,None      ,lt='--',plot_bphz=False,l5000=True)
+    compute_errors("runs/IMAP","Fisher_wA_woFG_HIRAX_32_6_sthr0.500_l5000",col_HIRAX,0.00,3.00,None,lt=':',plot_bphz=False,l5000=True)
+    compute_errors("runs/IMAP","Fisher_wA_woFG_HIRAX_32_6_sthr0.750_l5000",col_HIRAX,0.00,3.00,None,lt='-.',plot_bphz=False,l5000=True)
+    compute_errors("runs/IMAP","Fisher_wA_woFG_HIRAX_32_6_sthr1.000_l5000",col_HIRAX,0.00,3.00,"HIRAX",lt='-',plot_bphz=False,l5000=True)
+    compute_errors("runs/IMAP","Fisher_wA_woFG_HIRAX_32_6_lmax5000_l5000" ,col_HIRAX,0.00,3.00,None,lt='--',plot_bphz=False,l5000=True)
+    compute_errors("runs/IMAP","Fisher_wA_woFG_SKA_sthr0.500_l5000",col_SKA,0.00,3.00,None,lt=':',plot_bphz=False,l5000=True)
+    compute_errors("runs/IMAP","Fisher_wA_woFG_SKA_sthr0.750_l5000",col_SKA,0.00,3.00,None,lt='-.',plot_bphz=False,l5000=True)
+    compute_errors("runs/IMAP","Fisher_wA_woFG_SKA_sthr1.000_l5000",col_SKA,0.00,3.00,"SKA",lt='-',plot_bphz=False,l5000=True)
+    compute_errors("runs/IMAP","Fisher_wA_woFG_SKA_lmax5000_l5000" ,col_SKA,0.00,3.00,None,lt='--',plot_bphz=False,l5000=True)
+    compute_errors("runs/IMAP","Fisher_wA_woFG_MeerKAT_sthr0.500_l5000",col_MKT,0.00,3.00,None,lt=':',plot_bphz=False,l5000=True)
+    compute_errors("runs/IMAP","Fisher_wA_woFG_MeerKAT_sthr0.750_l5000",col_MKT,0.00,3.00,None,lt='-.',plot_bphz=False,l5000=True)
+    compute_errors("runs/IMAP","Fisher_wA_woFG_MeerKAT_sthr1.000_l5000",col_MKT,0.00,3.00,"MeerKAT",lt='-',plot_bphz=False,l5000=True)
+    compute_errors("runs/IMAP","Fisher_wA_woFG_MeerKAT_lmax5000_l5000" ,col_MKT,0.00,3.00,None,lt='--',plot_bphz=False,l5000=True)
     plt.xlim([0,2.7])
     plt.ylim([5E-5,1E-2])
     plt.yscale('log')
-    plt.xlabel('$z$',fontsize=16)
-    plt.ylabel('$\\sigma(\\sigma_z)$',fontsize=16)
-    plt.plot(zreq,1E-3*(1+zreq),'k-')#,label='LSST req.')
-    plt.legend(loc='lower right',frameon=False,labelspacing=0.1,ncol=2)
+    plt.xlabel('$z$',fontsize=18)
+    plt.ylabel('$\\sigma(\\sigma_z)$',fontsize=18)
+    plt.gca().tick_params(axis='x', labelsize=14)
+    plt.gca().tick_params(axis='y', labelsize=14)
+    plt.plot(zreq,1E-3*(1+zreq),'k-')
+    plt.legend(loc='lower right',frameon=False,labelspacing=0.1,ncol=2,fontsize=16)
     plt.savefig("bak/compare_nlin.pdf",bbox_inches='tight')
 
 if whichfig=='fig5' or whichfig=='all' :
@@ -251,6 +240,8 @@ if whichfig=='fig5' or whichfig=='all' :
     plt.loglog()
     plt.xlabel('$k_\\perp\\,[h\\,{\\rm Mpc}^{-1}]$',fontsize=18)
     plt.ylabel('$N(k_\\perp)\\,\\,[{\\rm Mpc}\\,h^{-1}]^3$',fontsize=18)
+    plt.gca().tick_params(axis='x', labelsize=14)
+    plt.gca().tick_params(axis='y', labelsize=14)
     plt.xlim([1E-3,3])
     plt.ylim([1E2,1E6])
     plt.savefig("bak/nk.pdf",bbox_inches='tight')
@@ -294,25 +285,14 @@ if whichfig=='test_sigmaT' :
     k_SKAIF ,pk_SKAIF =get_noisepower_imap("curves_IM/tz_HI.txt",xpr.im_SKA_IF)
     k_MKTSD ,pk_MKTSD =get_noisepower_imap("curves_IM/tz_HI.txt",xpr.im_MeerKAT_SD)
     k_MKTIF ,pk_MKTIF =get_noisepower_imap("curves_IM/tz_HI.txt",xpr.im_MeerKAT_IF)
-#    k_DESI  ,pk_DESI  =get_noisepower_spec(xpr.spec_DESI  ,z0)
-#    k_Euclid,pk_Euclid=get_noisepower_spec(xpr.spec_Euclid,z0)
-#    k_WFIRST,pk_WFIRST=get_noisepower_spec(xpr.spec_WFIRST,z0)
     plt.figure()
     plt.plot(k_HIRAX ,pk_HIRAX ,'-' ,color=col_HIRAX,lw=2,label='HIRAX')
     plt.plot(k_SKASD ,pk_SKASD ,'-' ,color=col_SKA  ,lw=2,label='SKA (S.D.)')
     plt.plot(k_SKAIF ,pk_SKAIF ,'--',color=col_SKA  ,lw=2,label='SKA (interf.)')
     plt.plot(k_MKTSD ,pk_MKTSD ,'-' ,color=col_MKT  ,lw=2,label='MeerKAT (S.D.)')
     plt.plot(k_MKTIF ,pk_MKTIF ,'--',color=col_MKT  ,lw=2,label='MeerKAT (interf.)')
-#    plt.plot(k_DESI  ,pk_DESI  ,'k-' ,lw=2,label='DESI')
-#    plt.plot(k_Euclid,pk_Euclid,'k--',lw=2,label='Euclid')
-#    plt.plot(k_WFIRST,pk_WFIRST,'k-.',lw=2,label='WFIRST')
     plt.legend(loc='upper left',frameon=False,labelspacing=0.1)
     plt.loglog()
-#    plt.xlabel('$k_\\perp\\,[h\\,{\\rm Mpc}^{-1}]$',fontsize=18)
-#    plt.ylabel('$N(k_\\perp)\\,\\,[{\\rm Mpc}\\,h^{-1}]^3$',fontsize=18)
-#    plt.xlim([1E-3,3])
-#    plt.ylim([1E2,1E6])
-#    plt.savefig("bak/nk.pdf",bbox_inches='tight')
 
 if whichfig=='fig6' or whichfig=='all':
     plt.figure()
@@ -320,24 +300,26 @@ if whichfig=='fig6' or whichfig=='all':
     plt.plot([-1,-1],[-1,-2],'k--',lw=2,label="$\\xi=10$")
     plt.plot([-1,-1],[-1,-2],'k-.',lw=2,label="$\\xi=1$")
     plt.plot([-1,-1],[-1,-2],'k:' ,lw=2,label="$\\xi=0.1$")
-    z,es,eb=compute_errors("runs/IMAP","Fisher_wA_woFG_HIRAX_32_6_sthr1.000"               ,col_HIRAX,0.00,3.00,'HIRAX',plot_bphz=False,lt='-')
-    z,es,eb=compute_errors("runs/IMAP","Fisher_wA_wFG_a1.000_xi10.000_HIRAX_32_6_sthr1.000",col_HIRAX,0.00,3.00,None   ,plot_bphz=False,lt='--')
-    z,es,eb=compute_errors("runs/IMAP","Fisher_wA_wFG_a1.000_xi1.000_HIRAX_32_6_sthr1.000" ,col_HIRAX,0.00,3.00,None   ,plot_bphz=False,lt='-.')
-    z,es,eb=compute_errors("runs/IMAP","Fisher_wA_wFG_a1.000_xi0.100_HIRAX_32_6_sthr1.000" ,col_HIRAX,0.00,3.00,None   ,plot_bphz=False,lt=':')
-    z,es,eb=compute_errors("runs/IMAP","Fisher_wA_woFG_SKA_sthr1.000"               ,col_SKA,0.00,3.00,'SKA',plot_bphz=False,lt='-')
-    z,es,eb=compute_errors("runs/IMAP","Fisher_wA_wFG_a1.000_xi10.000_SKA_sthr1.000",col_SKA,0.00,3.00,None ,plot_bphz=False,lt='--')
-    z,es,eb=compute_errors("runs/IMAP","Fisher_wA_wFG_a1.000_xi1.000_SKA_sthr1.000" ,col_SKA,0.00,3.00,None ,plot_bphz=False,lt='-.')
-    z,es,eb=compute_errors("runs/IMAP","Fisher_wA_wFG_a1.000_xi0.100_SKA_sthr1.000" ,col_SKA,0.00,3.00,None ,plot_bphz=False,lt=':')
-    z,es,eb=compute_errors("runs/IMAP","Fisher_wA_woFG_MeerKAT_sthr1.000"               ,col_MKT,0.00,3.00,'MeerKAT',plot_bphz=False,lt='-')
-    z,es,eb=compute_errors("runs/IMAP","Fisher_wA_wFG_a1.000_xi10.000_MeerKAT_sthr1.000",col_MKT,0.00,3.00,None     ,plot_bphz=False,lt='--')
-    z,es,eb=compute_errors("runs/IMAP","Fisher_wA_wFG_a1.000_xi1.000_MeerKAT_sthr1.000" ,col_MKT,0.00,3.00,None     ,plot_bphz=False,lt='-.')
-    z,es,eb=compute_errors("runs/IMAP","Fisher_wA_wFG_a1.000_xi0.100_MeerKAT_sthr1.000" ,col_MKT,0.00,3.00,None     ,plot_bphz=False,lt=':')
+    compute_errors("runs/IMAP","Fisher_wA_woFG_HIRAX_32_6_sthr1.000"               ,col_HIRAX,0.00,3.00,'HIRAX',plot_bphz=False,lt='-')
+    compute_errors("runs/IMAP","Fisher_wA_wFG_a1.000_xi10.000_HIRAX_32_6_sthr1.000",col_HIRAX,0.00,3.00,None   ,plot_bphz=False,lt='--')
+    compute_errors("runs/IMAP","Fisher_wA_wFG_a1.000_xi1.000_HIRAX_32_6_sthr1.000" ,col_HIRAX,0.00,3.00,None   ,plot_bphz=False,lt='-.')
+    compute_errors("runs/IMAP","Fisher_wA_wFG_a1.000_xi0.100_HIRAX_32_6_sthr1.000" ,col_HIRAX,0.00,3.00,None   ,plot_bphz=False,lt=':')
+    compute_errors("runs/IMAP","Fisher_wA_woFG_SKA_sthr1.000"               ,col_SKA,0.00,3.00,'SKA',plot_bphz=False,lt='-')
+    compute_errors("runs/IMAP","Fisher_wA_wFG_a1.000_xi10.000_SKA_sthr1.000",col_SKA,0.00,3.00,None ,plot_bphz=False,lt='--')
+    compute_errors("runs/IMAP","Fisher_wA_wFG_a1.000_xi1.000_SKA_sthr1.000" ,col_SKA,0.00,3.00,None ,plot_bphz=False,lt='-.')
+    compute_errors("runs/IMAP","Fisher_wA_wFG_a1.000_xi0.100_SKA_sthr1.000" ,col_SKA,0.00,3.00,None ,plot_bphz=False,lt=':')
+    compute_errors("runs/IMAP","Fisher_wA_woFG_MeerKAT_sthr1.000"               ,col_MKT,0.00,3.00,'MeerKAT',plot_bphz=False,lt='-')
+    compute_errors("runs/IMAP","Fisher_wA_wFG_a1.000_xi10.000_MeerKAT_sthr1.000",col_MKT,0.00,3.00,None     ,plot_bphz=False,lt='--')
+    compute_errors("runs/IMAP","Fisher_wA_wFG_a1.000_xi1.000_MeerKAT_sthr1.000" ,col_MKT,0.00,3.00,None     ,plot_bphz=False,lt='-.')
+    compute_errors("runs/IMAP","Fisher_wA_wFG_a1.000_xi0.100_MeerKAT_sthr1.000" ,col_MKT,0.00,3.00,None     ,plot_bphz=False,lt=':')
     plt.xlim([0,2.7])
     plt.ylim([1E-4,3E-2])
     plt.yscale('log')
-    plt.xlabel('$z$',fontsize=16)
-    plt.ylabel('$\\sigma(\\sigma_z)$',fontsize=16)
-    plt.plot(zreq,1E-3*(1+zreq),'k-')#,label='LSST req.')
+    plt.xlabel('$z$',fontsize=18)
+    plt.ylabel('$\\sigma(\\sigma_z)$',fontsize=18)
+    plt.gca().tick_params(axis='x', labelsize=14)
+    plt.gca().tick_params(axis='y', labelsize=14)
+    plt.plot(zreq,1E-3*(1+zreq),'k-')
     plt.legend(bbox_to_anchor=[0.7,1.0],frameon=False,labelspacing=0.1,ncol=2)
     plt.savefig("bak/compare_FG.pdf",bbox_inches='tight')
     
@@ -356,12 +338,14 @@ if whichfig=='fig7' or whichfig=='all' :
                            cols[icol],0.00,3.00,
                            "Noiseless case",plot_bphz=False)
     plt.yscale('log')
-    plt.xlabel('$z$',fontsize=16)
-    plt.ylabel('$\\sigma(\\sigma_z)$',fontsize=16)
+    plt.xlabel('$z$',fontsize=18)
+    plt.ylabel('$\\sigma(\\sigma_z)$',fontsize=18)
+    plt.gca().tick_params(axis='x', labelsize=14)
+    plt.gca().tick_params(axis='y', labelsize=14)
     plt.xlim([0,2.7])
     plt.ylim([3E-5,3E-1])
-    plt.plot(zreq,1E-3*(1+zreq),'k-')#,label='LSST req.')
-    plt.legend(loc='upper right',frameon=False,labelspacing=0.1,ncol=2)
+    plt.plot(zreq,1E-3*(1+zreq),'k-')
+    plt.legend(loc='upper right',frameon=False,labelspacing=0.1,ncol=2,fontsize=16)
     plt.savefig("bak/compare_noise.pdf",bbox_inches='tight');
 
 if whichfig=='fig8' or whichfig=='all' :
@@ -378,12 +362,14 @@ if whichfig=='fig8' or whichfig=='all' :
                                cols[icol],0.00,3.00,'$d_{\\rm min}='+num+'\\,{\\rm m}$',plot_bphz=False)
         icol+=1
     plt.yscale('log')
-    plt.xlabel('$z$',fontsize=16)
-    plt.ylabel('$\\sigma(\\sigma_z)$',fontsize=16)
+    plt.xlabel('$z$',fontsize=18)
+    plt.ylabel('$\\sigma(\\sigma_z)$',fontsize=18)
+    plt.gca().tick_params(axis='x', labelsize=14)
+    plt.gca().tick_params(axis='y', labelsize=14)
     plt.xlim([0,2.7])
-    plt.ylim([5E-5,1E-2])
-    plt.plot(zreq,1E-3*(1+zreq),'k-')#,label='LSST req.')
-    plt.legend(loc='lower left',frameon=False,labelspacing=0.1,ncol=2)
+    plt.ylim([4E-5,1E-2])
+    plt.plot(zreq,1E-3*(1+zreq),'k-')
+    plt.legend(loc='lower left',frameon=False,labelspacing=0.1,ncol=2,fontsize=16)
     plt.savefig("bak/compare_dmin.pdf",bbox_inches='tight');
 
 if whichfig=='fig9' or whichfig=='all' :
@@ -400,12 +386,14 @@ if whichfig=='fig9' or whichfig=='all' :
                                cols[icol],0.00,3.00,'$d_{\\rm max}='+num+'\\,{\\rm m}$',plot_bphz=False)
         icol+=1
     plt.yscale('log')
-    plt.xlabel('$z$',fontsize=16)
-    plt.ylabel('$\\sigma(\\sigma_z)$',fontsize=16)
+    plt.xlabel('$z$',fontsize=18)
+    plt.ylabel('$\\sigma(\\sigma_z)$',fontsize=18)
     plt.xlim([0,2.7])
     plt.ylim([1E-4,1E-2])
-    plt.plot(zreq,1E-3*(1+zreq),'k-')#,label='LSST req.')
-    plt.legend(loc='upper left',frameon=False,labelspacing=0.1,ncol=2)
+    plt.gca().tick_params(axis='x', labelsize=14)
+    plt.gca().tick_params(axis='y', labelsize=14)
+    plt.plot(zreq,1E-3*(1+zreq),'k-')
+    plt.legend(loc='upper left',frameon=False,labelspacing=0.1,ncol=2,fontsize=16)
     plt.savefig("bak/compare_dmax.pdf",bbox_inches='tight');
 
 if whichfig=='fig10' or whichfig=='all' :
@@ -419,9 +407,11 @@ if whichfig=='fig10' or whichfig=='all' :
     plot_nz("curves_spec/nz_WFIRST.txt", 2000.,'-.','WFIRST')
     plt.yscale('log')
     plt.xlim([0,3]); plt.ylim([1E2,3E4]);
-    plt.xlabel('$z$',fontsize=16)
-    plt.ylabel('$dN/dz\\,d\\Omega\\,[{\\rm deg}^{-2}]$',fontsize=16)
-    plt.legend(loc='upper left',frameon=False,labelspacing=0.1)
+    plt.gca().tick_params(axis='x', labelsize=14)
+    plt.gca().tick_params(axis='y', labelsize=14)
+    plt.xlabel('$z$',fontsize=18)
+    plt.ylabel('$dN/dz\\,d\\Omega\\,[{\\rm deg}^{-2}]$',fontsize=18)
+    plt.legend(loc='upper left',frameon=False,labelspacing=0.1,fontsize=16)
     plt.savefig("bak/nz_spec.pdf",bbox_inches='tight')
 
 if whichfig=='fig11' or whichfig=='all':
@@ -431,16 +421,18 @@ if whichfig=='fig11' or whichfig=='all':
     zarr_nofg ,err_sthz_cmbS4_arr ,err_bthz_cmbS4_arr=compute_errors("runs/CMBL/","Fisher_woA_S4_opt_sthr1.000"  ,'#009999',0.00,3.00,'$1\\,\\mu{\\rm K}\\,{\\rm arcmin}$ CMB lensing',fix_sphz=True)
     plt.xlim([0,2.7])
     plt.ylim([1E-3,1E-1])
+    plt.gca().tick_params(axis='x', labelsize=14)
+    plt.gca().tick_params(axis='y', labelsize=14)
     plt.yscale('log')
-    plt.xlabel('$z$',fontsize=16)
-    plt.ylabel('$\\sigma(\\Delta z)$',fontsize=16)
-    plt.plot(zreq,1E-3*(1+zreq),'k-')#,label='LSST req.')
-    plt.legend(loc='upper right',frameon=False,labelspacing=0.1,ncol=1)
+    plt.xlabel('$z$',fontsize=18)
+    plt.ylabel('$\\sigma(\\Delta z)$',fontsize=18)
+    plt.plot(zreq,1E-3*(1+zreq),'k-')
+    plt.legend(loc='upper right',frameon=False,labelspacing=0.1,ncol=1,fontsize=16)
     plt.savefig("bak/compare_CMBlens.pdf",bbox_inches='tight')
 
 if whichfig=='fig12' or whichfig=='all':
     plt.figure()
-    plt.plot([-1,-1],[-1,-2],'k-' ,lw=2,label="${\\rm Nominal}$")
+    plt.plot([-1,-1],[-1,-2],'k-' ,lw=2,label="Nominal$")
     plt.plot([-1,-1],[-1,-2],'k--',lw=2,label="$f_{\\rm sky}/2$")
     plt.plot([-1,-1],[-1,-2],'k-.',lw=2,label="$f_{\\rm sky}/4$")
     plt.plot([-1,-1],[-1,-2],'k:' ,lw=2,label="$f_{\\rm sky}/8$")
@@ -459,8 +451,10 @@ if whichfig=='fig12' or whichfig=='all':
     plt.xlim([0,2.7])
     plt.ylim([1E-4,1E-2])
     plt.yscale('log')
-    plt.xlabel('$z$',fontsize=16)
-    plt.ylabel('$\\sigma(\\Delta z)$',fontsize=16)
+    plt.gca().tick_params(axis='x', labelsize=14)
+    plt.gca().tick_params(axis='y', labelsize=14)
+    plt.xlabel('$z$',fontsize=18)
+    plt.ylabel('$\\sigma(\\Delta z)$',fontsize=18)
     plt.plot(zreq,1E-3*(1+zreq),'k-')
     plt.legend(frameon=False,labelspacing=0.1,ncol=2,bbox_to_anchor=[0.65,1.0])
     plt.savefig("bak/compare_fsky.pdf",bbox_inches='tight')
@@ -494,7 +488,7 @@ if whichfig=='fig13' or whichfig=='all':
     plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_DESI.npz",'#00FF00','DESI',ax=ax)
     plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_SKA.npz",col_SKA,None,ax=ax)
     plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,None,ax=ax)
-    plt.legend(loc='upper left',frameon=False,numpoints=1)#,labelspacing=0.1)
+    plt.legend(loc='upper left',frameon=False,numpoints=1,fontsize=16)
     axins=zoomed_inset_axes(ax,2.5,loc=1)
     zr=plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_MeerKAT.npz",col_MKT,'MeerKAT',ax=axins,
                    plot_smooth=True)
@@ -513,6 +507,8 @@ if whichfig=='fig13' or whichfig=='all':
     ax.get_yaxis().set_ticks([])
     ax.set_xlabel('$z$',fontsize=18)
     ax.set_ylabel('$\\phi(z)$',fontsize=18)
+    ax.tick_params(axis='x', labelsize=14)
+    ax.tick_params(axis='y', labelsize=14)
     plt.savefig("bak/compare_nonpar_bin%d.pdf"%ibin,bbox_inches='tight')
 
     ibin=8
@@ -524,7 +520,7 @@ if whichfig=='fig13' or whichfig=='all':
     plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,'HIRAX',ax=ax)
     plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_DESI.npz",'#00FF00','DESI',ax=ax)
     plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,None,ax=ax)
-    plt.legend(loc='upper left',frameon=False,numpoints=1)#,labelspacing=0.1)
+    plt.legend(loc='upper left',frameon=False,numpoints=1,fontsize=16)
     axins=zoomed_inset_axes(ax,2.5,loc=1)
     zr=plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_MeerKAT.npz",col_MKT,'MeerKAT',ax=axins,
                    plot_smooth=True)
@@ -542,6 +538,8 @@ if whichfig=='fig13' or whichfig=='all':
     ax.get_yaxis().set_ticks([])
     ax.set_xlabel('$z$',fontsize=18)
     ax.set_ylabel('$\\phi(z)$',fontsize=18)
+    ax.tick_params(axis='x', labelsize=14)
+    ax.tick_params(axis='y', labelsize=14)
     plt.savefig("bak/compare_nonpar_bin%d.pdf"%ibin,bbox_inches='tight')
 
     ibin=11
@@ -552,7 +550,7 @@ if whichfig=='fig13' or whichfig=='all':
     plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,'HIRAX',ax=ax)
     plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_WFIRST.npz",'#00FF00','WFIRST',ax=ax)
     plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,None,ax=ax)
-    plt.legend(loc='upper left',frameon=False,numpoints=1)#,labelspacing=0.1)
+    plt.legend(loc='upper left',frameon=False,numpoints=1,fontsize=16)
     axins=zoomed_inset_axes(ax,2.5,loc=1)
     zr=plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_SKA.npz",col_SKA,'SKA',ax=axins,
                    plot_smooth=True)
@@ -569,6 +567,8 @@ if whichfig=='fig13' or whichfig=='all':
     ax.get_yaxis().set_ticks([])
     ax.set_xlabel('$z$',fontsize=18)
     ax.set_ylabel('$\\phi(z)$',fontsize=18)
+    ax.tick_params(axis='x', labelsize=14)
+    ax.tick_params(axis='y', labelsize=14)
     plt.savefig("bak/compare_nonpar_bin%d.pdf"%ibin,bbox_inches='tight')
 
     ibin=14
@@ -579,7 +579,7 @@ if whichfig=='fig13' or whichfig=='all':
     plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,'HIRAX',ax=ax)
     plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_WFIRST.npz",'#00FF00','WFIRST',ax=ax)
     plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,None,ax=ax)
-    plt.legend(loc='upper left',frameon=False,numpoints=1)#,labelspacing=0.1)
+    plt.legend(loc='upper left',frameon=False,numpoints=1,fontsize=16)
     axins=zoomed_inset_axes(ax,2.5,loc=1)
     zr=plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_SKA.npz",col_SKA,'SKA',ax=axins,
                    plot_smooth=True)
@@ -596,182 +596,8 @@ if whichfig=='fig13' or whichfig=='all':
     ax.get_yaxis().set_ticks([])
     ax.set_xlabel('$z$',fontsize=18)
     ax.set_ylabel('$\\phi(z)$',fontsize=18)
+    ax.tick_params(axis='x', labelsize=14)
+    ax.tick_params(axis='y', labelsize=14)
     plt.savefig("bak/compare_nonpar_bin%d.pdf"%ibin,bbox_inches='tight')
 
-plt.show()
-exit(1)
-
-plt.figure()
-zarr_HIRAXa,err_sthz_HIRAXa_arr,err_bthz_HIRAXa_arr=compute_errors("HIRAX_32_6",'r',0.00,3.00,
-                                                                   "HIRAX-6m, $\\ell<2000$",
-                                                                   fishname="Fisher")
-zarr_SKASDa,err_sthz_SKASDa_arr,err_bthz_SKADSa_arr=compute_errors("SKA_SD"    ,'g',0.00,3.00,
-                                                                   "SKA single dish, $\\ell<2000$",
-                                                                   fishname="Fisher")
-zarr_HIRAXb,err_sthz_HIRAXb_arr,err_bthz_HIRAXb_arr=compute_errors("HIRAX_32_6",'b',0.00,3.00,
-                                                                   "HIRAX-6m, $\\sigma_{\\rm thr}=0.75$",
-                                                                   fishname="Fisher_sthr0p75")
-zarr_SKASDb,err_sthz_SKASDb_arr,err_bthz_SKADSb_arr=compute_errors("SKA_SD"    ,'y',0.00,3.00,
-                                                                   "SKA single dish, $\\sigma_{\\rm thr}=0.75$",
-                                                                   fishname="Fisher_sthr0p75")
-plt.xlim([0,2.7])
-plt.ylim([5E-5,1E-2])#6E-3])
-plt.yscale('log')
-plt.xlabel('$z$',fontsize=16)
-plt.ylabel('$\\sigma(\\sigma_z,\\Delta z)$',fontsize=16)
-plt.plot(zarr_SKASDa,1E-3*(1+zarr_SKASDa),'k-',label='LSST req.')
-plt.plot([-1,-1],[-1,-2],'k-',lw=2,label="$\\sigma_z$")
-plt.plot([-1,-1],[-1,-2],'k--',lw=2,label="$\\Delta z$")
-plt.legend(loc='upper left',frameon=False,labelspacing=0.1,ncol=2)
-plt.show()
-
-
-
-for i in np.arange(15) :
-    f1=read_fisher("runs/IMAP/output_b%d/Fisher_wA_woFG_HIRAX_32_6_lmax2000"%i)
-    f2=read_fisher("runs/IMAP/output_b%d/Fisher_wA_woFG_HIRAX_32_6_lmax2000"%i)
-    print i, get_sigma(f1,['sphz_LSST_gold_node0'])/get_sigma(f2,['sphz_LSST_gold_node0'])
-
-exit(1)
-
-names=np.array(['och2','bias_gal','sphz','bphz','bias_im'])
-nptot=len(names)
-
-def find_param(name) :
-    for i in np.arange(nptot) :
-        if names[i]==name :
-            return i
-
-def read_fish(prefix,lmin=-1,lmax=-1) :
-    fish_full_l=np.load(prefix+"/fisher_raw_l.npy")
-
-    if lmin<0 :
-        lmn=2
-    else :
-        lmn=lmin
-    if lmax<0 :
-        lmx=-1
-    else :
-        lmx=lmax
-
-    fish_full=np.sum(fish_full_l[:,:,lmn:lmx],axis=2)
-    
-#    errors=np.sqrt(np.diag(np.linalg.inv(fish_full)))
-#    print prefix
-#    for i in np.arange(nptot) :
-#        print names[i],errors[i]
-#    print ""
-    return fish_full
-
-vpar={'och2'    :0.1197,
-      'bias_gal':1.0,
-      'sphz'    :0.03,
-      'bphz'    :0.00,
-      'bias_im' :1.0
-      }
-rpar={'och2'    :None,
-      'bias_gal':None,
-      'sphz'    :None,
-      'bphz'    :None,
-      'bias_im' :None
-      }
-ppar={'och2'    :-1,
-      'bias_gal':-1,
-      'sphz'    :-1,
-      'bphz'    :-1,
-      'bias_im' :-1
-      }
-lpar={'och2'    :"$\\omega_c$",
-      'bias_gal':"$b_{\\rm gal}$",
-      'sphz'    :"$\\sigma_z$",
-      'bphz'    :"$\\Delta z$",
-      'bias_im' :"$b_{\\rm IM}$"
-      }
-plpar={'och2'    :True,
-       'bias_gal':True,
-       'sphz'    :True,
-       'bphz'    :True,
-       'bias_im' :True
-       }
-mpar={'och2'    :True,
-      'bias_gal':True,
-      'sphz'    :True,
-      'bphz'    :True,
-      'bias_im' :True
-      }
-
-#for fs in [0.05,0.1,0.2,0.4] :
-#    fish=read_fish("HIRAX_32_6/output_b4/Fisher_fs%.3lf"%fs)
-
-def compute_errors(dirname,col,z_min,z_max,label,fishname="Fisher") :
-    i_sthz=find_param('sphz')
-    i_bthz=find_param('bphz')
-    z0,zf,dum,dum,dum,dum=np.loadtxt("curves_LSST/bins_gold_lmax2000.txt",unpack=True);
-    zarr=0.5*(z0+zf)
-    ind=np.where((zarr>=z_min) & (zarr<=z_max))[0]
-    err_sthz=np.zeros_like(zarr)
-    err_bthz=np.zeros_like(zarr)
-    for b in np.arange(len(z0)) :
-        fish=read_fish(dirname+"/output_b%d/"%b+fishname)
-        error=np.sqrt(np.diag(np.linalg.inv(fish)))
-        err_sthz[b]=error[i_sthz]
-        err_bthz[b]=error[i_bthz]
-    plt.plot(zarr[ind],err_sthz[ind],col+'-',lw=2,label=label)
-    plt.plot(zarr[ind],err_bthz[ind],col+'--',lw=2)
-    return zarr,err_sthz,err_bthz
-
-plt.figure()
-zarr_DESI  ,err_sthz_DESI_arr  ,err_bthz_DESI_arr  =compute_errors("DESI_fs0p20"  ,'r',
-                                                                   0.00,1.85,label="DESI")
-zarr_Euclid,err_sthz_Euclid_arr,err_bthz_Euclid_arr=compute_errors("Euclid_fs0p40",'g',
-                                                                   0.65,2.15,label="Euclid")
-zarr_WFIRST,err_sthz_WFIRST_arr,err_bthz_WFIRST_arr=compute_errors("WFIRST_fs0p05",'b',
-                                                                   0.95,2.85,"WFIRST")
-zarr_HIRAX ,err_sthz_HIRAX_arr ,err_bthz_HIRAX_arr =compute_errors("HIRAX_32_6"   ,'y',
-                                                                   0.00,3.00,"HIRAX-6m")
-zarr_SKASD ,err_sthz_SKASD_arr ,err_bthz_SKADS_arr =compute_errors("SKA_SD"       ,'m',
-                                                                   0.00,3.00,"SKA single dish")
-plt.xlim([0,2.7])
-plt.ylim([5E-5,1E-2])#6E-3])
-plt.yscale('log')
-plt.xlabel('$z$',fontsize=16)
-plt.ylabel('$\\sigma(\\sigma_z,\\Delta z)$',fontsize=16)
-plt.plot(zarr_SKASD,1E-3*(1+zarr_SKASD),'k-',label='LSST req.')
-plt.plot([-1,-1],[-1,-2],'k-',lw=2,label="$\\sigma_z$")
-plt.plot([-1,-1],[-1,-2],'k--',lw=2,label="$\\Delta z$")
-plt.legend(loc='upper left',frameon=False,labelspacing=0.1,ncol=2)
-plt.savefig("photoz_calib_compare.pdf",bbox_inches='tight')
-
-plt.figure()
-zarr_HIRAXa,err_sthz_HIRAXa_arr,err_bthz_HIRAXa_arr=compute_errors("HIRAX_32_6",'r',0.00,3.00,
-                                                                   "HIRAX-6m, $\\ell<2000$",
-                                                                   fishname="Fisher")
-zarr_SKASDa,err_sthz_SKASDa_arr,err_bthz_SKADSa_arr=compute_errors("SKA_SD"    ,'g',0.00,3.00,
-                                                                   "SKA single dish, $\\ell<2000$",
-                                                                   fishname="Fisher")
-zarr_HIRAXb,err_sthz_HIRAXb_arr,err_bthz_HIRAXb_arr=compute_errors("HIRAX_32_6",'b',0.00,3.00,
-                                                                   "HIRAX-6m, $\\sigma_{\\rm thr}=0.75$",
-                                                                   fishname="Fisher_sthr0p75")
-zarr_SKASDb,err_sthz_SKASDb_arr,err_bthz_SKADSb_arr=compute_errors("SKA_SD"    ,'y',0.00,3.00,
-                                                                   "SKA single dish, $\\sigma_{\\rm thr}=0.75$",
-                                                                   fishname="Fisher_sthr0p75")
-plt.xlim([0,2.7])
-plt.ylim([5E-5,1E-2])#6E-3])
-plt.yscale('log')
-plt.xlabel('$z$',fontsize=16)
-plt.ylabel('$\\sigma(\\sigma_z,\\Delta z)$',fontsize=16)
-plt.plot(zarr_SKASDa,1E-3*(1+zarr_SKASDa),'k-',label='LSST req.')
-plt.plot([-1,-1],[-1,-2],'k-',lw=2,label="$\\sigma_z$")
-plt.plot([-1,-1],[-1,-2],'k--',lw=2,label="$\\Delta z$")
-plt.legend(loc='upper left',frameon=False,labelspacing=0.1,ncol=2)
-plt.show()
-
-exit(1)
-fshp=[]
-for ip in np.arange(nptot) :
-    pname=names[ip]
-    fshp.append(fshr.ParamFisher(vpar[pname],ppar[pname],pname,lpar[pname],True,plpar[pname],ppar[pname]))
-fshp=np.array(fshp)
-
-fshr.plot_fisher_all(fshp,[fish],['none'],[2],['solid'],['red'],['Default'],2,rpar,'fishtest.pdf',do_1D=False,fsize=14)
 plt.show()

@@ -5,7 +5,7 @@ from scipy.special import erf
 from scipy.optimize import brentq
 import py_cosmo_mad as csm
 
-plot_stuff=False
+plot_stuff=True
 
 def get_zarr(s_photoz,n_width,z_max) :
     dz_half=s_photoz*n_width*0.5
@@ -59,8 +59,12 @@ def plot_bins(fname,z_max,nz_func) :
     if plot_stuff :
         plt.plot(z_global_arr,nz_global_arr,'k-',linewidth=2)
         plt.xlim([0,z_max])#*1.2])
-        plt.xlabel('$z$',fontsize=16)
-        plt.ylabel('$N(z)\\,[{\\rm arcmin}^{-2}]$',fontsize=16)
+        plt.xlabel('$z$',fontsize=18)
+        plt.ylabel('$N(z)\\,[{\\rm arcmin}^{-2}]$',fontsize=18)
+        plt.gca().tick_params(axis='x', labelsize=14)
+        plt.gca().tick_params(axis='y', labelsize=14)
+        plt.gca().set_yticks([3,6,9,12,15,18])
+        plt.ylim([0.01,18])
         plt.savefig('nz_lsst.pdf',bbox_inches='tight')
         plt.show()
     print npar,np.sum(nz_global_arr)*(z_global_arr[1]-z_global_arr[0])
@@ -99,7 +103,8 @@ def get_bins(s_photoz,z_max,n_photoz_width,nzfile=None,fname_out=None,sigma_thr=
                 print z,ell
                 data_write[5,i]=ell
 
-        np.savetxt(fname_out,np.transpose(data_write),fmt="%lf %lf %lf %d %d %d",header="[1]-z0 [2]-zf [3]-sz [4]-marg_sz [5]-marg_bz [6]-lmax")
+        np.savetxt(fname_out,np.transpose(data_write),fmt="%lf %lf %lf %d %d %d",
+                   header="[1]-z0 [2]-zf [3]-sz [4]-marg_sz [5]-marg_bz [6]-lmax")
 
     if nzfile!=None :
         z,nz=np.loadtxt(nzfile,unpack=True)
@@ -127,16 +132,16 @@ if plot_stuff :
     plt.show()
 np.savetxt('kvals_st.txt',np.transpose([sthr_arr,kmax_arr]))
 
-get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
-         fname_out="bins_gold_sthr0p50.txt",sigma_thr=0.50)
-get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
-         fname_out="bins_gold_sthr0p75.txt",sigma_thr=0.75)
-get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
-         fname_out="bins_gold_sthr1p00.txt",sigma_thr=1.00)
+#get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
+#         fname_out="bins_gold_sthr0p50.txt",sigma_thr=0.50)
+#get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
+#         fname_out="bins_gold_sthr0p75.txt",sigma_thr=0.75)
+#get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
+#         fname_out="bins_gold_sthr1p00.txt",sigma_thr=1.00)
 get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
          fname_out="bins_gold_lmax2000.txt",sigma_thr=None)
 
-
+'''
 get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
          fname_out="bins_gold_sthr0p50_l3000.txt",sigma_thr=0.50,lmax=3000)
 get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
@@ -155,3 +160,4 @@ get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
          fname_out="bins_gold_sthr1p00_l5000.txt",sigma_thr=1.00,lmax=5000)
 get_bins(s_photoz_gold,z_max_gold,n_photoz,nzfile=nzfile_gold,
          fname_out="bins_gold_lmax5000_l5000.txt",sigma_thr=None,lmax=5000)
+'''
