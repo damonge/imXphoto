@@ -98,9 +98,18 @@ def plot_fisher_two(params,name1,name2,fishermat,ax,prop,fact_axis,add_2sigma=Fa
 
         centre=np.array([params[i1].val,params[i2].val])
 
+        if prop[i]['alpha']<0 :
+            fcol='none'
+            ecol=prop[i]['col']
+            alpha=1.
+        else :
+            fcol=prop[i]['col']
+            ecol=prop[i]['col']
+            alpha=prop[i]['alpha']
+
         e_1s=Ellipse(xy=centre,width=2*a_1s,height=2*b_1s,angle=angle,
-                     facecolor=prop[i]['col'],linewidth=prop[i]['lw'],
-                     linestyle=prop[i]['ls'],edgecolor=prop[i]['col'],alpha=prop[i]['alpha'])
+                     facecolor=fcol,linewidth=prop[i]['lw'],
+                     linestyle=prop[i]['ls'],edgecolor=ecol,alpha=alpha)
 #        if add_2sigma :
 #            e_2s=Ellipse(xy=centre,width=2*a_2s,height=2*b_2s,angle=angle,
 #                         facecolor=fc[i],linewidth=lw[i],linestyle='dashed',edgecolor=lc[i])

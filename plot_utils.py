@@ -434,7 +434,7 @@ if whichfig=='fig11' or whichfig=='all':
 
 if whichfig=='fig12' or whichfig=='all':
     plt.figure()
-    plt.plot([-1,-1],[-1,-2],'k-' ,lw=2,label="Nominal$")
+    plt.plot([-1,-1],[-1,-2],'k-' ,lw=2,label="Nominal")
     plt.plot([-1,-1],[-1,-2],'k--',lw=2,label="$f_{\\rm sky}/2$")
     plt.plot([-1,-1],[-1,-2],'k-.',lw=2,label="$f_{\\rm sky}/4$")
     plt.plot([-1,-1],[-1,-2],'k:' ,lw=2,label="$f_{\\rm sky}/8$")
@@ -742,11 +742,11 @@ if whichfig=='fig14' or whichfig=='all':
                      es_HIRAX,eb_HIRAX)
     p2,f2=get_fisher("outputs_FisherPerBin/Fisher_clust_shear_cmb",
                      1E-16*(1+zm),1E-16*(1+zm))
-    plot_subset([f0,f1],[p0,p1],{'w0':True,'wa':True,'mnu':True},
+    plot_subset([f0,f1,f2],[p0,p1,p2],{'w0':True,'wa':True,'mnu':True},
                 {},
-                [{'ls':'solid','col':'red','alpha':0.5,'lw':2},
-                 {'ls':'solid','col':'blue','alpha':1.0,'lw':2},
-                 {'ls':'solid','col':'green','alpha':1.0,'lw':2}],
+                [{'ls':'solid','col':'blue','alpha':0.5,'lw':2},
+                 {'ls':'solid','col':'red','alpha':1.0,'lw':2},
+                 {'ls':'dashed','col':'black','alpha':-1 ,'lw':2}],
                 ['Self-calibrated','Calibrated with 21cm','No photo-$z$ uncert.'],
                 fname='bak/compare_constraints.pdf')
 
