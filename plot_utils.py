@@ -8,6 +8,7 @@ import experiments as xpr
 from scipy.interpolate import interp1d
 from scipy.integrate import quad
 from mpl_toolkits.axes_grid1.inset_locator import mark_inset,zoomed_inset_axes
+import copy
 
 NU_21=1420.405751786
 CLIGHT=299.792458
@@ -57,7 +58,7 @@ def get_sigma(fishp,names,fix_params=[]) :
     return np.array(result)
 
 def compute_errors(dirname,fishname,col,z_min,z_max,label,plot_bphz=True,plot_sphz=True,lt='-',
-                   l5000=False,fix_sphz=False) :
+                   l5000=False,fix_sphz=False,do_plot=True) :
     z0,zf,dum,dum,dum,dum=np.loadtxt("curves_LSST/bins_gold_lmax2000.txt",unpack=True);
     zarr=0.5*(z0+zf)
     ind=np.where((zarr>=z_min) & (zarr<=z_max))[0]
@@ -76,13 +77,14 @@ def compute_errors(dirname,fishname,col,z_min,z_max,label,plot_bphz=True,plot_sp
         errors=get_sigma(fish,['bphz_LSST_gold_node0','sphz_LSST_gold_node0'],fix_params=namefix)
         err_bthz[b]=errors[0]
         err_sthz[b]=errors[1]
-    if plot_bphz :
+    if do_plot :
+        if plot_bphz :
+            if plot_sphz :
+                plt.plot(zarr[ind],err_bthz[ind],'--',color=col,lw=2)
+            else :
+                plt.plot(zarr[ind],err_bthz[ind],lt,color=col,lw=2,label=label)
         if plot_sphz :
-            plt.plot(zarr[ind],err_bthz[ind],'--',color=col,lw=2)
-        else :
-            plt.plot(zarr[ind],err_bthz[ind],lt,color=col,lw=2,label=label)
-    if plot_sphz :
-        plt.plot(zarr[ind],err_sthz[ind],lt,color=col,lw=2,label=label)
+            plt.plot(zarr[ind],err_sthz[ind],lt,color=col,lw=2,label=label)
     return zarr,err_sthz,err_bthz
 
 if whichfig=='fig1' or whichfig=='all':
@@ -599,5 +601,153 @@ if whichfig=='fig13' or whichfig=='all':
     ax.tick_params(axis='x', labelsize=14)
     ax.tick_params(axis='y', labelsize=14)
     plt.savefig("bak/compare_nonpar_bin%d.pdf"%ibin,bbox_inches='tight')
+
+'''
+pars_all=np.array([{'name':'tau' ,'val': 6.0000E-02,'label':'$\\tau$'},
+                   {'name':'mnu' ,'val': 6.0000E+01,'label':'$\\Sigma m_\\nu$'},
+                   {'name':'och2','val': 1.1970E-01,'label':'$\\omega_c$'},
+                   {'name':'hh'  ,'val': 6.9000E-01,'label':'$h$'},
+                   {'name':'obh2','val': 2.2220E-02,'label':'$\\omega_b$'},
+                   {'name':'ns'  ,'val': 9.6550E-01,'label':'$n_s$'},
+                   {'name':'A_s' ,'val': 2.1955E+00,'label':'$A_s\\times10^9$'},
+                   {'name':'wa'  ,'val': 0.0000E+00,'label':'$w_a$'},
+                   {'name':'w0'  ,'val':-1.0000E+00,'label':'$w_0$'},
+                   {'name':'bias_LSST_gold_node1','val':1.0000E+00,'label':'$b_1$'},
+                   {'name':'bias_LSST_gold_node2','val':1.0000E+00,'label':'$b_2$'},
+                   {'name':'bias_LSST_gold_node3','val':1.0000E+00,'label':'$b_3$'},
+                   {'name':'bias_LSST_gold_node4','val':1.0000E+00,'label':'$b_4$'},
+                   {'name':'bias_LSST_gold_node5','val':1.0000E+00,'label':'$b_5$'},
+                   {'name':'bias_LSST_gold_node6','val':1.0000E+00,'label':'$b_6$'},
+                   {'name':'bias_LSST_gold_node7','val':1.0000E+00,'label':'$b_7$'},
+                   {'name':'bias_LSST_gold_node8','val':1.0000E+00,'label':'$b_8$'},
+                   {'name':'bias_LSST_gold_node9','val':1.0000E+00,'label':'$b_9$'},
+                   {'name':'sphz_LSST_gold_node1','val':1.0000E+00,'label':'$\\sigma_z^1$'},
+                   {'name':'sphz_LSST_gold_node2','val':1.0000E+00,'label':'$\\sigma_z^2$'},
+                   {'name':'sphz_LSST_gold_node3','val':1.0000E+00,'label':'$\\sigma_z^3$'},
+                   {'name':'sphz_LSST_gold_node4','val':1.0000E+00,'label':'$\\sigma_z^4$'},
+                   {'name':'sphz_LSST_gold_node5','val':1.0000E+00,'label':'$\\sigma_z^5$'},
+                   {'name':'sphz_LSST_gold_node6','val':1.0000E+00,'label':'$\\sigma_z^6$'},
+                   {'name':'sphz_LSST_gold_node7','val':1.0000E+00,'label':'$\\sigma_z^7$'},
+                   {'name':'sphz_LSST_gold_node8','val':1.0000E+00,'label':'$\\sigma_z^8$'},
+                   {'name':'sphz_LSST_gold_node9','val':1.0000E+00,'label':'$\\sigma_z^9$'},
+                   {'name':'bphz_LSST_gold_node1','val':1.0000E+00,'label':'$\\Delta z^1$'},
+                   {'name':'bphz_LSST_gold_node2','val':1.0000E+00,'label':'$\\Delta z^2$'},
+                   {'name':'bphz_LSST_gold_node3','val':1.0000E+00,'label':'$\\Delta z^3$'},
+                   {'name':'bphz_LSST_gold_node4','val':1.0000E+00,'label':'$\\Delta z^4$'},
+                   {'name':'bphz_LSST_gold_node5','val':1.0000E+00,'label':'$\\Delta z^5$'},
+                   {'name':'bphz_LSST_gold_node6','val':1.0000E+00,'label':'$\\Delta z^6$'},
+                   {'name':'bphz_LSST_gold_node7','val':1.0000E+00,'label':'$\\Delta z^7$'},
+                   {'name':'bphz_LSST_gold_node8','val':1.0000E+00,'label':'$\\Delta z^8$'},
+                   {'name':'bphz_LSST_gold_node9','val':1.0000E+00,'label':'$\\Delta z^9$'}])
+p_all=np.array([fshr.ParamFisher(p['val'],0,p['name'],p['label'],True,True,1E4) for p in pars_all[:]])
+'''
+
+def get_fisher(prefix,priors_sz,priors_bz) :
+    data=np.load(prefix+"/fisher_raw.npz")
+    p_all=np.array([fshr.ParamFisher(data['values'][i],0,data['names'][i],data['labels'][i],True,False,1E4)
+                    for i in np.arange(len(data['names']))])
+    fisher=data['fisher_tot']
+
+    for i in np.arange(len(data['names'])) :
+        for inode in np.arange(9) :
+            if priors_sz[inode]>0 :
+                if p_all[i].name=='sphz_LSST_gold_node%d'%inode :
+                    fisher[i,i]+=1./priors_sz[inode]**2
+            if priors_bz[inode]>0 :
+                if p_all[i].name=='bphz_LSST_gold_node%d'%inode :
+                    fisher[i,i]+=1./priors_bz[inode]**2
+
+    return p_all,fisher
+
+def plot_subset(fish_arr,pars_arr,dict_plot,dict_prior,properties,names_arr,fac_sigma=2,fs=18,nticks=4,fname='none') :
+    nfish=len(fish_arr)
+    pars_arr_here=copy.deepcopy(pars_arr)
+    fish_arr_here=[]
+    
+    for ifish in np.arange(nfish) :
+        fish_arr_here.append(fish_arr[ifish])
+        for key in dict_plot.keys() :
+            ipar=0
+            for par in pars_arr_here[ifish] :
+                if par.name==key :
+                    pars_arr_here[ifish][ipar].do_plot=dict_plot[key]
+                    break
+                ipar+=1
+        for key in dict_prior.keys() :
+            ipar=0
+            for par in pars_arr_here[ifish] :
+                if par.name==key :
+                    fish_arr_here[ifish][ipar,ipar]+=1./dict_prior[key]**2
+                    break
+                ipar+=1
+                
+        cov=np.linalg.inv(fish_arr_here[ifish])
+
+        print "Case "+names_arr[ifish]+":"
+        for key in dict_plot.keys() :
+            ipar=0
+            for par in pars_arr_here[ifish] :
+                if par.name==key :
+                    print key+" %lE"%(np.sqrt(cov[ipar,ipar]))
+                    break
+                ipar+=1
+                
+        npar=len(pars_arr[ifish])
+        covde=np.zeros([2,2])
+        ipw0=-1; ipwa=-1;
+        for ipar in np.arange(npar) :
+            if pars_arr_here[ifish][ipar].name=="w0" :
+                ipw0=ipar
+            if pars_arr_here[ifish][ipar].name=="wa" :
+                ipwa=ipar
+        covde[0,0]=cov[ipw0,ipw0]
+        covde[0,1]=cov[ipw0,ipwa]
+        covde[1,0]=cov[ipwa,ipw0]
+        covde[1,1]=cov[ipwa,ipwa]
+        print "FoM : %lE"%(1./np.sqrt(np.linalg.det(covde)))
+        print ""
+
+    fshr.plot_fisher_all(pars_arr_here[0],fish_arr_here,properties,
+                         names_arr,fac_sigma,fname,do_1D=False,fs=fs,nticks=nticks)
+
+if whichfig=='fig14' or whichfig=='all':
+    data=np.loadtxt('curves_LSST/bins_gold_conservative_lmax2000.txt',unpack=True);
+    zm=0.5*(data[0]+data[1])
+    
+    def get_errz(prefix,fisher) :
+        z,es,eb=compute_errors(prefix,fisher,'#FFFFFF',0.00,3.00,'none',do_plot=False)
+        esf=interp1d(z,es)
+        ebf=interp1d(z,eb)
+        return esf,ebf
+    
+    es_HIRAX_f,eb_HIRAX_f=get_errz("runs/IMAP","Fisher_wA_woFG_HIRAX_32_6_sthr1.000")
+    es_HIRAX=es_HIRAX_f(zm)
+    eb_HIRAX=eb_HIRAX_f(zm)
+
+    es_SKA_f,eb_SKA_f=get_errz("runs/IMAP","Fisher_wA_woFG_SKA_sthr1.000")
+    es_SKA=es_SKA_f(zm)
+    eb_SKA=eb_SKA_f(zm)
+
+    es_MeerKAT_f,eb_MeerKAT_f=get_errz("runs/IMAP","Fisher_wA_woFG_MeerKAT_sthr1.000")
+    es_MeerKAT=es_MeerKAT_f(zm)
+    eb_MeerKAT=eb_MeerKAT_f(zm)
+
+    es_DESI_f,eb_DESI_f=get_errz("runs/DESI","Fisher_wA_sthr1.000")
+    es_DESI=es_DESI_f(zm)
+    eb_DESI=eb_DESI_f(zm)
+
+    p0,f0=get_fisher("outputs_FisherPerBin/Fisher_clust_shear_cmb",
+                     -1*np.ones_like(zm),-1*np.ones_like(zm))
+    p1,f1=get_fisher("outputs_FisherPerBin/Fisher_clust_shear_cmb",
+                     es_HIRAX,eb_HIRAX)
+    p2,f2=get_fisher("outputs_FisherPerBin/Fisher_clust_shear_cmb",
+                     1E-16*(1+zm),1E-16*(1+zm))
+    plot_subset([f0,f1],[p0,p1],{'w0':True,'wa':True,'mnu':True},
+                {},
+                [{'ls':'solid','col':'red','alpha':0.5,'lw':2},
+                 {'ls':'solid','col':'blue','alpha':1.0,'lw':2},
+                 {'ls':'solid','col':'green','alpha':1.0,'lw':2}],
+                ['Self-calibrated','Calibrated with 21cm','No photo-$z$ uncert.'],
+                fname='bak/compare_constraints.pdf')
 
 plt.show()

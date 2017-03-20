@@ -4,8 +4,12 @@ import sys as sys
 import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
 import copy
+from matplotlib.ticker import MaxNLocator
+from matplotlib.ticker import ScalarFormatter
 
-FS=16
+FS=18
+
+formatter=ScalarFormatter(useOffset=False)
 
 class ParamFisher:
     """ Fisher matrix parameter """
@@ -25,7 +29,7 @@ class ParamFisher:
         self.isfree=isfree
         self.do_plot=do_plot
         self.prior=prior
-        
+
 def find_param(param_list,name):
     index=0
     for par in param_list:
@@ -35,7 +39,7 @@ def find_param(param_list,name):
     print "No parameter "+name
     sys.exit()
 
-def plot_fisher_single(params,name,fishermat,ax,fc,lw,ls,lc,fact_axis,ranges,labels,do_title=True,fsize=FS) :
+def plot_fisher_single(params,name,fishermat,ax,prop,fact_axis,fs=FS) :
     nb=128
 
     sigma_max=0
@@ -48,28 +52,24 @@ def plot_fisher_single(params,name,fishermat,ax,fc,lw,ls,lc,fact_axis,ranges,lab
             sigma_max=sigma
         x_arr=params[i1].val-4*sigma+8*sigma*np.arange(nb)/(nb-1.)
         p_arr=np.exp(-(x_arr-params[i1].val)**2/(2*sigma**2))
+#        title+="%.3lf"%sigma
         title+="%.3lf"%sigma
         if i<(len(fishermat)-1) :
             title+=","
 #        ax.plot(x_arr,p_arr,color=lc[i],linestyle=ls[i],linewidth=lw[i])
-        ax.plot(x_arr,p_arr,color=lc[i],linestyle=ls[i],linewidth=lw[i],label=labels[i])
+        ax.plot(x_arr,p_arr,color=prop[i]['col'],linestyle=prop[i]['ls'],linewidth=prop[i]['lw'])
     title+="]$"
-    if do_title :
-        ax.set_title(title)
-    else :
-        print title
-    if ranges[name]==None :
-        ax.set_xlim([params[i1].val-fact_axis*sigma_max,params[i1].val+fact_axis*sigma_max])
-    else :
-        ax.set_xlim(ranges[name])
-    ax.set_ylim([0,1.02])
-    ax.set_xlabel(params[i1].label,fontsize=FS)
+    ax.set_title(title)
+    ax.set_xlim([params[i1].val-fact_axis*sigma_max,params[i1].val+fact_axis*sigma_max])
+    ax.set_xlabel(params[i1].label,fontsize=fs)
+    ax.xaxis.set_major_formatter(formatter)
+    ax.yaxis.set_major_formatter(formatter)
     for label in ax.get_yticklabels():
-        label.set_fontsize(fsize-2)
+        label.set_fontsize(fs-6)
     for label in ax.get_xticklabels():
-        label.set_fontsize(fsize-2)
+        label.set_fontsize(fs-6)
 
-def plot_fisher_two(params,name1,name2,fishermat,ax,fc,lw,ls,lc,fact_axis,ranges,fsize=FS) :
+def plot_fisher_two(params,name1,name2,fishermat,ax,prop,fact_axis,add_2sigma=False,fs=FS) :
     sig0_max=0
     sig1_max=0
     for i in np.arange(len(fishermat)) :
@@ -99,30 +99,28 @@ def plot_fisher_two(params,name1,name2,fishermat,ax,fc,lw,ls,lc,fact_axis,ranges
         centre=np.array([params[i1].val,params[i2].val])
 
         e_1s=Ellipse(xy=centre,width=2*a_1s,height=2*b_1s,angle=angle,
-                     facecolor=fc[i],linewidth=lw[i],linestyle=ls[i],edgecolor=lc[i])
-#        e_2s=Ellipse(xy=centre,width=2*a_2s,height=2*b_2s,angle=angle,
-#                     facecolor=fc[i],linewidth=lw[i],linestyle='dashed',edgecolor=lc[i])
-
-#        ax.add_artist(e_2s)
+                     facecolor=prop[i]['col'],linewidth=prop[i]['lw'],
+                     linestyle=prop[i]['ls'],edgecolor=prop[i]['col'],alpha=prop[i]['alpha'])
+#        if add_2sigma :
+#            e_2s=Ellipse(xy=centre,width=2*a_2s,height=2*b_2s,angle=angle,
+#                         facecolor=fc[i],linewidth=lw[i],linestyle='dashed',edgecolor=lc[i])
+#
+#            ax.add_artist(e_2s)
         ax.add_artist(e_1s)
-        if ranges[name1]==None :
-            ax.set_xlim([params[i1].val-fact_axis*sig0_max,
-                         params[i1].val+fact_axis*sig0_max])
-        else :
-            ax.set_xlim(ranges[name1])
-        if ranges[name2]==None :
-            ax.set_ylim([params[i2].val-fact_axis*sig1_max,
-                         params[i2].val+fact_axis*sig1_max])
-        else :
-            ax.set_ylim(ranges[name2])
-        ax.set_xlabel(params[i1].label,fontsize=FS)
-        ax.set_ylabel(params[i2].label,fontsize=FS)
+        ax.set_xlim([params[i1].val-fact_axis*sig0_max,
+                     params[i1].val+fact_axis*sig0_max])
+        ax.set_ylim([params[i2].val-fact_axis*sig1_max,
+                     params[i2].val+fact_axis*sig1_max])
+        ax.set_xlabel(params[i1].label,fontsize=fs)
+        ax.set_ylabel(params[i2].label,fontsize=fs)
+    ax.xaxis.set_major_formatter(formatter)
+    ax.yaxis.set_major_formatter(formatter)
     for label in ax.get_yticklabels():
-        label.set_fontsize(fsize-2)
+        label.set_fontsize(fs-6)
     for label in ax.get_xticklabels():
-        label.set_fontsize(fsize-2)
+        label.set_fontsize(fs-6)
 
-def plot_fisher_two_standalone(params,name1,name2,fishermat,fc,lw,lc,lab,fact_axis,ranges,fsize=FS) :
+def plot_fisher_two_standalone(params,name1,name2,fishermat,fc,lw,lc,lab,fact_axis,fs=FS) :
     sig0_max=0
     sig1_max=0
     leg_items=[]
@@ -160,36 +158,32 @@ def plot_fisher_two_standalone(params,name1,name2,fishermat,fc,lw,lc,lab,fact_ax
         ax=plt.gca()
         ax.add_artist(e_2s)
         ax.add_artist(e_1s)
-        if ranges[name1]==None :
-            ax.set_xlim([params[i1].val-fact_axis*sig0_max,
-                         params[i1].val+fact_axis*sig0_max])
-        else :
-            ax.set_xlim(ranges[name1])
-        if ranges[name2]==None :
-            ax.set_ylim([params[i2].val-fact_axis*sig1_max,
-                         params[i2].val+fact_axis*sig1_max])
-        else :
-            ax.set_ylim(ranges[name2])
-        ax.set_xlabel(params[i1].label,fontsize=FS)
-        ax.set_ylabel(params[i2].label,fontsize=FS)
+        ax.set_xlim([params[i1].val-fact_axis*sig0_max,
+                     params[i1].val+fact_axis*sig0_max])
+        ax.set_ylim([params[i2].val-fact_axis*sig1_max,
+                     params[i2].val+fact_axis*sig1_max])
+        ax.set_xlabel(params[i1].label,fontsize=fs)
+        ax.set_ylabel(params[i2].label,fontsize=fs)
         leg_items.append(plt.Line2D((0,1),(0,0),color=lc[i],linewidth=lw[i]))
+    ax.xaxis.set_major_formatter(formatter)
+    ax.yaxis.set_major_formatter(formatter)
     for label in ax.get_yticklabels():
-        label.set_fontsize(fsize-2)
+        label.set_fontsize(fs-6)
     for label in ax.get_xticklabels():
-        label.set_fontsize(fsize-2)
+        label.set_fontsize(fs-6)
     ax.legend(leg_items,lab,loc='upper left',frameon=False)
 
 
 def plot_fisher_all(params, #Parameters in the FMs
                     fishermat, #FMs to plot
-                    fc,lw,ls,lc, #Foreground colors, line widths, line styles and line colours for each FM
+                    prop,#fc,lw,ls,lc, #Foreground colors, line widths, line styles and line colours for each FM
                     labels, #Labels for each FM
                     fact_axis, #The x and y axes will be fact_axis x error in each parameter
-                    ranges, #Ranges for each parameter
                     fname,
                     do_1D=True,
                     do_titles=True,
-                    fsize=FS) : #File to save the plot
+                    fs=FS,
+                    nticks=4) : #File to save the plot
     index_plot=np.where(np.array([p.do_plot for p in params]))
     n_params=len(index_plot[0])
     param_plot=params[index_plot]
@@ -210,18 +204,28 @@ def plot_fisher_all(params, #Parameters in the FMs
                 ax=fig.add_subplot(n_params,n_params,iplot)
                 if i==j :
                     plot_fisher_single(params,param_plot[i].name,fishermat,
-                                       ax,fc,lw,ls,lc,fact_axis,ranges,labels,do_titles,fsize=fsize)
+                                       ax,prop,fact_axis,fs=fs)
             if i!=j :
                 if do_1D :
                     ax=fig.add_subplot(n_params,n_params,iplot)
                 else :
                     ax=fig.add_subplot(n_params-1,n_params-1,iplot)
                 plot_fisher_two(params,param_plot[i].name,param_plot[j].name,
-                                fishermat,ax,fc,lw,ls,lc,fact_axis,ranges,fsize=fsize)
+                                fishermat,ax,prop,fact_axis,fs=fs)
+                if do_1D==False :
+                    if n_params==2 :
+                        leg_items=[]
+                        for i in np.arange(len(fishermat)) :
+                            leg_items.append(plt.Line2D((0,1),(0,0),color=prop[i]['col'],
+                                                        linestyle=prop[i]['ls'],
+                                                        linewidth=prop[i]['lw']))
+                        ax.legend(leg_items,labels[:len(fishermat)],loc='upper left',frameon=False,fontsize=FS,ncol=2) 
 
             if ax!=None :
                 if i_row!=n_params-1 :
                     ax.get_xaxis().set_visible(False)
+                else :
+                    plt.setp(ax.get_xticklabels(),rotation=45)
 
                 if i_col!=0 :
                     ax.get_yaxis().set_visible(False)
@@ -229,7 +233,7 @@ def plot_fisher_all(params, #Parameters in the FMs
                 if i_col==0 and i_row==0 :
                     ax.get_yaxis().set_visible(False)
                 
-                ax.locator_params(nbins=6)
+                ax.locator_params(nbins=nticks)
 
     if n_params!=2 :
         if n_params>1 : #Add labels in a separate plot
@@ -239,17 +243,16 @@ def plot_fisher_all(params, #Parameters in the FMs
                 ax=fig.add_subplot(n_params-1,n_params-1,2)
             ax.set_xlim([-1,1])
             ax.set_ylim([-1,1])
-            for i in np.arange(len(labels)) :
-                ax.plot([-1,1],[-3,-3],color=lc[i],linestyle=ls[i],
-                        linewidth=lw[i],label=labels[i])
+            for i in np.arange(len(fishermat)) :
+                ax.plot([-1,1],[-3,-3],color=prop[i]['col'],linestyle=prop[i]['ls'],
+                        linewidth=2,label=labels[i])
             ax.legend(loc='upper left',frameon=False,fontsize=FS)
             ax.axis('off')
         else :
-            ax.legend(loc='upper right',frameon=False,fontsize=FS)
+            ax.legend(loc='upper right',frameon=False,fontsize=FS) 
 #        ax.axis('off')
 
     if fname!="none" :
         plt.savefig(fname,bbox_inches='tight')
 
-    plt.show()
-
+#    plt.show()
