@@ -747,7 +747,7 @@ if whichfig=='fig14' or whichfig=='all':
                 [{'ls':'solid','col':'blue','alpha':0.5,'lw':2},
                  {'ls':'solid','col':'red','alpha':1.0,'lw':2},
                  {'ls':'dashed','col':'black','alpha':-1 ,'lw':2}],
-                ['Self-calibrated','Calibrated with 21cm','No photo-$z$ uncert.'],
+                ['Self-calibrated','Calibrated with 21cm','Perfect calibration'],
                 fname='bak/compare_constraints.pdf')
 
 plt.show()
