@@ -16,6 +16,9 @@ FWHM2G=0.42466090014
 col_HIRAX="#004C99"
 col_SKA="#CC0000"
 col_MKT="#D8BB00"
+zrange_HIRAX=[0.775,2.55]
+zrange_SKA=[0.35,3.05]
+zrange_MKT=[0.35,1.37]
 
 zreq=3.0*np.arange(256)/255.
 
@@ -95,16 +98,27 @@ if whichfig=='fig1' or whichfig=='all':
     zarr_DESI  ,err_sthz_DESI_arr  ,err_bthz_DESI_arr  =compute_errors("runs/DESI"  ,"Fisher_wA_sthr1.000"                ,'#000000',0.00,1.85,label="DESI",plot_bphz=False,lt='-')
     zarr_Euclid,err_sthz_Euclid_arr,err_bthz_Euclid_arr=compute_errors("runs/Euclid","Fisher_wA_sthr1.000"                ,'#000000',0.65,2.15,label="Euclid",plot_bphz=False,lt='--')
     zarr_WFIRST,err_sthz_WFIRST_arr,err_bthz_WFIRST_arr=compute_errors("runs/WFIRST","Fisher_wA_sthr1.000"                ,'#000000',0.95,2.85,"WFIRST",plot_bphz=False,lt='-.')
+    ax=plt.gca()
+    ax.fill_between([zrange_SKA[0],zrange_SKA[1]],[10.**(-2.1),10**(-2.1)],[1E-2,1E-2],
+                           facecolor=col_SKA,alpha=0.5,edgecolor='none')
+    ax.fill_between([zrange_HIRAX[0],zrange_HIRAX[1]],[10.**(-2.2),10**(-2.2)],[10.**(-2.1),10**(-2.1)],
+                           facecolor=col_HIRAX,alpha=0.5,edgecolor='none')
+    ax.fill_between([zrange_MKT[0],zrange_MKT[1]],[10.**(-2.3),10**(-2.3)],[10.**(-2.2),10**(-2.2)],
+                           facecolor=col_MKT,alpha=0.5,edgecolor='none')
+    ax.annotate('${\\rm LSST\\,\\,req.}$',xy=(0.305,0.0013),xytext=(0.35,2.1E-3),fontsize=16,
+                arrowprops={'width':1,'headwidth':5,'headlength':7,'facecolor':'black'})
+    ax.annotate('${\\rm DES\\,\\,req.}$',xy=(0.223,0.00245),xytext=(0.27,4E-3),fontsize=16,
+                arrowprops={'width':1,'headwidth':5,'headlength':7,'facecolor':'black'})
     plt.xlim([0,2.7])
-    plt.ylim([5E-5,1E-2])
+    plt.ylim([7E-5,1E-2])
     plt.yscale('log')
     plt.xlabel('$z$',fontsize=18)
     plt.ylabel('$\\sigma(\\sigma_z)$',fontsize=18)
-    plt.plot(zreq,1E-3*(1+zreq),'k-',label='LSST req.')
-    plt.plot(zreq,2E-3*(1+zreq),'k--',label='DES req.')
-    plt.gca().tick_params(axis='x', labelsize=14)
-    plt.gca().tick_params(axis='y', labelsize=14)
-    plt.legend(loc='lower left',frameon=False,labelspacing=0.1,ncol=3,fontsize=16)
+    plt.plot(zreq,1E-3*(1+zreq),'k-')
+    plt.plot(zreq,2E-3*(1+zreq),'k--')
+    ax.tick_params(axis='x', labelsize=14)
+    ax.tick_params(axis='y', labelsize=14)
+    plt.legend(loc='lower right',frameon=False,labelspacing=0.1,ncol=2,fontsize=16)
     plt.savefig("bak/compare_spec.pdf",bbox_inches='tight')
 
 if whichfig=='fig2' or whichfig=='all':
