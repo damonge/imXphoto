@@ -480,9 +480,10 @@ def plot_nz_err(fname,col,label,ax=None,plot_smooth=False) :
     return zm[0]-dz/10,zm[-1]+dz/5
 
 if whichfig=='fig13' or whichfig=='all':
+    fig=plt.figure(figsize=(18,6))
+    plt.subplots_adjust(wspace=0)
+    ax=fig.add_subplot(1,3,1)
     ibin=4
-    plt.figure()
-    ax=plt.gca()
     zr=plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_MeerKAT.npz",col_MKT,'MeerKAT',ax=ax,
                    plot_smooth=True)
     plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_SKA.npz",col_SKA,'SKA',ax=ax)
@@ -511,11 +512,9 @@ if whichfig=='fig13' or whichfig=='all':
     ax.set_ylabel('$\\phi(z)$',fontsize=18)
     ax.tick_params(axis='x', labelsize=14)
     ax.tick_params(axis='y', labelsize=14)
-    plt.savefig("bak/compare_nonpar_bin%d.pdf"%ibin,bbox_inches='tight')
 
-    ibin=8
-    plt.figure()
-    ax=plt.gca()
+    ibin=9
+    ax=fig.add_subplot(1,3,2)
     zr=plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_MeerKAT.npz",col_MKT,'MeerKAT',ax=ax,
                    plot_smooth=True)
     plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_SKA.npz",col_SKA,'SKA',ax=ax)
@@ -532,50 +531,18 @@ if whichfig=='fig13' or whichfig=='all':
     plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,None,ax=axins)
     axins.get_xaxis().set_visible(False)
     axins.get_yaxis().set_visible(False)
-    axins.set_xlim(1.09,1.18)
+    axins.set_xlim(1.285,1.385)
     axins.set_ylim(0.12,0.17)
     mark_inset(ax, axins, loc1=2, loc2=4, fc="none", ec="0.5")
     ax.set_xlim(zr)
     ax.set_ylim([-0.02,0.2])
     ax.get_yaxis().set_ticks([])
     ax.set_xlabel('$z$',fontsize=18)
-    ax.set_ylabel('$\\phi(z)$',fontsize=18)
     ax.tick_params(axis='x', labelsize=14)
     ax.tick_params(axis='y', labelsize=14)
-    plt.savefig("bak/compare_nonpar_bin%d.pdf"%ibin,bbox_inches='tight')
-
-    ibin=11
-    plt.figure()
-    ax=plt.gca()
-    zr=plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_SKA.npz",col_SKA,'SKA',ax=ax,
-                   plot_smooth=True)
-    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,'HIRAX',ax=ax)
-    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_WFIRST.npz",'#00FF00','WFIRST',ax=ax)
-    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,None,ax=ax)
-    plt.legend(loc='upper left',frameon=False,numpoints=1,fontsize=16)
-    axins=zoomed_inset_axes(ax,2.5,loc=1)
-    zr=plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_SKA.npz",col_SKA,'SKA',ax=axins,
-                   plot_smooth=True)
-    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,'HIRAX',ax=axins)
-    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_WFIRST.npz",'#00FF00','WFIRST',ax=axins)
-    plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,None,ax=axins)
-    axins.get_xaxis().set_visible(False)
-    axins.get_yaxis().set_visible(False)
-    axins.set_xlim(1.75,1.85)
-    axins.set_ylim(0.13,0.155)
-    mark_inset(ax, axins, loc1=2, loc2=4, fc="none", ec="0.5")
-    ax.set_xlim(zr)
-    ax.set_ylim([-0.02,0.17])
-    ax.get_yaxis().set_ticks([])
-    ax.set_xlabel('$z$',fontsize=18)
-    ax.set_ylabel('$\\phi(z)$',fontsize=18)
-    ax.tick_params(axis='x', labelsize=14)
-    ax.tick_params(axis='y', labelsize=14)
-    plt.savefig("bak/compare_nonpar_bin%d.pdf"%ibin,bbox_inches='tight')
 
     ibin=14
-    plt.figure()
-    ax=plt.gca()
+    ax=fig.add_subplot(1,3,3)
     zr=plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_SKA.npz",col_SKA,'SKA',ax=ax,
                    plot_smooth=True)
     plot_nz_err("runs_non_parametric/result_b%d_"%ibin+"lmax2000_HIRAX_32_6.npz",col_HIRAX,'HIRAX',ax=ax)
@@ -594,53 +561,13 @@ if whichfig=='fig13' or whichfig=='all':
     axins.set_ylim(0.124,0.155)
     mark_inset(ax, axins, loc1=2, loc2=4, fc="none", ec="0.5")
     ax.set_xlim(zr)
-    ax.set_ylim([-0.02,0.17])
+    ax.set_ylim([-0.02,0.2])
     ax.get_yaxis().set_ticks([])
     ax.set_xlabel('$z$',fontsize=18)
-    ax.set_ylabel('$\\phi(z)$',fontsize=18)
     ax.tick_params(axis='x', labelsize=14)
     ax.tick_params(axis='y', labelsize=14)
-    plt.savefig("bak/compare_nonpar_bin%d.pdf"%ibin,bbox_inches='tight')
+    plt.savefig("bak/compare_nonpar.pdf",bbox_inches='tight')
 
-'''
-pars_all=np.array([{'name':'tau' ,'val': 6.0000E-02,'label':'$\\tau$'},
-                   {'name':'mnu' ,'val': 6.0000E+01,'label':'$\\Sigma m_\\nu$'},
-                   {'name':'och2','val': 1.1970E-01,'label':'$\\omega_c$'},
-                   {'name':'hh'  ,'val': 6.9000E-01,'label':'$h$'},
-                   {'name':'obh2','val': 2.2220E-02,'label':'$\\omega_b$'},
-                   {'name':'ns'  ,'val': 9.6550E-01,'label':'$n_s$'},
-                   {'name':'A_s' ,'val': 2.1955E+00,'label':'$A_s\\times10^9$'},
-                   {'name':'wa'  ,'val': 0.0000E+00,'label':'$w_a$'},
-                   {'name':'w0'  ,'val':-1.0000E+00,'label':'$w_0$'},
-                   {'name':'bias_LSST_gold_node1','val':1.0000E+00,'label':'$b_1$'},
-                   {'name':'bias_LSST_gold_node2','val':1.0000E+00,'label':'$b_2$'},
-                   {'name':'bias_LSST_gold_node3','val':1.0000E+00,'label':'$b_3$'},
-                   {'name':'bias_LSST_gold_node4','val':1.0000E+00,'label':'$b_4$'},
-                   {'name':'bias_LSST_gold_node5','val':1.0000E+00,'label':'$b_5$'},
-                   {'name':'bias_LSST_gold_node6','val':1.0000E+00,'label':'$b_6$'},
-                   {'name':'bias_LSST_gold_node7','val':1.0000E+00,'label':'$b_7$'},
-                   {'name':'bias_LSST_gold_node8','val':1.0000E+00,'label':'$b_8$'},
-                   {'name':'bias_LSST_gold_node9','val':1.0000E+00,'label':'$b_9$'},
-                   {'name':'sphz_LSST_gold_node1','val':1.0000E+00,'label':'$\\sigma_z^1$'},
-                   {'name':'sphz_LSST_gold_node2','val':1.0000E+00,'label':'$\\sigma_z^2$'},
-                   {'name':'sphz_LSST_gold_node3','val':1.0000E+00,'label':'$\\sigma_z^3$'},
-                   {'name':'sphz_LSST_gold_node4','val':1.0000E+00,'label':'$\\sigma_z^4$'},
-                   {'name':'sphz_LSST_gold_node5','val':1.0000E+00,'label':'$\\sigma_z^5$'},
-                   {'name':'sphz_LSST_gold_node6','val':1.0000E+00,'label':'$\\sigma_z^6$'},
-                   {'name':'sphz_LSST_gold_node7','val':1.0000E+00,'label':'$\\sigma_z^7$'},
-                   {'name':'sphz_LSST_gold_node8','val':1.0000E+00,'label':'$\\sigma_z^8$'},
-                   {'name':'sphz_LSST_gold_node9','val':1.0000E+00,'label':'$\\sigma_z^9$'},
-                   {'name':'bphz_LSST_gold_node1','val':1.0000E+00,'label':'$\\Delta z^1$'},
-                   {'name':'bphz_LSST_gold_node2','val':1.0000E+00,'label':'$\\Delta z^2$'},
-                   {'name':'bphz_LSST_gold_node3','val':1.0000E+00,'label':'$\\Delta z^3$'},
-                   {'name':'bphz_LSST_gold_node4','val':1.0000E+00,'label':'$\\Delta z^4$'},
-                   {'name':'bphz_LSST_gold_node5','val':1.0000E+00,'label':'$\\Delta z^5$'},
-                   {'name':'bphz_LSST_gold_node6','val':1.0000E+00,'label':'$\\Delta z^6$'},
-                   {'name':'bphz_LSST_gold_node7','val':1.0000E+00,'label':'$\\Delta z^7$'},
-                   {'name':'bphz_LSST_gold_node8','val':1.0000E+00,'label':'$\\Delta z^8$'},
-                   {'name':'bphz_LSST_gold_node9','val':1.0000E+00,'label':'$\\Delta z^9$'}])
-p_all=np.array([fshr.ParamFisher(p['val'],0,p['name'],p['label'],True,True,1E4) for p in pars_all[:]])
-'''
 
 def get_fisher(prefix,priors_sz,priors_bz) :
     data=np.load(prefix+"/fisher_raw.npz")
