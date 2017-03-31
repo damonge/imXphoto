@@ -359,7 +359,7 @@ class Tracer :
 
         return self.nbins
 
-def get_foreground_cls(tr1,tr2,lmax,pname) :
+def get_foreground_cls(tr1,tr2,lmax,pname,include_wedge=False) :
     z,tz=np.loadtxt(tr1.tz_file,unpack=True)
     tofz=interp1d(z,tz)
 
@@ -373,10 +373,24 @@ def get_foreground_cls(tr1,tr2,lmax,pname) :
     nu_arr2=NU_21/(1+z_arr2)
     
     larr=np.arange(lmax+1)
+
+    beam_fwhm_1=CLIGHT/(tr1.dish_size*nu_arr1)
+    beam_fwhm_2=CLIGHT/(tr2.dish_size*nu_arr2)
+    xi_fg_1=tr1.xi_fg*np.ones([lmax+1,tr1.nbins])
+    xi_fg_2=tr1.xi_fg*np.ones([lmax+1,tr2.nbins])
+    if include_wedge :
+        xi_ell_1=1./(1./(np.pi/((larr[:,None]+0.001)*np.sin(0.5*beam_fwhm_1[None,:])))+1./xi_fg_1)
+        xi_ell_2=1./(1./(np.pi/((larr[:,None]+0.001)*np.sin(0.5*beam_fwhm_2[None,:])))+1./xi_fg_2)
+    else :
+        xi_ell_1=xi_fg_1
+        xi_ell_2=xi_fg_2
+
+    xi_fac=np.exp(-0.5*((np.log(nu_arr1[None,:,None]/nu_arr2[None,None,:]))**2/(xi_ell_1[:,:,None]*xi_ell_2[:,None,:])))
+
     cl=np.zeros([lmax+1,tr1.nbins,tr2.nbins])
     cl[:,:,:]=(tr1.a_fg/(tbg_arr1[:,None]*tbg_arr2[None,:]))[None,:,:]
     cl[:,:,:]*=(((nu_arr1[:,None]*nu_arr2[None,:])/tr1.nux_fg**2)**tr1.alp_fg)[None,:,:]
-    cl[:,:,:]*=(np.exp(-0.5*(np.log(nu_arr1[:,None]/nu_arr2[None,:])/tr1.xi_fg)**2))[None,:,:]
+    cl[:,:,:]*=xi_fac
     cl[:,:,:]*=(((larr+1.)/(tr1.lx_fg+1.))**tr1.bet_fg)[:,None,None]
 
     if pname.startswith("im_fg_a_fg") :

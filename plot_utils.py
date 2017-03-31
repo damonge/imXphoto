@@ -62,6 +62,8 @@ def get_sigma(fishp,names,fix_params=[]) :
 
 def compute_errors(dirname,fishname,col,z_min,z_max,label,plot_bphz=True,plot_sphz=True,lt='-',
                    l5000=False,fix_sphz=False,do_plot=True) :
+#    plot_bphz=True
+#    plot_sphz=False
     z0,zf,dum,dum,dum,dum=np.loadtxt("curves_LSST/bins_gold_lmax2000.txt",unpack=True);
     zarr=0.5*(z0+zf)
     ind=np.where((zarr>=z_min) & (zarr<=z_max))[0]
@@ -690,5 +692,27 @@ if whichfig=='fig14' or whichfig=='all':
                  {'ls':'dashed','col':'black','alpha':-1 ,'lw':2}],
                 ['Self-calibrated','Calibrated with 21cm','Perfect calibration'],
                 fname='bak/compare_constraints.pdf')
+
+if whichfig=='fig15' or whichfig=='all':
+    plt.figure()
+    zarr_HIRAX ,err_sthz_HIRAX_arr ,err_bthz_HIRAX_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_HIRAX_32_6_sthr1.000",col_HIRAX,0.00,3.00,"HIRAX",plot_bphz=False)
+    zarr_HIRAX ,err_sthz_HIRAX_arr ,err_bthz_HIRAX_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_wFG_a1.000_wedge_HIRAX_32_6_sthr1.000",col_HIRAX,0.00,3.00,None,plot_bphz=False,lt='--')
+    zarr_SKAFL ,err_sthz_SKAFL_arr ,err_bthz_SKAFL_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_SKA_sthr1.000"       ,col_SKA,0.00,3.00,"SKA",plot_bphz=False)
+    zarr_SKAFL ,err_sthz_SKAFL_arr ,err_bthz_SKAFL_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_wFG_a1.000_wedge_SKA_sthr1.000"       ,col_SKA,0.00,3.00,None,plot_bphz=False,lt='--')
+    zarr_MKTFL ,err_sthz_MKTFL_arr ,err_bthz_MKTFL_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_woFG_MeerKAT_sthr1.000"   ,col_MKT,0.00,3.00,"MeerKAT",plot_bphz=False)
+    zarr_MKTFL ,err_sthz_MKTFL_arr ,err_bthz_MKTFL_arr =compute_errors("runs/IMAP"  ,"Fisher_wA_wFG_a1.000_wedge_MeerKAT_sthr1.000"   ,col_MKT,0.00,3.00,None,plot_bphz=False,lt='--')
+    ax=plt.gca()
+    plt.xlim([0,2.7])
+    plt.ylim([7E-5,1E-2])
+    plt.yscale('log')
+    plt.xlabel('$z$',fontsize=18)
+    plt.ylabel('$\\sigma(\\sigma_z)$',fontsize=18)
+    plt.plot(zreq,1E-3*(1+zreq),'k-')
+    plt.plot([-1,-1],[-1,-2],'k-' ,lw=2,label="No foregrounds")
+    plt.plot([-1,-1],[-1,-2],'k--',lw=2,label="Beam wedge")
+    ax.tick_params(axis='x', labelsize=14)
+    ax.tick_params(axis='y', labelsize=14)
+    plt.legend(loc='lower right',frameon=False,labelspacing=0.1,ncol=2,fontsize=16)
+    plt.savefig("bak/compare_wedge.pdf",bbox_inches='tight')
 
 plt.show()

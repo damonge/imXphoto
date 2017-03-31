@@ -466,7 +466,7 @@ class ParamRun:
             tz_file=None; dish_size=None; t_inst=None; t_total=None; n_dish=None;
             area_efficiency=None; fsky_im=None; im_type=None; base_file=None;
             baseline_min=None; baseline_max=None;
-            include_fg=False; fit_fg=False;
+            include_fg=False; fit_fg=False; include_wedge=False;
             a_fg=None; alp_fg=None; bet_fg=None; xi_fg=None; nux_fg=None; lx_fg=None; 
             if config.has_option(sec_title,'tz_file') :
                 tz_file=config.get(sec_title,'tz_file')
@@ -495,6 +495,8 @@ class ParamRun:
                 if include_fg :
                     if config.has_option(sec_title,'fit_foregrounds') :
                         fit_fg=config.getboolean(sec_title,'fit_foregrounds')
+                    if config.has_option(sec_title,'include_wedge') :
+                        include_wedge=config.getboolean(sec_title,'include_wedge')
                     if config.has_option(sec_title,'A_fg') :
                         a_fg=config.getfloat(sec_title,'A_fg')
                     if config.has_option(sec_title,'alpha_fg') :
@@ -510,6 +512,7 @@ class ParamRun:
                     if self.include_im_fg==False :
                         self.include_im_fg=include_fg
                         self.fit_im_fg=fit_fg*include_fg
+                        self.include_wedge=include_wedge
                         if self.fit_im_fg :
                             self.params_all.append(fsh.ParamFisher(a_fg,0.1*a_fg,"im_fg_a_fg",
                                                                    "$A_{\\rm FG}$",True,True,0))
@@ -649,13 +652,13 @@ class ParamRun:
                     nb2=tr2.nbins
                     if tr1.tracer_type=='intensity_mapping' :
                         if tr2.tracer_type=='intensity_mapping' :
-                            cls=(trc.get_foreground_cls(tr1,tr2,self.lmax,"none"))
+                            cls=(trc.get_foreground_cls(tr1,tr2,self.lmax,"none",include_wedge=self.include_wedge))
                             self.cl_fid_arr[:,nbt1:nbt1+nb1,nbt2:nbt2+nb2]+=cls.reshape((self.lmax+1)/NLB,NLB,nb1,nb2).mean(axis=1)
                             if self.fit_im_fg :
                                 for ip in np.arange(self.npar_vary) :
                                     pname=self.params_fshr[ip].name 
                                     if pname.startswith("im_fg") :
-                                        dcls=trc.get_foreground_cls(tr1,tr2,self.lmax,pname)
+                                        dcls=trc.get_foreground_cls(tr1,tr2,self.lmax,pname,include_wedge=self.include_wedge)
                                         self.dcl_arr[ip,:,nbt1:nbt1+nb1,nbt2:nbt2+nb2]=dcls.reshape((self.lmax+1)/NLB,NLB,nb1,nb2).mean(axis=1)
                     nbt2+=nb2
                 nbt1+=nb1
