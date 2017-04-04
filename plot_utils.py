@@ -415,14 +415,15 @@ if whichfig=='fig9' or whichfig=='all' :
     plt.savefig("bak/compare_dmax.pdf",bbox_inches='tight');
 
 if whichfig=='fig10' or whichfig=='all' :
-    def plot_nz(fname,area,lt,label) :
+    def plot_nz(fname,area,lt,label,refac=1.) :
         z,nz=np.loadtxt(fname,unpack=True)
-        plt.plot(z,nz*area*60**2/area,'k'+lt,lw=2,label=label)
+        plt.plot(z,nz*area*60**2/area/refac,lt,lw=2,label=label)
 
     plt.figure()
-    plot_nz("curves_spec/nz_DESI.txt"  ,14000.,'-' ,'DESI')
-    plot_nz("curves_spec/nz_Euclid.txt",15000.,'--','Euclid')
-    plot_nz("curves_spec/nz_WFIRST.txt", 2000.,'-.','WFIRST')
+    plot_nz("curves_spec/nz_DESI.txt"  ,14000.,'k-' ,'DESI')
+    plot_nz("curves_spec/nz_Euclid.txt",15000.,'k--','Euclid')
+    plot_nz("curves_spec/nz_WFIRST.txt", 2000.,'k-.','WFIRST')
+    plot_nz("curves_IM/nz_HI.txt",1.,'r-','$\\propto\\rho_{\\rm HI}$',refac=10);
     plt.yscale('log')
     plt.xlim([0,3]); plt.ylim([1E2,3E4]);
     plt.gca().tick_params(axis='x', labelsize=14)
